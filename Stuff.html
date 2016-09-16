@@ -1,0 +1,101 @@
+<meta charset="utf-8">
+
+<head>
+<script src="jquery-3.1.0.js"></script>
+</head> 
+
+<!-- Mazemap inclusion -->
+<link rel="stylesheet" href="https://api.mazemap.com/js/v1.0.6/mazemap.min.css">
+<script type='text/javascript' src='https://api.mazemap.com/js/v1.0.6/mazemap.min.js'></script>
+
+<!-- Leaflet inclusion -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.0-rc.3/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
+
+<div id='mazemap-container'></div>
+
+<style>
+
+		body {
+			margin: 0;
+		}
+
+		#mazemap-container {
+			width: 100vw;
+			height: 100vh;
+		}
+
+		.pswp__zoom-wrap {
+		  will-change: auto !important;
+		  -webkit-backface-visibility: visible !important;
+		}
+</style>
+
+<script>
+	// Create global variable for storing the geography JSON in
+	var rawResponse;
+
+	// Create event for handling asynchronous responses from the server
+	var event = new Event('responseTextChange');
+
+	// Listen for the event.
+	document.getElementById('mazemap-container').addEventListener('responseTextChange', function () { restOfProgram() }, false);
+
+	// Function for requesting JSON object from server
+	function getHttp(url) {
+		var info = new XMLHttpRequest();
+
+		// Asynchronous HTTP request
+		info.open( "GET", url, true );
+		info.send();
+		
+		info.onreadystatechange = function(error) {
+			if (info.readyState == 4 && info.status == 200) {
+				console.log("successfully retrieved response from the server");
+				rawResponse = info.responseText;
+
+				// Dispatch the event, which will make the rest of the program happen
+				document.getElementById('mazemap-container').dispatchEvent(event);
+			}
+			else {
+				console.error("Error", error);
+			}
+		}
+	}
+
+	getHttp("http://api.mazemap.com/api/pois/?campusid=1&floorid=159&srid=4326");
+
+	var map = Maze.map('mazemap-container', {});
+	map.setView([63.41431498967308,10.406826528933491]);
+	var coordinates = [];
+
+
+	// This will contain the rest of the program, and will be run when we know we have received the JSON from the server
+	function restOfProgram() {
+		var geoJSON = JSON.parse(rawResponse);
+
+		for (i = 0; i < geoJSON.pois.length; i++) {
+			coordinates.push(geoJSON.pois[i].geometry.coordinates[0]);
+		}
+
+		var temp;
+
+		for (i = 0; i < coordinates.length; i++) {
+			for (j = 0; j < coordinates[i].length; j++) {
+				temp = coordinates[i][j][0];
+				coordinates[i][j][0] = coordinates[i][j][1];
+				coordinates[i][j][1] = temp;
+			}
+		}
+
+		for (i = 0; i < coordinates.length; i++) {
+			var polygon = L.polygon(coordinates[i]);
+			polygon.addTo(map);
+		}
+		
+	}
+
+    
+</script>
+
+
