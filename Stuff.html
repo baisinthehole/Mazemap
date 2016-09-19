@@ -1,9 +1,5 @@
 <meta charset="utf-8">
 
-<head>
-<script src="jquery-3.1.0.js"></script>
-</head> 
-
 <!-- Mazemap inclusion -->
 <link rel="stylesheet" href="https://api.mazemap.com/js/v1.0.6/mazemap.min.css">
 <script type='text/javascript' src='https://api.mazemap.com/js/v1.0.6/mazemap.min.js'></script>
@@ -48,7 +44,7 @@
 		// Asynchronous HTTP request
 		info.open( "GET", url, true );
 		info.send();
-		
+
 		info.onreadystatechange = function(error) {
 			if (info.readyState == 4 && info.status == 200) {
 				console.log("successfully retrieved response from the server");
@@ -66,36 +62,27 @@
 	getHttp("http://api.mazemap.com/api/pois/?campusid=1&floorid=159&srid=4326");
 
 	var map = Maze.map('mazemap-container', {});
-	map.setView([63.41431498967308,10.406826528933491]);
+	map.setView([63.41431498967308,10.406826528933491], 15);
 	var coordinates = [];
 
 
 	// This will contain the rest of the program, and will be run when we know we have received the JSON from the server
 	function restOfProgram() {
 		var geoJSON = JSON.parse(rawResponse);
+		var temp;
 
 		for (i = 0; i < geoJSON.pois.length; i++) {
 			coordinates.push(geoJSON.pois[i].geometry.coordinates[0]);
-		}
-
-		var temp;
-
-		for (i = 0; i < coordinates.length; i++) {
 			for (j = 0; j < coordinates[i].length; j++) {
 				temp = coordinates[i][j][0];
 				coordinates[i][j][0] = coordinates[i][j][1];
 				coordinates[i][j][1] = temp;
 			}
+			Maze.polygon(coordinates[i]).addTo(map);
 		}
-
-		for (i = 0; i < coordinates.length; i++) {
-			var polygon = L.polygon(coordinates[i]);
-			polygon.addTo(map);
-		}
-		
 	}
 
-    
+
 </script>
 
 
