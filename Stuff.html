@@ -70,15 +70,30 @@
 	function restOfProgram() {
 		var geoJSON = JSON.parse(rawResponse);
 		var temp;
+		var color;
+		console.log(geoJSON);
 
 		for (i = 0; i < geoJSON.pois.length; i++) {
+			color = 'blue';
 			coordinates.push(geoJSON.pois[i].geometry.coordinates[0]);
 			for (j = 0; j < coordinates[i].length; j++) {
 				temp = coordinates[i][j][0];
 				coordinates[i][j][0] = coordinates[i][j][1];
 				coordinates[i][j][1] = temp;
 			}
-			Maze.polygon(coordinates[i]).addTo(map);
+
+			// Draws different rooms in different colors
+			for (var j = 0; j < geoJSON.pois[i].infos.length; j++) {
+				// WC
+				if (geoJSON.pois[i].infos[j].poiTypeId==9){
+				color = 'red';
+				}
+				// Stairs
+				if (geoJSON.pois[i].infos[j].poiTypeId==3){
+				color = 'green';
+				}
+			}
+			Maze.polygon(coordinates[i], {color: color}).addTo(map);
 		}
 	}
 
