@@ -83,20 +83,32 @@ function recievedLocalJSON(data) {
     var color = ['blue', 'gray', 'green', 'black'];
     var temp;
     var index = 0;
-    for (var property in data) {
-        var coordinates = [];
-        if (property !== 'zOrder') {
-            for (i = 0; i < data[property].features.length; i++) {
-                coordinates.push(data[property].features[i].geometry.coordinates[0]);
-                for (j = 0; j < coordinates[i].length; j++) {
-                    temp = coordinates[i][j][0];
-                    coordinates[i][j][0] = coordinates[i][j][1];
-                    coordinates[i][j][1] = temp;
-                }
-            Maze.polygon(coordinates[i], {color: color[index]}).addTo(map);
-            }
-          index += 1;
+
+    // One array of coordinates for each type of polygon
+    var roomCoordinates = [];
+    var stairCoordinates = [];
+    var outlineCoordinates = [];
+    var doorCoordinates = [];
+    
+    // Fill the coordinate arrays for each type of polygon and draw to map
+    fillCoordinateType(data, stairCoordinates, 'stairs', color[0]);
+    fillCoordinateType(data, roomCoordinates, 'rooms', color[1]);
+    fillCoordinateType(data, doorCoordinates, 'doors', color[2]);
+    fillCoordinateType(data, outlineCoordinates, 'outlines', color[3]);
+
+    // Draw markers on all stair coordinates
+    drawMarkersForStairs(stairCoordinates);
+}
+
+function fillCoordinateType(data, coordinates, coordinateType, color) {
+    for (i = 0; i < data[coordinateType].features.length; i++) {
+        coordinates.push(data[coordinateType].features[i].geometry.coordinates[0]);
+        for (j = 0; j < coordinates[i].length; j++) {
+            temp = coordinates[i][j][0];
+            coordinates[i][j][0] = coordinates[i][j][1];
+            coordinates[i][j][1] = temp;
         }
+        Maze.polygon(coordinates[i], {color: color}).addTo(map);
     }
 }
 
@@ -118,4 +130,11 @@ function loadJSON(path, success, error)
     };
     xhr.open("GET", path, true);
     xhr.send();
+}
+function drawMarkersForStairs(stairCoordinates) {
+    for (var i = 0; i < stairCoordinates.length; i++) {
+        for (var j = 0; j < stairCoordinates[i].length; j++) {
+            L.marker(stairCoordinates[i][j]).addTo(map);
+        }
+    }
 }
