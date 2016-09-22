@@ -11,93 +11,17 @@
 <div id='mazemap-container'></div>
 
 <style>
-
 		body {
 			margin: 0;
 		}
-
 		#mazemap-container {
 			width: 100vw;
 			height: 100vh;
 		}
-
 		.pswp__zoom-wrap {
 		  will-change: auto !important;
 		  -webkit-backface-visibility: visible !important;
 		}
 </style>
 
-<script>
-	// Create global variable for storing the geography JSON in
-	var rawResponse;
-
-	// Create event for handling asynchronous responses from the server
-	var event = new Event('responseTextChange');
-
-	// Listen for the event.
-	document.getElementById('mazemap-container').addEventListener('responseTextChange', function () { restOfProgram() }, false);
-
-	// Function for requesting JSON object from server
-	function getHttp(url) {
-		var info = new XMLHttpRequest();
-
-		// Asynchronous HTTP request
-		info.open( "GET", url, true );
-		info.send();
-
-		info.onreadystatechange = function(error) {
-			if (info.readyState == 4 && info.status == 200) {
-				console.log("successfully retrieved response from the server");
-				rawResponse = info.responseText;
-
-				// Dispatch the event, which will make the rest of the program happen
-				document.getElementById('mazemap-container').dispatchEvent(event);
-			}
-			else {
-				console.error("Error", error);
-			}
-		}
-	}
-
-	getHttp("http://api.mazemap.com/api/pois/?campusid=1&floorid=159&srid=4326");
-
-	var map = Maze.map('mazemap-container', {});
-	map.setView([63.41431498967308,10.406826528933491], 15);
-	var coordinates = [];
-
-
-	// This will contain the rest of the program, and will be run when we know we have received the JSON from the server
-	function restOfProgram() {
-		var geoJSON = JSON.parse(rawResponse);
-		var temp;
-		var color;
-		console.log(geoJSON);
-
-		for (i = 0; i < geoJSON.pois.length; i++) {
-			color = 'blue';
-			coordinates.push(geoJSON.pois[i].geometry.coordinates[0]);
-			for (j = 0; j < coordinates[i].length; j++) {
-				temp = coordinates[i][j][0];
-				coordinates[i][j][0] = coordinates[i][j][1];
-				coordinates[i][j][1] = temp;
-			}
-
-			// Draws different rooms in different colors
-			for (var j = 0; j < geoJSON.pois[i].infos.length; j++) {
-				// WC
-				if (geoJSON.pois[i].infos[j].poiTypeId==9){
-				color = 'red';
-				}
-				// Stairs
-				if (geoJSON.pois[i].infos[j].poiTypeId==3){
-				color = 'green';
-				}
-			}
-			Maze.polygon(coordinates[i], {color: color}).addTo(map);
-		}
-	}
-
-
-</script>
-
-
+<script src="Stuff.js"></script>
