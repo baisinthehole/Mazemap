@@ -1,3 +1,5 @@
+var drawn = false;
+
 // initialize rawResponse and event for asynchronous response from server
 // Create global variable for storing the geography JSON in
 var rawResponse;
@@ -8,11 +10,31 @@ var event = new Event('responseTextChange');
 // Create a map
 var map = Maze.map('mazemap-container', { campusloader: false });
 map.setView([63.41431498967308,10.406826528933491], 15);
+// Maze.Instancer.getCampus(1).then( function (campus) {
+//     map.fitBounds(campus.getBounds());
+//     campus.addTo(map).setActive().then( function() {
+//         map.setZLevel(1);
+//         map.getZLevelControl().show();
+//     });
+// });
 
 // Uncomment the preferred JSON file
-getLocalJSON('floor_4_35.json');
+// getLocalJSON('floor_4_35.json');
 // getJSONfromServer();
 
+
+map.on('zoomend', function () {
+    if (map.getZoom() >= 17 && !drawn) {
+        console.log('Zoom is greater than 17');
+        getLocalJSON('floor_4_35.json');
+
+    }
+    if (map.getZoom() < 17 && drawn)
+    {
+        console.log('Zoom is less than 17');
+        clearMap();
+    }
+});
 
 /* JSON object from server */
 function getJSONfromServer() {
@@ -74,6 +96,7 @@ function getHttp(url) {
 
 /* JSON object from local file */
 function getLocalJSON(filename) {
+    drawn = true;
     loadJSON(filename,
         function(data) { recievedLocalJSON(data); },
         function(xhr) { console.error(xhr); }
@@ -118,4 +141,18 @@ function loadJSON(path, success, error)
     };
     xhr.open("GET", path, true);
     xhr.send();
+}
+
+function clearMap() {
+    drawn = false;
+    for(i in map._layers) {
+        if(map._layers[i]._path != undefined) {
+            try {
+                map.removeLayer(map._layers[i]);
+            }
+            catch(e) {
+                console.log("problem with " + e + map._layers[i]);
+            }
+        }
+    }
 }
