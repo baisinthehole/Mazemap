@@ -1,6 +1,7 @@
 // enum
 var RoomType = {"OFFICE": 1, "CORRIDOR": 2, "STAIRS": 3, "COMPUTER_LAB": 4, "MEETING_ROOM": 5, "LECTURE_HALL": 6, "STUDY_ROOM": 7, "NOT_AVAILABLE": 8, "TOILETS": 9, "STORAGE_ROOM": 10, "LAB": 11, "COPY_ROOM": 12, "TECHNICAL": 13, "WARDROBE": 14, "SHOWER": 15, "GROUP_ROOM": 16, "INSTITUTE": 17, "FRAT": 18, "DRAWING_ROOM": 19, "LIBRARY": 20, "TEACHING_ROOM": 21, "STORE": 22, "CANTEEN": 23, "SIT": 24, "BUS_STOP": 27, "PARKING_LOT": 28, "WORKSHOP": 29};
 
+var corridorStyle = {"color": "gray", "fillColor": "red", "opacity": 1};
 
 var drawn = false;
 
@@ -106,8 +107,9 @@ function getJSONfromServer() {
 // This will contain the rest of the program, and will be run when we know we have received the JSON from the server
 function recievedJSONfromServer() {
     var geoJSON = JSON.parse(rawResponse);
-    var color = "red";
-    fillCoordinateTypeServer(geoJSON, corridorCoordinates, corridorPolygons, RoomType.CORRIDOR, color, "polygon");
+    var color = "gray";
+    var fillColor = "red";
+    fillCoordinateTypeServer(geoJSON, corridorCoordinates, corridorPolygons, RoomType.CORRIDOR, color, fillColor, "polygon");
 }
   // Function for requesting JSON object from server
 function getHttp(url) {
@@ -138,7 +140,7 @@ function getLocalJSON(filename) {
 }
 function recievedLocalJSON(data) {
     var color = ['blue', 'gray', 'green', 'black'];
-    
+
     // Fill the coordinate arrays for each type of polygon and draw to map
     fillCoordinateTypeLocal(data, stairCoordinates, stairPolygons, 'stairs', color[0], "line");
     fillCoordinateTypeLocal(data, roomCoordinates, roomPolygons, 'rooms', color[1], "line");
@@ -168,7 +170,7 @@ function fillCoordinateTypeLocal(data, coordinates, polygonList, coordinateType,
     console.log(coordinates);
 }
 
-function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, lineOrPolygon) {
+function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, fillColor, lineOrPolygon) {
     var temp;
     for (var i = 0; i < data.pois.length; i++) {
         for (var j = 0; j < data.pois[i].infos.length; j++) {
@@ -189,7 +191,7 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
             polygonList.push(Maze.polyline(coordinates[i], {color: color}));
         }
         else {
-            polygonList.push(Maze.polygon(coordinates[i], {color: color}));
+            polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor}));
         }
     }
 }
