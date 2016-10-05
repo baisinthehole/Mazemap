@@ -1,5 +1,5 @@
 // enum
-var RoomType = {"OFFICE": 1, "CORRIDOR": 2, "STAIRS": 3, "COMPUTER_LAB": 4, "MEETING_ROOM": 5, "LECTURE_HALL": 6, "STUDY_ROOM": 7, "NOT_AVAILABLE": 8, "TOILETS": 9, "STORAGE_ROOM": 10, "LAB": 11, "COPY_ROOM": 12, "TECHNICAL": 13, "WARDROBE": 14, "SHOWER": 15, "GROUP_ROOM": 16, "INSTITUTE": 17, "FRAT": 18, "DRAWING_ROOM": 19, "LIBRARY": 20, "TEACHING_ROOM": 21, "STORE": 22, "CANTEEN": 23, "SIT": 24, "BUS_STOP": 27, "PARKING_LOT": 28, "WORKSHOP": 29};
+var RoomType = {"OFFICE": 1, "CORRIDOR": 2, "STAIRS": 3, "COMPUTER_LAB": 4, "MEETING_ROOM": 5, "LECTURE_HALL": 6, "STUDY_ROOM": 7, "NOT_AVAILABLE": 8, "TOILETS": 9, "STORAGE_ROOM": 10, "LAB": 11, "COPY_ROOM": 12, "TECHNICAL": 13, "WARDROBE": 14, "SHOWER": 15, "GROUP_ROOM": 16, "INSTITUTE": 17, "FRAT": 18, "DRAWING_ROOM": 19, "LIBRARY": 20, "TEACHING_ROOM": 21, "STORE": 22, "CANTEEN": 23, "SIT": 24, "BUS_STOP": 27, "PARKING_LOT": 28, "WORKSHOP": 29, "ROOM":91};
 
 var corridorStyle = {"color": "gray", "fillColor": "red", "opacity": 1};
 
@@ -18,7 +18,8 @@ var zoomLevelsDrawn = {"16": false, "17": false, "18": false, "19": false, "20":
 
 // Create a map
 var map = Maze.map('mazemap-container', { campusloader: false });
-map.setView([63.41431498967308,10.406826528933491], 15);
+map.setView([10.406426561608821,63.417421008760335], 15);
+// map.setView([63.417421008760335,10.406426561608821], 15);
 
 // One array of coordinates for each type of polygon
 var roomCoordinates = [];
@@ -33,9 +34,15 @@ var outlinePolygons = [];
 var doorPolygons = [];
 var corridorPolygons = [];
 
+var roomNames = [];
+var roomNameCoords = [];
+
 // Uncomment the preferred JSON file
 getLocalJSON('floor_4_35.json');
 getJSONfromServer();
+
+var myIcon;
+
 
 // Zoom listener
 map.on('zoomend', function () {
@@ -110,6 +117,7 @@ function recievedJSONfromServer() {
     var color = "gray";
     var fillColor = "red";
     fillCoordinateTypeServer(geoJSON, corridorCoordinates, corridorPolygons, RoomType.CORRIDOR, color, fillColor, "polygon");
+    fillCoordinateTypeServer(geoJSON, roomCoordinates, roomPolygons, RoomType.ROOM, color, fillColor, "line");
 }
   // Function for requesting JSON object from server
 function getHttp(url) {
@@ -143,7 +151,7 @@ function recievedLocalJSON(data) {
 
     // Fill the coordinate arrays for each type of polygon and draw to map
     fillCoordinateTypeLocal(data, stairCoordinates, stairPolygons, 'stairs', color[0], "line");
-    fillCoordinateTypeLocal(data, roomCoordinates, roomPolygons, 'rooms', color[1], "line");
+    // fillCoordinateTypeLocal(data, roomCoordinates, roomPolygons, 'rooms', color[1], "line");
     fillCoordinateTypeLocal(data, doorCoordinates, doorPolygons, 'doors', color[2], "line");
     fillCoordinateTypeLocal(data, outlineCoordinates, outlinePolygons, 'outlines', color[3], "line");
 
@@ -172,16 +180,33 @@ function fillCoordinateTypeLocal(data, coordinates, polygonList, coordinateType,
 
 function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, fillColor, lineOrPolygon) {
     var temp;
+    console.log(data);
     for (var i = 0; i < data.pois.length; i++) {
         for (var j = 0; j < data.pois[i].infos.length; j++) {
             if (data.pois[i].infos[j].poiTypeId == coordinateType){
-                coordinates.push(data.pois[i].geometry.coordinates[0]);
+                if (data.pois[i].geometry.coordinates[0].constructor === Array){
+                    console.log("Array");
+                    console.log(data.pois[i].geometry.coordinates[0]);
+                    coordinates.push(data.pois[i].geometry.coordinates[0]);
+                    for (k = 0; k < coordinates[coordinates.length - 1].length; k++) {
+                        temp = coordinates[coordinates.length - 1][k][0];
+                        coordinates[coordinates.length - 1][k][0] = coordinates[coordinates.length - 1][k][1];
+                        coordinates[coordinates.length - 1][k][1] = temp;
+                    }
+                }
+                else {
+                    console.log("Not array");
+                    coordinates.push(data.pois[i].geometry.coordinates);
+                    console.log(coordinates[coordinates.length - 1]);
+                    temp = coordinates[coordinates.length - 1][0];
+                    coordinates[coordinates.length - 1][0] = coordinates[coordinates.length - 1][1];
+                    coordinates[coordinates.length - 1][1] = temp;
+                    console.log(coordinates[coordinates.length - 1]);
+                }
 
-
-                for (k = 0; k < coordinates[coordinates.length - 1].length; k++) {
-                    temp = coordinates[coordinates.length - 1][k][0];
-                    coordinates[coordinates.length - 1][k][0] = coordinates[coordinates.length - 1][k][1];
-                    coordinates[coordinates.length - 1][k][1] = temp;
+                // if (coordinateType == RoomType.ROOM && coordinates[i].constructor === Array){
+                if (coordinateType == RoomType.ROOM){
+                    makeRoomNames(coordinates[i], data.pois[i].title);
                 }
             }
         }
@@ -238,7 +263,16 @@ function getRoomCircumference(singleRoomCoordinates) {
 
 function drawPolygons(polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
-        map.addLayer(polygonList[i]);
+        if (polygonList[i]._latlngs.length > 1) {
+            map.addLayer(polygonList[i]);
+        }
+        else if (polygonList[i]._latlngs[0][0]) {
+            map.addLayer(polygonList[i]);
+        }
+        else {
+            console.log("Trying to draw a non-polygon");
+            console.log(polygonList[i]._latlngs);
+        }
     }
 }
 
@@ -249,9 +283,11 @@ function removePolygons(polygonList) {
 }
 
 function drawPolygonsBiggerThanThreshold(roomCoordinates, polygonList, threshold) {
+    console.log(roomNameCoords);
     for (var i = 0; i < polygonList.length; i++) {
         if (getRoomCircumference(roomCoordinates[i]) > threshold) {
             map.addLayer(polygonList[i]);
+            map.addLayer(roomNames[i]);
         }
     }
 }
@@ -260,6 +296,7 @@ function removePolygonsBiggerThanThreshold(roomCoordinates, polygonList, thresho
     for (var i = 0; i < polygonList.length; i++) {
         if (getRoomCircumference(roomCoordinates[i]) > threshold) {
             map.removeLayer(polygonList[i]);
+            map.removeLayer(roomNames[i]);
         }
     }
 }
@@ -268,6 +305,7 @@ function drawPolygonsSmallerThanThreshold(roomCoordinates, polygonList, threshol
     for (var i = 0; i < polygonList.length; i++) {
         if (getRoomCircumference(roomCoordinates[i]) < threshold) {
             map.addLayer(polygonList[i]);
+            map.addLayer(roomNames[i]);
         }
     }
 }
@@ -276,6 +314,50 @@ function removePolygonsSmallerThanThreshold(roomCoordinates, polygonList, thresh
     for (var i = 0; i < polygonList.length; i++) {
         if (getRoomCircumference(roomCoordinates[i]) < threshold) {
             map.removeLayer(polygonList[i]);
+            map.removeLayer(roomNames[i]);
         }
     }
+}
+
+function makeRoomNames(coordinates, title) {
+    if (coordinates.length == 2) {
+        console.log("Point 2");
+        console.log(coordinates);
+        myIcon = Maze.divIcon({
+            iconSize: new Maze.Point(0, 0),
+            html: title
+        });
+        roomNames.push(Maze.marker(coordinates, {icon: myIcon}));
+    }
+    else {
+        point = getPoint(coordinates);
+        myIcon = Maze.divIcon({
+            iconSize: new Maze.Point(0, 0),
+            html: title
+        });
+        roomNames.push(Maze.marker(point, {icon: myIcon}));
+    }
+}
+
+
+function getPoint(coordinates){
+    var minX = coordinates[0][0];
+    var minY = coordinates[0][1];
+    var maxX = coordinates[0][0];
+    var maxY = coordinates[0][1];
+    for (var i = 0; i < coordinates.length; i++) {
+        if (coordinates[i][0] < minX){
+            minX = coordinates[i][0];
+        }
+        else if (coordinates[i][0] > maxX){
+            maxX = coordinates[i][0];
+        }
+        if (coordinates[i][1] < minY){
+            minY = coordinates[i][1];
+        }
+        else if (coordinates[i][1] > maxY){
+            maxY = coordinates[i][1];
+        }
+    }
+    return [(minX+maxX)/2, (minY+maxY)/2];
 }
