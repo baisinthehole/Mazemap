@@ -54,7 +54,6 @@ map.on('zoomend', function () {
     }
     if (!zoomLevelsDrawn["18"]) {
         if (map.getZoom() >= 18) {
-            console.log("why no corridors?");
             drawPolygons(corridorPolygons);
             zoomLevelsDrawn["18"] = true;
         }
@@ -141,11 +140,15 @@ function getLocalJSON(filename) {
 function recievedLocalJSON(data) {
     var color = ['blue', 'gray', 'green', 'black'];
 
+    //console.log(data["stairs"].features[2].geometry.coordinates[0]);
+
     // Fill the coordinate arrays for each type of polygon and draw to map
     fillCoordinateTypeLocal(data, stairCoordinates, stairPolygons, 'stairs', color[0], "line");
     fillCoordinateTypeLocal(data, roomCoordinates, roomPolygons, 'rooms', color[1], "line");
     fillCoordinateTypeLocal(data, doorCoordinates, doorPolygons, 'doors', color[2], "line");
     fillCoordinateTypeLocal(data, outlineCoordinates, outlinePolygons, 'outlines', color[3], "line");
+
+    console.log(data["stairsfull"].features[0].geometry.coordinates);
 
 
     // Draw markers on all stair coordinates
@@ -167,7 +170,6 @@ function fillCoordinateTypeLocal(data, coordinates, polygonList, coordinateType,
             polygonList.push(Maze.polygon(coordinates[i], {color: color}));
         }
     }
-    console.log(coordinates);
 }
 
 function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, fillColor, lineOrPolygon) {
