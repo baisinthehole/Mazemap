@@ -18,8 +18,8 @@ var zoomLevelsDrawn = {"16": false, "17": false, "18": false, "19": false, "20":
 
 // Create a map
 var map = Maze.map('mazemap-container', { campusloader: false });
-map.setView([10.406426561608821,63.417421008760335], 15);
-// map.setView([63.417421008760335,10.406426561608821], 15);
+// map.setView([10.406426561608821,63.417421008760335], 15);
+map.setView([63.417421008760335,10.406426561608821], 15);
 
 // One array of coordinates for each type of polygon
 var roomCoordinates = [];
@@ -181,27 +181,25 @@ function fillCoordinateTypeLocal(data, coordinates, polygonList, coordinateType,
 function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, fillColor, lineOrPolygon) {
     var temp;
     console.log(data);
+    console.log(coordinateType);
     for (var i = 0; i < data.pois.length; i++) {
         for (var j = 0; j < data.pois[i].infos.length; j++) {
             if (data.pois[i].infos[j].poiTypeId == coordinateType){
                 if (data.pois[i].geometry.coordinates[0].constructor === Array){
-                    console.log("Array");
-                    console.log(data.pois[i].geometry.coordinates[0]);
-                    coordinates.push(data.pois[i].geometry.coordinates[0]);
-                    for (k = 0; k < coordinates[coordinates.length - 1].length; k++) {
-                        temp = coordinates[coordinates.length - 1][k][0];
-                        coordinates[coordinates.length - 1][k][0] = coordinates[coordinates.length - 1][k][1];
-                        coordinates[coordinates.length - 1][k][1] = temp;
-                    }
+                    coordinates.push(deepCopy(data.pois[i].geometry.coordinates[0]));
+                    // if (coordinates[coordinates.length - 1][0][0] < 30){
+                        for (k = 0; k < coordinates[coordinates.length - 1].length; k++) {
+                            temp = coordinates[coordinates.length - 1][k][0];
+                            coordinates[coordinates.length - 1][k][0] = coordinates[coordinates.length - 1][k][1];
+                            coordinates[coordinates.length - 1][k][1] = temp;
+                        }
+                    // }
                 }
                 else {
-                    console.log("Not array");
                     coordinates.push(data.pois[i].geometry.coordinates);
-                    console.log(coordinates[coordinates.length - 1]);
                     temp = coordinates[coordinates.length - 1][0];
                     coordinates[coordinates.length - 1][0] = coordinates[coordinates.length - 1][1];
                     coordinates[coordinates.length - 1][1] = temp;
-                    console.log(coordinates[coordinates.length - 1]);
                 }
 
                 // if (coordinateType == RoomType.ROOM && coordinates[i].constructor === Array){
@@ -283,7 +281,6 @@ function removePolygons(polygonList) {
 }
 
 function drawPolygonsBiggerThanThreshold(roomCoordinates, polygonList, threshold) {
-    console.log(roomNameCoords);
     for (var i = 0; i < polygonList.length; i++) {
         if (getRoomCircumference(roomCoordinates[i]) > threshold) {
             map.addLayer(polygonList[i]);
@@ -321,8 +318,6 @@ function removePolygonsSmallerThanThreshold(roomCoordinates, polygonList, thresh
 
 function makeRoomNames(coordinates, title) {
     if (coordinates.length == 2) {
-        console.log("Point 2");
-        console.log(coordinates);
         myIcon = Maze.divIcon({
             iconSize: new Maze.Point(0, 0),
             html: title
@@ -360,4 +355,22 @@ function getPoint(coordinates){
         }
     }
     return [(minX+maxX)/2, (minY+maxY)/2];
+}
+
+function deepCopy(obj) {
+    if (Object.prototype.toString.call(obj) === '[object Array]') {
+        var out = [], i = 0, len = obj.length;
+        for ( ; i < len; i++ ) {
+            out[i] = arguments.callee(obj[i]);
+        }
+        return out;
+    }
+    if (typeof obj === 'object') {
+        var out = {}, i;
+        for ( i in obj ) {
+            out[i] = arguments.callee(obj[i]);
+        }
+        return out;
+    }
+    return obj;
 }
