@@ -319,7 +319,8 @@ function removePolygonsSmallerThanThreshold(roomCoordinates, polygonList, thresh
 function makeRoomNames(coordinates, title) {
     if (coordinates.length == 2) {
         myIcon = Maze.divIcon({
-            iconSize: new Maze.Point(0, 0),
+            className: "labelClass",
+            iconSize: new Maze.Point(30, 20),
             html: title
         });
         roomNames.push(Maze.marker(coordinates, {icon: myIcon}));
@@ -327,7 +328,8 @@ function makeRoomNames(coordinates, title) {
     else {
         point = getPoint(coordinates);
         myIcon = Maze.divIcon({
-            iconSize: new Maze.Point(0, 0),
+            className: "labelClass",
+            iconSize: new Maze.Point(30, 20),
             html: title
         });
         roomNames.push(Maze.marker(point, {icon: myIcon}));
