@@ -66,15 +66,14 @@ map.on('zoomend', function () {
     }
     if (!zoomLevelsDrawn["19"]) {
         if (map.getZoom() >= 19) {
+        	console.log("bulba");
             drawPolygonsBiggerThanThreshold(roomCoordinates, roomPolygons, threshold);
-            drawPolygons(stairPolygons);
             zoomLevelsDrawn["19"] = true;
         }
     }
     if (zoomLevelsDrawn["19"]) {
         if (map.getZoom() < 19) {
             removePolygonsBiggerThanThreshold(roomCoordinates, roomPolygons, threshold);
-            removePolygons(stairPolygons);
             zoomLevelsDrawn["19"] = false;
         }
     }
@@ -82,6 +81,7 @@ map.on('zoomend', function () {
         if (map.getZoom() >= 20) {
             drawPolygonsSmallerThanThreshold(roomCoordinates, roomPolygons, threshold);
             drawPolygons(doorPolygons);
+            drawPolygons(stairPolygons);
             zoomLevelsDrawn["20"] = true;
         }
     }
@@ -89,6 +89,7 @@ map.on('zoomend', function () {
         if (map.getZoom() < 20) {
             removePolygonsSmallerThanThreshold(roomCoordinates, roomPolygons, threshold);
             removePolygons(doorPolygons);
+            removePolygons(stairPolygons);
             zoomLevelsDrawn["20"] = false;
         }
     }
@@ -143,33 +144,60 @@ function recievedLocalJSON(data) {
     //console.log(data["stairs"].features[2].geometry.coordinates[0]);
 
     // Fill the coordinate arrays for each type of polygon and draw to map
-    fillCoordinateTypeLocal(data, stairCoordinates, stairPolygons, 'stairs', color[0], "line");
+    fillCoordinateTypeLocal(data, stairCoordinates, stairPolygons, 'stairsfull', color[0], "line");
     fillCoordinateTypeLocal(data, roomCoordinates, roomPolygons, 'rooms', color[1], "line");
     fillCoordinateTypeLocal(data, doorCoordinates, doorPolygons, 'doors', color[2], "line");
     fillCoordinateTypeLocal(data, outlineCoordinates, outlinePolygons, 'outlines', color[3], "line");
-
-    console.log(data["stairsfull"].features[0].geometry.coordinates);
 
 
     // Draw markers on all stair coordinates
     //drawMarkersForStairs(stairCoordinates);
 }
 
+function fillStairCoordinates(data, coordinates, polygonList, coordinateType, color, lineOrPolygon) {
+	for (var i = 0; i < data[coordinateType].features.length; i++) {
+	        for (var j = 0; j < data[coordinateType].features[i].geometry.coordinates.length; j++) {
+	        	coordinates.push(data[coordinateType].features[i].geometry.coordinates[j]);
+	        	for (var k = 0; k < coordinates[i].length; k++) {
+		            temp = coordinates[coordinates.length - 1][k][0];
+		            coordinates[coordinates.length - 1][k][0] = coordinates[coordinates.length - 1][k][1];
+		            coordinates[coordinates.length - 1][k][1] = temp;
+		        }
+		    }
+		}
+		for (var i = 0; i < coordinates.length; i++) {
+	        if (lineOrPolygon == "line") {
+	            polygonList.push(Maze.polyline(coordinates[i], {color: color}));
+	        }
+	        else {
+	            polygonList.push(Maze.polygon(coordinates[i], {color: color}));
+	        }
+	    }
+}
+
 function fillCoordinateTypeLocal(data, coordinates, polygonList, coordinateType, color, lineOrPolygon) {
-    for (i = 0; i < data[coordinateType].features.length; i++) {
-        coordinates.push(data[coordinateType].features[i].geometry.coordinates[0]);
-        for (j = 0; j < coordinates[i].length; j++) {
-            temp = coordinates[i][j][0];
-            coordinates[i][j][0] = coordinates[i][j][1];
-            coordinates[i][j][1] = temp;
-        }
-        if (lineOrPolygon == "line") {
-            polygonList.push(Maze.polyline(coordinates[i], {color: color}));
-        }
-        else {
-            polygonList.push(Maze.polygon(coordinates[i], {color: color}));
-        }
-    }
+	// stairsfull is organized a little different from the others
+	if (coordinateType == 'stairsfull') {
+		fillStairCoordinates(data, coordinates, polygonList, coordinateType, color, lineOrPolygon);
+	}
+	// This applies for the rest of the type of coordinates
+	else {
+		for (var i = 0; i < data[coordinateType].features.length; i++) {
+	        coordinates.push(data[coordinateType].features[i].geometry.coordinates[0]);
+	        for (var j = 0; j < coordinates[i].length; j++) {
+	            temp = coordinates[i][j][0];
+	            coordinates[i][j][0] = coordinates[i][j][1];
+	            coordinates[i][j][1] = temp;
+	        }
+	        if (lineOrPolygon == "line") {
+	            polygonList.push(Maze.polyline(coordinates[i], {color: color}));
+	        }
+	        else {
+	            polygonList.push(Maze.polygon(coordinates[i], {color: color}));
+	        }
+	    }
+	}
+    
 }
 
 function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, fillColor, lineOrPolygon) {
