@@ -245,7 +245,7 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
             polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: serverWeight}));
         }
         else {
-            polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, serverWeight}));
+            polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, weight: serverWeight}));
         }
     }
 }
