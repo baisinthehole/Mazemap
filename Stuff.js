@@ -39,6 +39,8 @@ var corridorPolygons = [];
 var roomNames = [];
 var roomNameCoords = [];
 
+var neighbors;
+
 // Uncomment the preferred JSON file
 getLocalJSON('floor_4_35.json');
 getJSONfromServer();
@@ -120,6 +122,9 @@ function recievedJSONfromServer() {
     var fillColor = "red";
     fillCoordinateTypeServer(geoJSON, corridorCoordinates, corridorPolygons, RoomType.CORRIDOR, color, fillColor, "polygon");
     fillCoordinateTypeServer(geoJSON, roomCoordinates, roomPolygons, RoomType.ROOM, color, fillColor, "line");
+    neighbors = getAdjacentRooms(geoJSON);
+    console.log("Neighbors");
+    console.log(neighbors);
 }
   // Function for requesting JSON object from server
 function getHttp(url) {
@@ -213,6 +218,7 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
     var temp;
     console.log(data);
     console.log(coordinateType);
+
     for (var i = 0; i < data.pois.length; i++) {
         for (var j = 0; j < data.pois[i].infos.length; j++) {
             if (data.pois[i].infos[j].poiTypeId == coordinateType){
@@ -406,4 +412,39 @@ function deepCopy(obj) {
         return out;
     }
     return obj;
+}
+
+function getAdjacentRooms(data){
+    var neighbors = [];
+    for (var i = 0; i < data.pois.length; i++) {
+        var adjacent = [];
+        for (var j = 0; j < data.pois.length; j++) {
+            if (i!=j){
+                dist = getMinDist(data.pois[i].geometry.coordinates[0], data.pois[j].geometry.coordinates[0]);
+                if (dist < 0.0000011523708237294147*5) {
+                    adjacent.push(j);
+                }
+            }
+        }
+        neighbors.push(adjacent);
+    }
+    return(neighbors);
+}
+
+function getMinDist(coord1, coord2){
+    var minDist = 1234343231;
+    var dist;
+    for (var k = 0; k < coord1.length; k++) {
+        for (var l = 0; l < coord2.length; l++) {
+            dist = getDistPoints(coord1[k], coord2[l]);
+            if (dist < minDist){
+                minDist = dist;
+            }
+        }
+    }
+    return minDist;
+}
+
+function getDistPoints(point1, point2){
+    return Math.sqrt(Math.pow((point1[0]-point2[0]),2)+Math.pow((point1[1]-point2[1]),2));
 }
