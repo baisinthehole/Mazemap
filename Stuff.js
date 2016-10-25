@@ -125,6 +125,16 @@ function recievedJSONfromServer() {
     neighbors = getAdjacentRooms(geoJSON);
     console.log("Neighbors");
     console.log(neighbors);
+
+    console.log("roomCoordinates");
+    console.log(roomCoordinates);
+    console.log(roomCoordinates[0]);
+
+    console.log(roomCoordinates[0][2]);
+    var test = roomCoordinates[2][0];
+    console.log("point");
+    console.log(test);
+    console.log(getMinDistToPoly(test,roomCoordinates[1]));
 }
   // Function for requesting JSON object from server
 function getHttp(url) {
@@ -241,7 +251,7 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
 
                 // if (coordinateType == RoomType.ROOM && coordinates[i].constructor === Array){
                 if (coordinateType == RoomType.ROOM){
-                    makeRoomNames(coordinates[i], data.pois[i].title);
+                    makeRoomNames(coordinates[i], i);
                 }
             }
         }
@@ -445,6 +455,53 @@ function getMinDist(coord1, coord2){
     return minDist;
 }
 
+function getMinDistToPoly(point1, polygon1){
+    var minDist = 12345465432;
+    var dist;
+    for (var i = 0; i < polygon1.length; i++) {
+        if (i==polygon1.length-1){
+            dist = getMinDistToLine(point1,[polygon1[i],polygon1[0]]);
+        }
+        else{
+            dist = getMinDistToLine(point1,[polygon1[i],polygon1[i+1]]);
+        }
+        if (dist<minDist){
+            minDist = dist;
+        }
+    }
+    return minDist;
+}
+
+function getMinDistToLine(point, line){
+    dotResult = dotProd(makeLine(line[1],line[0]), makeLine(point,line[0]));
+    dotResult /= Math.pow(getDist(point,line[0]),2);
+    if (dotResult < 0){
+        return getDist(point,line[0]);
+    }
+    else if (dotResult > 1){
+        return getDist(point,line[1]);
+    }
+    else {
+        return Math.sqrt(Math.pow(getDist(point,line[0]),2)-dotResult*Math.pow(getDist(line[1],line[0]),2));
+    }
+}
+
+function makeLine(point2,point1){
+    return [point2[1]-point1[1], point2[0]-point1[0]];
+}
+
+function getDist(point1, point2){
+    return Math.sqrt(Math.pow(point2[0]-point1[0],2)+Math.pow(point2[1]-point1[1],2));
+}
+
 function getDistPoints(point1, point2){
     return Math.sqrt(Math.pow((point1[0]-point2[0]),2)+Math.pow((point1[1]-point2[1]),2));
+}
+
+function dotProd(line1,line2){
+    var sum = 0;
+    for (var i = 0; i < line1.length; i++) {
+        sum += line1[i] * line2[i];
+    }
+    return sum;
 }
