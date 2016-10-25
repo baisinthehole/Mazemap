@@ -1,3 +1,14 @@
+Maze.Map = Maze.Map.extend({
+    openPopup: function(popup) {
+        //        this.closePopup();  // just comment this
+        this._popup = popup;
+
+        return this.addLayer(popup).fire('popupopen', {
+            popup: this._popup
+        });
+    }
+});
+
 // enum
 var RoomType = {"OFFICE": 1, "CORRIDOR": 2, "STAIRS": 3, "COMPUTER_LAB": 4, "MEETING_ROOM": 5, "LECTURE_HALL": 6, "STUDY_ROOM": 7, "NOT_AVAILABLE": 8, "TOILETS": 9, "STORAGE_ROOM": 10, "LAB": 11, "COPY_ROOM": 12, "TECHNICAL": 13, "WARDROBE": 14, "SHOWER": 15, "GROUP_ROOM": 16, "INSTITUTE": 17, "FRAT": 18, "DRAWING_ROOM": 19, "LIBRARY": 20, "TEACHING_ROOM": 21, "STORE": 22, "CANTEEN": 23, "SIT": 24, "BUS_STOP": 27, "PARKING_LOT": 28, "WORKSHOP": 29, "ROOM":91};
 
@@ -127,14 +138,13 @@ function recievedJSONfromServer() {
     console.log(neighbors);
 
     console.log("roomCoordinates");
-    console.log(roomCoordinates);
-    console.log(roomCoordinates[0]);
-
-    console.log(roomCoordinates[0][2]);
-    var test = roomCoordinates[2][0];
-    console.log("point");
-    console.log(test);
-    console.log(getMinDistToPoly(test,roomCoordinates[1]));
+    var testRoom = roomCoordinates[11];
+    var points = getDistPolyToPoly(testRoom, roomCoordinates[45]);
+    console.log(points);
+    console.log(testRoom[points[0]]);
+    console.log(testRoom[points[1]]);
+    L.popup().setLatLng(testRoom[points[0]]).setContent("45").addTo(map);
+    L.popup().setLatLng(testRoom[points[1]]).setContent("45").addTo(map);
 }
   // Function for requesting JSON object from server
 function getHttp(url) {
@@ -455,9 +465,32 @@ function getMinDist(coord1, coord2){
     return minDist;
 }
 
+function getDistPolyToPoly(polygon1, polygon2){
+    var minDist = 12345465321;
+    var secondMinDist = 12345465321;
+    var result;
+    var index1;
+    var index2;
+    for (var i = 0; i < polygon1.length; i++) {
+        dist = getMinDistToPoly(polygon1[i], polygon2);
+        if (dist < minDist){
+            secondMinDist = minDist;
+            index2 = index1;
+            minDist = dist;
+            index1 = i;
+        }
+        else if (dist < secondMinDist){
+            secondMinDist = dist;
+            index2 = i;
+        }
+    }
+    return [index1, index2];
+}
+
 function getMinDistToPoly(point1, polygon1){
     var minDist = 12345465432;
     var dist;
+    var index1;
     for (var i = 0; i < polygon1.length; i++) {
         if (i==polygon1.length-1){
             dist = getMinDistToLine(point1,[polygon1[i],polygon1[0]]);
@@ -467,6 +500,7 @@ function getMinDistToPoly(point1, polygon1){
         }
         if (dist<minDist){
             minDist = dist;
+            index1 = i;
         }
     }
     return minDist;
