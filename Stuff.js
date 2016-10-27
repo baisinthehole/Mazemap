@@ -154,7 +154,7 @@ function testDotProduct(samplePoints, samplePoint, whichPoint) {
 		L.marker(samplePoints[0]).addTo(map);
 		L.marker(samplePoint).addTo(map);
 		console.log(dotProd(makeLine(samplePoints[1], samplePoints[0]), makeLine(samplePoints[1], samplePoint)));
-	}	
+	}
 }
 
 /* JSON object from server */
@@ -206,6 +206,19 @@ function recievedJSONfromServer() {
     simplifiedRoomCoordinates = simplifyRooms(removedDuplicatePoints);
 
     fillPolygons(simplifiedRoomCoordinates, simplifiedRoomPolygons, color, fillColor, "polygon");
+
+    var neighbors = getNeighbors(geoJSON, simplifiedRoomCoordinates);
+
+    // Temporary for testing
+    //
+    // for (var i = 0; i < neighbors.length; i++) {
+    //     for (var j = 0; j < neighbors[i].length; j++) {
+    //         console.log("Test output");
+    //         console.log(simplifiedRoomCoordinates[i]);
+    //         console.log(simplifiedRoomCoordinates[neighbors[i][j]]);
+    //         Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),getPoint(simplifiedRoomCoordinates[neighbors[i][j]])], {color: 'blue', weight: stairWeight}).addTo(map);
+    //     }
+    // }
 }
 
   // Function for requesting JSON object from server
@@ -567,7 +580,7 @@ function getAdjacentRooms(data){
         for (var j = 0; j < data.pois.length; j++) {
             if (i != j) {
                 dist = getMinDist(data.pois[i].geometry.coordinates[0], data.pois[j].geometry.coordinates[0]);
-                
+
                 minType = 1000;
                 minTypeIndexJ = 0;
             	for (var l = 0; l < data.pois[j].infos.length; l++) {
@@ -580,7 +593,7 @@ function getAdjacentRooms(data){
         			if (data.pois[i].infos[minTypeIndexI].poiTypeId == data.pois[j].infos[minTypeIndexJ].poiTypeId) {
             			adjacent.push(j);
             		}
-            	}	       	
+            	}
             }
         }
         neighbors.push(adjacent);
@@ -602,14 +615,14 @@ function getMinDist(coord1, coord2){
     return minDist;
 }
 
-function getNeighbors(data){
+function getNeighbors(data, simplified){
     var neighbors = [];
     var result;
     for (var i = 0; i < data.pois.length; i++) {
         var adjacent = [];
         for (var j = 0; j < data.pois.length; j++) {
             if (i!=j){
-                result = getDistPolyToPoly(data.pois[i].geometry.coordinates[0], data.pois[j].geometry.coordinates[0]);
+                result = getDistPolyToPoly(simplified[i], simplified[j]);
                 if (result[2] < 0.0000011523708237294147*5) {
                     if (samePoiType(data.pois[i].infos, data.pois[j].infos, i)){
                         adjacent.push(j);
