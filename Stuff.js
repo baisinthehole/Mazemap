@@ -595,6 +595,46 @@ function getMinDist(coord1, coord2){
     return minDist;
 }
 
+function getNeighbors(data){
+    var neighbors = [];
+    var result;
+    for (var i = 0; i < data.pois.length; i++) {
+        var adjacent = [];
+        for (var j = 0; j < data.pois.length; j++) {
+            if (i!=j){
+                result = getDistPolyToPoly(data.pois[i].geometry.coordinates[0], data.pois[j].geometry.coordinates[0]);
+                if (result[2] < 0.0000011523708237294147*5) {
+                    if (samePoiType(data.pois[i].infos, data.pois[j].infos, i)){
+                        adjacent.push(j);
+                    }
+                }
+            }
+        }
+        neighbors.push(adjacent);
+    }
+    return(neighbors);
+}
+
+function samePoiType(infos1, infos2, roomNumber){
+    var priority1 = 1000;
+    var priority2 = 1000;
+    var type1;
+    var type2;
+    for (var i = 0; i < infos1.length; i++) {
+        if (infos1[i].priority < priority1){
+            priority1 = infos1[i].priority
+            type1 = infos1[i].poiTypeId;
+        }
+    }
+    for (var i = 0; i < infos2.length; i++) {
+        if (infos2[i].priority < priority2){
+            priority2 = infos2[i].priority
+            type2 = infos2[i].poiTypeId;
+        }
+    }
+    return type1==type2;
+}
+
 function getDistPolyToPoly(polygon1, polygon2){
     var minDist = 12345465321;
     var secondMinDist = 12345465321;
@@ -614,7 +654,7 @@ function getDistPolyToPoly(polygon1, polygon2){
             index2 = i;
         }
     }
-    return [index1, index2];
+    return [index1, index2, secondMinDist];
 }
 
 function getMinDistToPoly(point1, polygon1){
