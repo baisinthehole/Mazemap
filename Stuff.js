@@ -94,13 +94,13 @@ function zoom() {
 	    }
 	    if (!zoomLevelsDrawn["18"]) {
 	        if (map.getZoom() >= 18) {
-	            //drawPolygons(corridorPolygons);
+	            drawPolygons(corridorPolygons);
 	            zoomLevelsDrawn["18"] = true;
 	        }
 	    }
 	    if (zoomLevelsDrawn["18"]) {
 	        if (map.getZoom() < 18) {
-	            //removePolygons(corridorPolygons);
+	            removePolygons(corridorPolygons);
 	            zoomLevelsDrawn["18"] = false;
 	        }
 	    }
@@ -137,6 +137,7 @@ function zoom() {
 }
 
 zoom();
+
 function drawDirectedTestLine(samplePoints) {
 	Maze.polyline(samplePoints).addTo(map);
 }
@@ -199,6 +200,12 @@ function recievedJSONfromServer() {
     var fillColor = "red";
     fillCoordinateTypeServer(geoJSON, corridorCoordinates, corridorPolygons, RoomType.CORRIDOR, color, fillColor, "polygon");
     fillCoordinateTypeServer(geoJSON, roomCoordinates, roomPolygons, RoomType.ROOM, color, fillColor, "line");
+
+    removedDuplicatePoints = removeDuplicatesFromAllRooms(roomCoordinates);
+
+    simplifiedRoomCoordinates = simplifyRooms(removedDuplicatePoints);
+
+    fillPolygons(simplifiedRoomCoordinates, simplifiedRoomPolygons, color, fillColor, "polygon");
 }
 
   // Function for requesting JSON object from server
