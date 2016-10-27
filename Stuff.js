@@ -207,18 +207,23 @@ function recievedJSONfromServer() {
 
     fillPolygons(simplifiedRoomCoordinates, simplifiedRoomPolygons, color, fillColor, "polygon");
 
-    var neighbors = getNeighbors(geoJSON, simplifiedRoomCoordinates);
+    var result = getNeighbors(geoJSON, simplifiedRoomCoordinates);
+    var neighbors = result[0];
+    var indeces = result[1];
+
+    console.log("Test output");
+    console.log(simplifiedCoordinates);
+    console.log(neighbors);
+    console.log(indeces);
 
     // Temporary for testing
     //
-    // for (var i = 0; i < neighbors.length; i++) {
-    //     for (var j = 0; j < neighbors[i].length; j++) {
-    //         console.log("Test output");
-    //         console.log(simplifiedRoomCoordinates[i]);
-    //         console.log(simplifiedRoomCoordinates[neighbors[i][j]]);
-    //         Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),getPoint(simplifiedRoomCoordinates[neighbors[i][j]])], {color: 'blue', weight: stairWeight}).addTo(map);
-    //     }
-    // }
+    for (var i = 0; i < neighbors.length; i++) {
+        for (var j = 0; j < neighbors[i].length; j++) {
+            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][0]]], {color: 'blue', weight: stairWeight}).addTo(map);
+            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][1]]], {color: 'green', weight: stairWeight}).addTo(map);
+        }
+    }
 }
 
   // Function for requesting JSON object from server
@@ -618,21 +623,26 @@ function getMinDist(coord1, coord2){
 function getNeighbors(data, simplified){
     var neighbors = [];
     var result;
+    var indeces = [];
+    var index = [];
     for (var i = 0; i < data.pois.length; i++) {
         var adjacent = [];
+        index = [];
         for (var j = 0; j < data.pois.length; j++) {
             if (i!=j){
                 result = getDistPolyToPoly(simplified[i], simplified[j]);
                 if (result[2] < 0.0000011523708237294147*5) {
                     if (samePoiType(data.pois[i].infos, data.pois[j].infos, i)){
                         adjacent.push(j);
+                        index.push([result[0],result[1]]);
                     }
                 }
             }
         }
         neighbors.push(adjacent);
+        indeces.push(index);
     }
-    return(neighbors);
+    return [neighbors, indeces];
 }
 
 function samePoiType(infos1, infos2, roomNumber){
