@@ -19,7 +19,7 @@ var localWeight = 1;
 var drawn = false;
 
 var veryImportantDistance = 0.0000011523708237294147*5;
-var minimumDistance = 0.0000000000001;
+var minimumDistance = 0.000001;
 
 var threshold = 0.0005;
 
@@ -76,65 +76,67 @@ getJSONfromServer();
 
 var myIcon;
 
+function zoom() {
+	// Zoom listener
+	map.on('zoomend', function () {
+	    console.log(map.getZoom());
+	    if (!zoomLevelsDrawn["17"]) {
+	        if (map.getZoom() >= 17) {
+	            drawPolygons(outlinePolygons);
+	            zoomLevelsDrawn["17"] = true;
+	        }
+	    }
+	    if (zoomLevelsDrawn["17"]) {
+	        if (map.getZoom() < 17) {
+	            removePolygons(outlinePolygons);
+	            zoomLevelsDrawn["17"] = false;
+	        }
+	    }
+	    if (!zoomLevelsDrawn["18"]) {
+	        if (map.getZoom() >= 18) {
+	            //drawPolygons(corridorPolygons);
+	            zoomLevelsDrawn["18"] = true;
+	        }
+	    }
+	    if (zoomLevelsDrawn["18"]) {
+	        if (map.getZoom() < 18) {
+	            //removePolygons(corridorPolygons);
+	            zoomLevelsDrawn["18"] = false;
+	        }
+	    }
+	    if (!zoomLevelsDrawn["19"]) {
+	        if (map.getZoom() >= 19) {
+	        	console.log("bulba");
+	            drawPolygonsBiggerThanThreshold(simplifiedRoomCoordinates, simplifiedRoomPolygons, threshold);
+	            zoomLevelsDrawn["19"] = true;
+	        }
+	    }
+	    if (zoomLevelsDrawn["19"]) {
+	        if (map.getZoom() < 19) {
+	            removePolygonsBiggerThanThreshold(simplifiedRoomCoordinates, simplifiedRoomPolygons, threshold);
+	            zoomLevelsDrawn["19"] = false;
+	        }
+	    }
+	    if (!zoomLevelsDrawn["20"]) {
+	        if (map.getZoom() >= 20) {
+	            drawPolygonsSmallerThanThreshold(simplifiedRoomCoordinates, simplifiedRoomPolygons, threshold);
+	            drawPolygons(doorPolygons);
+	            drawPolygons(stairPolygons);
+	            zoomLevelsDrawn["20"] = true;
+	        }
+	    }
+	    if (zoomLevelsDrawn["20"]) {
+	        if (map.getZoom() < 20) {
+	            removePolygonsSmallerThanThreshold(simplifiedRoomCoordinates, simplifiedRoomPolygons, threshold);
+	            removePolygons(doorPolygons);
+	            removePolygons(stairPolygons);
+	            zoomLevelsDrawn["20"] = false;
+	        }
+	    }
+	});
+}
 
-// Zoom listener
-map.on('zoomend', function () {
-    console.log(map.getZoom());
-    if (!zoomLevelsDrawn["17"]) {
-        if (map.getZoom() >= 17) {
-            drawPolygons(outlinePolygons);
-            zoomLevelsDrawn["17"] = true;
-        }
-    }
-    if (zoomLevelsDrawn["17"]) {
-        if (map.getZoom() < 17) {
-            removePolygons(outlinePolygons);
-            zoomLevelsDrawn["17"] = false;
-        }
-    }
-    if (!zoomLevelsDrawn["18"]) {
-        if (map.getZoom() >= 18) {
-            drawPolygons(corridorPolygons);
-            zoomLevelsDrawn["18"] = true;
-        }
-    }
-    if (zoomLevelsDrawn["18"]) {
-        if (map.getZoom() < 18) {
-            removePolygons(corridorPolygons);
-            zoomLevelsDrawn["18"] = false;
-        }
-    }
-    if (!zoomLevelsDrawn["19"]) {
-        if (map.getZoom() >= 19) {
-        	console.log("bulba");
-            drawPolygonsBiggerThanThreshold(simplifiedRoomCoordinates, simplifiedRoomPolygons, threshold);
-            zoomLevelsDrawn["19"] = true;
-        }
-    }
-    if (zoomLevelsDrawn["19"]) {
-        if (map.getZoom() < 19) {
-            removePolygonsBiggerThanThreshold(simplifiedRoomCoordinates, simplifiedRoomPolygons, threshold);
-            zoomLevelsDrawn["19"] = false;
-        }
-    }
-    if (!zoomLevelsDrawn["20"]) {
-        if (map.getZoom() >= 20) {
-            drawPolygonsSmallerThanThreshold(simplifiedRoomCoordinates, simplifiedRoomPolygons, threshold);
-            drawPolygons(doorPolygons);
-            drawPolygons(stairPolygons);
-            zoomLevelsDrawn["20"] = true;
-        }
-    }
-    if (zoomLevelsDrawn["20"]) {
-        if (map.getZoom() < 20) {
-            removePolygonsSmallerThanThreshold(simplifiedRoomCoordinates, simplifiedRoomPolygons, threshold);
-            removePolygons(doorPolygons);
-            removePolygons(stairPolygons);
-            zoomLevelsDrawn["20"] = false;
-        }
-    }
-});
-
+zoom();
 function drawDirectedTestLine(samplePoints) {
 	Maze.polyline(samplePoints).addTo(map);
 }
@@ -185,8 +187,8 @@ function drawPolygonFromOnlyCoordinates(coordinates, fillColor, outlineColor) {
 	for (var i = 0; i < coordinates.length; i++) {
 		simplifiedCoordinates.push(coordinates[i]);
 	}
-	console.log("simplified");
-    console.log(simplifiedCoordinates);
+	//console.log("simplified");
+    //console.log(simplifiedCoordinates);
 	map.addLayer(Maze.polygon(simplifiedCoordinates, {color: outlineColor, fillColor: fillColor}));
 }
 
@@ -195,44 +197,10 @@ function recievedJSONfromServer() {
     var geoJSON = JSON.parse(rawResponse);
     var color = "gray";
     var fillColor = "red";
-
     fillCoordinateTypeServer(geoJSON, corridorCoordinates, corridorPolygons, RoomType.CORRIDOR, color, fillColor, "polygon");
     fillCoordinateTypeServer(geoJSON, roomCoordinates, roomPolygons, RoomType.ROOM, color, fillColor, "line");
-
-    removedDuplicateCoordinates = removeDuplicatesFromAllRooms(roomCoordinates);
-
-    console.log("roomCoordinates");
-    console.log(roomCoordinates);
-    console.log(removedDuplicateCoordinates);
-
-    simplifiedRoomCoordinates = simplifyRooms(removedDuplicateCoordinates);
-
-    fillPolygons(simplifiedRoomCoordinates, simplifiedRoomPolygons, color, fillColor, "polygon");
-
-    neighbors = getAdjacentRooms(geoJSON);
-    console.log("Neighbors");
-    console.log(neighbors);
-
-    console.log("roomCoordinates");
-    var testRoom = roomCoordinates[21];
-    var number = 52;
-    var points = getDistPolyToPoly(testRoom, simplifiedRoomCoordinates[number]);
-
-    //checkPointSequence(roomCoordinates, 15);
-
-    /*
-    console.log(points);
-    console.log(testRoom[points[0]]);
-    console.log(testRoom[points[1]]);
-    L.popup().setLatLng(testRoom[points[0]]).setContent(number.toString()).addTo(map);
-    L.popup().setLatLng(testRoom[points[1]]).setContent(number.toString()).addTo(map);
-	*/
-
-    drawDirectedTestLine(samplePointsF474);
-    testDotProduct(samplePointsF474, samplePointE412, "second");
-
-    //drawPolygonFromOnlyCoordinates(simplifiedRoomCoordinates[41], "blue", "blue")
 }
+
   // Function for requesting JSON object from server
 function getHttp(url) {
     var info = new XMLHttpRequest();
@@ -323,8 +291,8 @@ function fillCoordinateTypeLocal(data, coordinates, polygonList, coordinateType,
 
 function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, fillColor, lineOrPolygon) {
     var temp;
-    console.log(data);
-    console.log(coordinateType);
+    //console.log(data);
+    //console.log(coordinateType);
 
     for (var i = 0; i < data.pois.length; i++) {
         for (var j = 0; j < data.pois[i].infos.length; j++) {
@@ -392,14 +360,6 @@ function loadJSON(path, success, error)
     };
     xhr.open("GET", path, true);
     xhr.send();
-}
-
-function drawMarkersForStairs(stairCoordinates) {
-    for (var i = 0; i < stairCoordinates.length; i++) {
-        for (var j = 0; j < stairCoordinates[i].length; j++) {
-            L.marker(stairCoordinates[i][j]).addTo(map);
-        }
-    }
 }
 
 function getRoomCircumference(singleRoomCoordinates) {
@@ -537,20 +497,28 @@ function getDistanceBetweenTwoPoints(point1, point2) {
 }
 
 function removeDuplicatePoints(coordinates, index) {
+	if (coordinates[index].length <= 2) {
+		return coordinates[index];
+	}
+
+
+
 	simplifiedCoordinates = [];
 
-	console.log(index);
-
-	for (var i = 0; i < coordinates.length - 1; i++) {
-		if (getDistanceBetweenTwoPoints(coordinates[index][i], coordinates[index][i + 1] > minimumDistance) ) {
+	for (var i = 0; i < coordinates[index].length - 1; i++) {
+		if (getDistanceBetweenTwoPoints(coordinates[index][i], coordinates[index][i + 1]) > minimumDistance) {
 			simplifiedCoordinates.push(coordinates[index][i]);
 		}
 	}
+	simplifiedCoordinates.push(coordinates[index][coordinates[index].length - 1]);
+
 	return simplifiedCoordinates;
 }
 
 function removeSmallEdges(coordinates, index) {
 	simplifiedCoordinates = [];
+
+	//console.log(coordinates);
 
 	if ((getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 2], coordinates[index][0]) >= veryImportantDistance
 		&& getDistanceBetweenTwoPoints(coordinates[index][0], coordinates[index][1]) >= veryImportantDistance)
@@ -702,7 +670,7 @@ function dotProd(line1,line2){
 }
 
 function distPointToLine(point,linepoint1,linepoint2){
-	console.log(point);
+	//console.log(point);
     // return Math.abs((linepoint2[1]-linepoint1[1])*point[0]-(linepoint2[0]-linepoint1[0])*point[1]+linepoint2[0]*linepoint1[1]-linepoint2[1]*linepoint1[0])/Math.sqrt(Math.pow(linepoint2[1]-linepoint1[1],2)+Math.pow(linepoint2[0]-linepoint1[0],2));
     a = (linepoint2[1]-linepoint1[1])/(linepoint2[0]-linepoint1[0]);
     b = -1;
