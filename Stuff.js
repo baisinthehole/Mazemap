@@ -207,28 +207,9 @@ function recievedJSONfromServer() {
 
     fillPolygons(simplifiedRoomCoordinates, simplifiedRoomPolygons, color, fillColor, "polygon");
 
-    var result = getNeighbors(geoJSON, simplifiedRoomCoordinates);
-    var neighbors = result[0];
-    var indeces = result[1];
+    createMergedPolygons(geoJSON, simplifiedRoomCoordinates);
 
-    console.log("Test output");
-    console.log(simplifiedRoomCoordinates);
-    console.log(neighbors);
-    console.log(indeces);
-
-    // checkPointSequence(simplifiedRoomCoordinates, 27);
-
-    console.log("A lot of output");
-    mergePolygons(simplifiedRoomCoordinates[48], simplifiedRoomCoordinates[43], indeces[48][1], indeces[43][1]);
-
-    // Temporary for testing
-    //
-    for (var i = 0; i < neighbors.length; i++) {
-        for (var j = 0; j < neighbors[i].length; j++) {
-            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][0]]], {color: 'blue', weight: stairWeight}).addTo(map);
-            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][1]]], {color: 'green', weight: stairWeight}).addTo(map);
-        }
-    }
+    // markClosestCorners(geoJSON, simplifiedRoomCoordinates);
 }
 
   // Function for requesting JSON object from server
@@ -321,7 +302,7 @@ function fillCoordinateTypeLocal(data, coordinates, polygonList, coordinateType,
 
 function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, fillColor, lineOrPolygon) {
     var temp;
-    console.log(data);
+    // console.log(data);
     //console.log(coordinateType);
 
     for (var i = 0; i < data.pois.length; i++) {
@@ -645,8 +626,6 @@ function getNeighbors(data, simplified){
     var result;
     var indeces = [];
     var index = [];
-    console.log("simplified");
-    console.log(simplified);
     for (var i = 0; i < simplified.length; i++) {
         var adjacent = [];
         index = [];
@@ -776,7 +755,7 @@ function checkPointSequence(coordinates, index) {
 	}
 }
 
-function mergePolygons(polygon1, polygon2, indeces1, indeces2){
+function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2){
     indeces1.sort();
     indeces2.sort();
     var shiftedPolygon1 = polygon1.slice(0, polygon1.length-1);
@@ -790,16 +769,10 @@ function mergePolygons(polygon1, polygon2, indeces1, indeces2){
     var partPolygon1 = getLongestPart(shiftedPolygon1, Math.abs(indeces1[1]-indeces1[0]));
     var partPolygon2 = getLongestPart(shiftedPolygon2, Math.abs(indeces2[1]-indeces2[0]));
     var mergedPolygon = partPolygon1.concat(partPolygon2,[partPolygon1[0]]);
-    console.log(mergedPolygon);
-    Maze.polyline(mergedPolygon).addTo(map);
-
-    // Maze.polyline(getLongestPart(shiftedPolygon2, Math.abs(indeces2[1]-indeces2[0]))).addTo(map);
-    // Maze.polyline(getLongestPart(shiftedPolygon1, Math.abs(indeces1[1]-indeces1[0]))).addTo(map);
+    return mergedPolygon;
 }
 
 function getLongestPart(polygon, index){
-    console.log("index");
-    console.log(index);
     if (index > 1){
         var part1 = polygon.slice(1,index);
     }
@@ -815,5 +788,37 @@ function getLongestPart(polygon, index){
     }
     else {
         return part2;
+    }
+}
+
+function getNeighborIndex(room1, room2, neighbors){
+    for (var i = 0; i < neighbors[room1].length; i++) {
+        if (neighbors[room1][i] == room2){
+            return i;
+        }
+    }
+    return -1;
+}
+
+function createMergedPolygons(data, roomCoordinates){
+    var result = getNeighbors(data, simplifiedRoomCoordinates);
+    var neighbors = result[0];
+    var indeces = result[1];
+
+    var room1 = 10;
+    var room2 = 50;
+    var mergedPolygon = mergeTwoPolygons(simplifiedRoomCoordinates[room1], simplifiedRoomCoordinates[room2], indeces[room1][getNeighborIndex(room1, room2, neighbors)], indeces[room2][getNeighborIndex(room2, room1, neighbors)]);
+    Maze.polyline(mergedPolygon).addTo(map);
+}
+
+function markClosestCorners(data, simplifiedRoomCoordinates){
+    var result = getNeighbors(data, simplifiedRoomCoordinates);
+    var neighbors = result[0];
+    var indeces = result[1];
+    for (var i = 0; i < neighbors.length; i++) {
+        for (var j = 0; j < neighbors[i].length; j++) {
+            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][0]]], {color: 'blue', weight: stairWeight}).addTo(map);
+            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][1]]], {color: 'green', weight: stairWeight}).addTo(map);
+        }
     }
 }
