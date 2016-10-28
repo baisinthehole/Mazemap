@@ -216,6 +216,13 @@ function recievedJSONfromServer() {
     console.log(neighbors);
     console.log(indeces);
 
+    // checkPointSequence(simplifiedRoomCoordinates, 27);
+
+    console.log("A lot of output");
+    mergePolygons(simplifiedRoomCoordinates[48], simplifiedRoomCoordinates[43], indeces[48][1], indeces[43][1]);
+
+    // Temporary for testing
+    //
     for (var i = 0; i < neighbors.length; i++) {
         for (var j = 0; j < neighbors[i].length; j++) {
             Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][0]]], {color: 'blue', weight: stairWeight}).addTo(map);
@@ -770,25 +777,39 @@ function checkPointSequence(coordinates, index) {
 }
 
 function mergePolygons(polygon1, polygon2, indeces1, indeces2){
+    indeces1.sort();
+    indeces2.sort();
+    var shiftedPolygon1 = polygon1.slice(0, polygon1.length-1);
+    for (var i = 0; i < indeces1[0]; i++) {
+        shiftedPolygon1.push(shiftedPolygon1.shift());
+    }
     var shiftedPolygon2 = polygon2.slice(0, polygon2.length-1);
     for (var i = 0; i < indeces2[0]; i++) {
         shiftedPolygon2.push(shiftedPolygon2.shift());
     }
-    console.log(shiftedPolygon2);
-    getLongestPart(shiftedPolygon2, Math.abs(indeces2[1]-indeces2[0])+1);
+    var partPolygon1 = getLongestPart(shiftedPolygon1, Math.abs(indeces1[1]-indeces1[0]));
+    var partPolygon2 = getLongestPart(shiftedPolygon2, Math.abs(indeces2[1]-indeces2[0]));
+    var mergedPolygon = partPolygon1.concat(partPolygon2,[partPolygon1[0]]);
+    console.log(mergedPolygon);
+    Maze.polyline(mergedPolygon).addTo(map);
+
+    // Maze.polyline(getLongestPart(shiftedPolygon2, Math.abs(indeces2[1]-indeces2[0]))).addTo(map);
+    // Maze.polyline(getLongestPart(shiftedPolygon1, Math.abs(indeces1[1]-indeces1[0]))).addTo(map);
 }
 
 function getLongestPart(polygon, index){
-    if (index > 2){
-        var part1 = polygon.slice(0,index);
+    console.log("index");
+    console.log(index);
+    if (index > 1){
+        var part1 = polygon.slice(1,index);
     }
     else {
-        return polygon.slice(index,polygon.length);
+        return polygon.slice(index+1,polygon.length);
     }
     if (index >= polygon.length){
         return part1;
     }
-    var part2 = polygon.slice(index,polygon.length);
+    var part2 = polygon.slice(index+1,polygon.length);
     if (getRoomCircumference(part1) > getRoomCircumference(part2)){
         return part1;
     }
