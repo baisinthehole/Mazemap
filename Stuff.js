@@ -209,7 +209,7 @@ function recievedJSONfromServer() {
 
     var result = getNeighbors(geoJSON, simplifiedRoomCoordinates);
 
-    console.log(result[0]);
+    console.log(simplifiedRoomCoordinates);
 
     // i = 37;
     // j = 41;
@@ -221,7 +221,15 @@ function recievedJSONfromServer() {
     // var mergedRoom = mergeTwoPolygons(simplifiedRoomCoordinates[i], simplifiedRoomCoordinates[j], [5,6], undefined);
     // Maze.polygon(mergedRoom).addTo(map);
 
+	
+    //checkPointSequence(simplifiedRoomCoordinates[24]);
+
     createMergedPolygons(geoJSON, simplifiedRoomCoordinates);
+    checkPointSequence(simplifiedRoomCoordinates[25]);
+    //checkPointSequence(simplifiedRoomCoordinates[15]);
+    //checkPointSequence(simplifiedRoomCoordinates[24]);
+
+    //checkPointSequence(simplifiedRoomCoordinates[15]);
     // var result = getNeighbors(geoJSON, simplifiedRoomCoordinates);
     // var neighbors = result[0];
     // var indeces = result[1];
@@ -927,20 +935,34 @@ function createMergedPolygons(data, roomCoordinates){
 
     console.log(deepCopy(container));
 
-    for (var i = 0; i < roomCoordinates.length; i++) {
+    //for (var i = 0; i < roomCoordinates.length; i++) {
+    //	for (var j = 0; j < roomCoordinates.length; j++) {
+    for (var i = 0; i < 40; i++) {
     	for (var j = 0; j < roomCoordinates.length; j++) {
     		if (contains(neighbors[i], j)) {
                 result0 = getDistPolyToPoly(roomCoordinates[i], roomCoordinates[j]);
                 result1 = getDistPolyToPoly(roomCoordinates[j], roomCoordinates[i]);
                 if (result1[2] < veryImportantDistance) {
+                	if (i == 25 || j == 25) {
+                		console.log("not undefined");
+                		console.log([i, j]);
+                	}
                     var mergedPolygon = mergeTwoPolygons(roomCoordinates[i], roomCoordinates[j], [result0[0],result0[1]], [result1[0],result1[1]]);
                 }
                 else {
+                	if (i == 25 || j == 25) {
+                		console.log("undefined");
+                		console.log([i, j]);
+                	}
                     var mergedPolygon = mergeTwoPolygons(roomCoordinates[i], roomCoordinates[j], [result0[0],result0[1]], undefined);
                 }
-                    if (mergedPolygon != -1){
-            			neighbors[i].splice(neighbors[i].indexOf(j), 1);
-            			neighbors[j].splice(neighbors[j].indexOf(i), 1);
+                if (mergedPolygon != -1){
+                	if (neighbors[i].indexOf(j) != -1) {
+        				neighbors[i].splice(neighbors[i].indexOf(j), 1);
+                	}
+                	if (neighbors[j].indexOf(i) != -1) {
+        				neighbors[j].splice(neighbors[j].indexOf(i), 1);
+                	}
 
 
 
