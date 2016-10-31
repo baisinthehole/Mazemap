@@ -834,33 +834,41 @@ function createMergedPolygons(data, roomCoordinates){
 
     neighbors = deepCopy(neighbors2);
 
+    container = [];
 
+    for (var i = 0; i < roomCoordinates.length; i++) {
+    	container.push([i]);
+    }
 
     var room1 = 10;
     var room2 = 24;
 
-    for (var i = 0; i < simplifiedRoomCoordinates.length; i++) {
-    	for (var j = 0; j < simplifiedRoomCoordinates.length; j++) {
+    console.log(deepCopy(container));
+
+    for (var i = 0; i < roomCoordinates.length; i++) {
+    	for (var j = 0; j < roomCoordinates.length; j++) {
     		if (contains(neighbors[i], j)) {
     			if (indeces[i][getNeighborIndex(i, j, neighbors)] != null && indeces[j][getNeighborIndex(j, i, neighbors)] != null) {
                     result0 = getDistPolyToPoly(roomCoordinates[i], roomCoordinates[j]);
                     result1 = getDistPolyToPoly(roomCoordinates[j], roomCoordinates[i]);
                     var mergedPolygon = mergeTwoPolygons(roomCoordinates[i], roomCoordinates[j], [result0[0],result0[1]], [result1[0],result1[1]]);
 
-	    			if (i == 6 && j == 20) {
-	    				console.log(deepCopy(neighbors)[20]);
-	    				console.log(deepCopy(neighbors)[6]);
-	    			}
-                    console.log("Before");
-                    console.log(deepCopy(neighbors[i]));
 	    			neighbors[i].splice(neighbors[i].indexOf(j), 1);
-                    console.log(deepCopy(neighbors[i]));
 	    			neighbors[j].splice(neighbors[j].indexOf(i), 1);
 
 
-	    			roomCoordinates[i] = mergedPolygon;
-	    			roomCoordinates[j] = mergedPolygon;
+	    			
 
+	    			for (var k = 0; k < container[j].length; k++) {
+	    				if (!contains(container[i], container[j][k])) {
+	    					container[i].push(container[j][k]);
+	    				}
+	    			}
+	    			container[j] = deepCopy(container[i]);
+	    			
+	    			for (var k = 0; k < container[i].length; k++) {
+	    				roomCoordinates[container[i][k]] = mergedPolygon;
+	    			}
 
 
     				for (var k = 0; k < neighbors[i].length; k++) {
@@ -873,15 +881,11 @@ function createMergedPolygons(data, roomCoordinates){
 	    					neighbors[i].push(neighbors[j][k]);
 	    				}
 	    			}
-
-	    			if (i == 6 && j == 20) {
-	    				console.log(deepCopy(neighbors)[20]);
-	    				console.log(deepCopy(neighbors)[6]);
-	    			}
     			}
     		}
     	}
     }
+    //checkPointSequence(roomCoordinates, 19);
 
     for (var i = 0; i < roomCoordinates.length; i++) {
     	Maze.polyline(roomCoordinates[i]).addTo(map);
