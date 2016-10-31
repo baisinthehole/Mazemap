@@ -648,7 +648,7 @@ function getNeighbors(data, simplified){
     return [neighbors, indeces];
 }
 
-function samePoiType(infos1, infos2, roomNumber){
+function samePoiTypeByPriority(infos1, infos2, roomNumber){
     var priority1 = 1000;
     var priority2 = 1000;
     var type1;
@@ -662,6 +662,22 @@ function samePoiType(infos1, infos2, roomNumber){
     for (var i = 0; i < infos2.length; i++) {
         if (infos2[i].priority < priority2){
             priority2 = infos2[i].priority;
+            type2 = infos2[i].poiTypeId;
+        }
+    }
+    return type1==type2;
+}
+
+function samePoiType(infos1, infos2, roomNumber){
+    var type1 = 10000;
+    var type2 = 10000;
+    for (var i = 0; i < infos1.length; i++) {
+        if (infos1[i].poiTypeId < type1){
+            type1 = infos1[i].poiTypeId;
+        }
+    }
+    for (var i = 0; i < infos2.length; i++) {
+        if (infos2[i].poiTypeId < type2){
             type2 = infos2[i].poiTypeId;
         }
     }
@@ -776,22 +792,28 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2){
         return -1;
     }
     else if (indeces2 == null){
-        indeces1.sort();
-        var resultIndeces = getClosestCorner(polygon1, polygon2, indeces1);
-        var shiftedPolygon2 = polygon2.slice(0, polygon2.length-1);
-        for (var i = 0; i < resultIndeces[1]+1; i++) {
-            shiftedPolygon2.push(shiftedPolygon2.shift());
-        }
-        shiftedPolygon2.pop();
+        if (oneCloseCorner(polygon1, polygon2)){
+            indeces1.sort();
+            var resultIndeces = getClosestCorner(polygon1, polygon2, indeces1);
+            var shiftedPolygon2 = polygon2.slice(0, polygon2.length-1);
+            for (var i = 0; i < resultIndeces[1]+1; i++) {
+                shiftedPolygon2.push(shiftedPolygon2.shift());
+            }
+            shiftedPolygon2.pop();
 
-        var shiftedPolygon1 = polygon1.slice(0, polygon1.length-1);
-        for (var i = 0; i < indeces1[0]; i++) {
-            shiftedPolygon1.push(shiftedPolygon1.shift());
+            var shiftedPolygon1 = polygon1.slice(0, polygon1.length-1);
+            for (var i = 0; i < indeces1[0]; i++) {
+                shiftedPolygon1.push(shiftedPolygon1.shift());
+            }
+            var partPolygon1 = getLongestPartWithoutRemoval(shiftedPolygon1, indeces1[1]-indeces1[0]);
+            var mergedPolygon;
+            mergedPolygon = partPolygon1.concat(shiftedPolygon2,[partPolygon1[0]]);
+            return mergedPolygon;
         }
-        var partPolygon1 = getLongestPartWithoutRemoval(shiftedPolygon1, indeces1[1]-indeces1[0]);
-        var mergedPolygon;
-        mergedPolygon = partPolygon1.concat(shiftedPolygon2,[partPolygon1[0]]);
-        return mergedPolygon;
+        else {
+            console.log("Did not merge room:");
+            return -1
+        }
     }
     else {
         console.log("Error: This should not happend");
@@ -891,4 +913,15 @@ function getClosestCorner(polygon1, polygon2, indeces1){
         }
     }
     return [index1, index2];
+}
+
+function oneCloseCorner(polygon1, polygon2){
+    for (var i = 0; i < polygon1.length; i++) {
+        for (var j = 0; j < polygon2.length; j++) {
+            if (getDistPoints(polygon1[i],polygon2[j]) < veryImportantDistance){
+                return true;
+            }
+        }
+    }
+    return false;
 }
