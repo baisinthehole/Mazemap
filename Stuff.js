@@ -221,7 +221,7 @@ function recievedJSONfromServer() {
     // var mergedRoom = mergeTwoPolygons(simplifiedRoomCoordinates[i], simplifiedRoomCoordinates[j], [5,6], undefined);
     // Maze.polygon(mergedRoom).addTo(map);
 
-	
+
     //checkPointSequence(simplifiedRoomCoordinates[24]);
 
     createMergedPolygons(geoJSON, simplifiedRoomCoordinates);
@@ -937,58 +937,72 @@ function createMergedPolygons(data, roomCoordinates){
 
     //for (var i = 0; i < roomCoordinates.length; i++) {
     //	for (var j = 0; j < roomCoordinates.length; j++) {
-    for (var i = 0; i < 40; i++) {
+    for (var i = 0; i < roomCoordinates.length; i++) {
     	for (var j = 0; j < roomCoordinates.length; j++) {
     		if (contains(neighbors[i], j)) {
-                result0 = getDistPolyToPoly(roomCoordinates[i], roomCoordinates[j]);
-                result1 = getDistPolyToPoly(roomCoordinates[j], roomCoordinates[i]);
-                if (result1[2] < veryImportantDistance) {
-                	if (i == 25 || j == 25) {
-                		console.log("not undefined");
-                		console.log([i, j]);
-                	}
-                    var mergedPolygon = mergeTwoPolygons(roomCoordinates[i], roomCoordinates[j], [result0[0],result0[1]], [result1[0],result1[1]]);
+                console.log(deepCopy(neighbors[10]));
+                if (!findOne(container[i], container[j])){
+                    result0 = getDistPolyToPoly(roomCoordinates[i], roomCoordinates[j]);
+                    result1 = getDistPolyToPoly(roomCoordinates[j], roomCoordinates[i]);
+                    if (result1[2] < veryImportantDistance) {
+                    	if (i == 25 || j == 25) {
+                    		console.log("not undefined");
+                    		console.log([i, j]);
+                    	}
+                        var mergedPolygon = mergeTwoPolygons(roomCoordinates[i], roomCoordinates[j], [result0[0],result0[1]], [result1[0],result1[1]]);
+                    }
+                    else {
+                    	if (i == 25 || j == 25) {
+                    		console.log("undefined");
+                    		console.log([i, j]);
+                    	}
+                        var mergedPolygon = mergeTwoPolygons(roomCoordinates[i], roomCoordinates[j], [result0[0],result0[1]], undefined);
+                    }
+                    if (mergedPolygon != -1){
+                    	if (neighbors[i].indexOf(j) != -1) {
+            				neighbors[i].splice(neighbors[i].indexOf(j), 1);
+                    	}
+                    	if (neighbors[j].indexOf(i) != -1) {
+            				neighbors[j].splice(neighbors[j].indexOf(i), 1);
+                    	}
+
+
+
+
+            			for (var k = 0; k < container[j].length; k++) {
+            				if (!contains(container[i], container[j][k])) {
+            					container[i].push(container[j][k]);
+            				}
+            			}
+            			container[j] = container[i];
+
+            			for (var k = 0; k < container[i].length; k++) {
+            				roomCoordinates[container[i][k]] = mergedPolygon;
+            			}
+
+
+        				for (var k = 0; k < neighbors[i].length; k++) {
+            				if (!contains(neighbors[j], neighbors[i][k]) && !contains(container[j], neighbors[i][k]) && neighbors[i][k] != j) {
+            					neighbors[j].push(neighbors[i][k]);
+            				}
+            			}
+            			for (var k = 0; k < neighbors[j].length; k++) {
+            				if (!contains(neighbors[i], neighbors[j][k]) && !contains(container[i], neighbors[j][k]) && neighbors[j][k] != i) {
+            					neighbors[i].push(neighbors[j][k]);
+            				}
+                        }
+                        for (var k = 0; k < container[i].length; k++) {
+                            neighbors[container[i][k]] = neighbors[i];
+                        }
+                        for (var k = 0; k < container[j].length; k++) {
+                            neighbors[container[j][k]] = neighbors[j];
+                        }
+        			}
                 }
                 else {
-                	if (i == 25 || j == 25) {
-                		console.log("undefined");
-                		console.log([i, j]);
-                	}
-                    var mergedPolygon = mergeTwoPolygons(roomCoordinates[i], roomCoordinates[j], [result0[0],result0[1]], undefined);
-                }
-                if (mergedPolygon != -1){
-                	if (neighbors[i].indexOf(j) != -1) {
-        				neighbors[i].splice(neighbors[i].indexOf(j), 1);
-                	}
-                	if (neighbors[j].indexOf(i) != -1) {
-        				neighbors[j].splice(neighbors[j].indexOf(i), 1);
-                	}
-
-
-
-
-        			for (var k = 0; k < container[j].length; k++) {
-        				if (!contains(container[i], container[j][k])) {
-        					container[i].push(container[j][k]);
-        				}
-        			}
-        			container[j] = deepCopy(container[i]);
-
-        			for (var k = 0; k < container[i].length; k++) {
-        				roomCoordinates[container[i][k]] = mergedPolygon;
-        			}
-
-
-    				for (var k = 0; k < neighbors[i].length; k++) {
-        				if (!contains(neighbors[j], neighbors[i][k]) && neighbors[i][k] != j) {
-        					neighbors[j].push(neighbors[i][k]);
-        				}
-        			}
-        			for (var k = 0; k < neighbors[j].length; k++) {
-        				if (!contains(neighbors[i], neighbors[j][k]) && neighbors[j][k] != i) {
-        					neighbors[i].push(neighbors[j][k]);
-        				}
-        			}
+                    // console.log("Contains an equal element");
+                    // console.log(container[i]);
+                    // console.log(container[j]);
                 }
     		}
     	}
@@ -1045,3 +1059,9 @@ function oneCloseCorner(polygon1, polygon2){
     }
     return false;
 }
+
+var findOne = function (haystack, arr) {
+    return arr.some(function (v) {
+        return haystack.indexOf(v) >= 0;
+    });
+};
