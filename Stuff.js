@@ -211,6 +211,16 @@ function recievedJSONfromServer() {
 
     console.log(result[0]);
 
+    // i = 37;
+    // j = 41;
+    // var result0 = getDistPolyToPoly(simplifiedRoomCoordinates[i], simplifiedRoomCoordinates[j]);
+    // var result1 = getDistPolyToPoly(simplifiedRoomCoordinates[j], simplifiedRoomCoordinates[i]);
+    // console.log(result1);
+    // checkPointSequence(simplifiedRoomCoordinates[j]);
+    // var mergedRoom = mergeTwoPolygons(simplifiedRoomCoordinates[i], simplifiedRoomCoordinates[j], [result0[0],result0[1]], [result1[0],result1[1]]);
+    // var mergedRoom = mergeTwoPolygons(simplifiedRoomCoordinates[i], simplifiedRoomCoordinates[j], [5,6], undefined);
+    // Maze.polygon(mergedRoom).addTo(map);
+
     createMergedPolygons(geoJSON, simplifiedRoomCoordinates);
     // var result = getNeighbors(geoJSON, simplifiedRoomCoordinates);
     // var neighbors = result[0];
@@ -922,10 +932,15 @@ function createMergedPolygons(data, roomCoordinates){
     		if (contains(neighbors[i], j)) {
                 result0 = getDistPolyToPoly(roomCoordinates[i], roomCoordinates[j]);
                 result1 = getDistPolyToPoly(roomCoordinates[j], roomCoordinates[i]);
-                var mergedPolygon = mergeTwoPolygons(roomCoordinates[i], roomCoordinates[j], [result0[0],result0[1]], [result1[0],result1[1]]);
-                if (mergedPolygon != -1){
-        			neighbors[i].splice(neighbors[i].indexOf(j), 1);
-        			neighbors[j].splice(neighbors[j].indexOf(i), 1);
+                if (result1[2] < veryImportantDistance) {
+                    var mergedPolygon = mergeTwoPolygons(roomCoordinates[i], roomCoordinates[j], [result0[0],result0[1]], [result1[0],result1[1]]);
+                }
+                else {
+                    var mergedPolygon = mergeTwoPolygons(roomCoordinates[i], roomCoordinates[j], [result0[0],result0[1]], undefined);
+                }
+                    if (mergedPolygon != -1){
+            			neighbors[i].splice(neighbors[i].indexOf(j), 1);
+            			neighbors[j].splice(neighbors[j].indexOf(i), 1);
 
 
 
