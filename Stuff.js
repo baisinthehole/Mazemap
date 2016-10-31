@@ -226,7 +226,6 @@ function recievedJSONfromServer() {
     // Maze.polyline(mergedRoom2).addTo(map);
 
     //markClosestCorners(geoJSON, simplifiedRoomCoordinates);
-
 }
 
   // Function for requesting JSON object from server
@@ -663,7 +662,7 @@ function getNeighbors(data, simplified){
     return [neighbors, indeces];
 }
 
-function samePoiType(infos1, infos2, roomNumber){
+function samePoiTypeByPriority(infos1, infos2, roomNumber){
     var priority1 = 1000;
     var priority2 = 1000;
     var type1;
@@ -677,6 +676,22 @@ function samePoiType(infos1, infos2, roomNumber){
     for (var i = 0; i < infos2.length; i++) {
         if (infos2[i].priority < priority2){
             priority2 = infos2[i].priority;
+            type2 = infos2[i].poiTypeId;
+        }
+    }
+    return type1==type2;
+}
+
+function samePoiType(infos1, infos2, roomNumber){
+    var type1 = 10000;
+    var type2 = 10000;
+    for (var i = 0; i < infos1.length; i++) {
+        if (infos1[i].poiTypeId < type1){
+            type1 = infos1[i].poiTypeId;
+        }
+    }
+    for (var i = 0; i < infos2.length; i++) {
+        if (infos2[i].poiTypeId < type2){
             type2 = infos2[i].poiTypeId;
         }
     }
@@ -730,7 +745,6 @@ function getMinDistToLine(point, line){
     }
     else if (dotResult0 >= 0 && dotResult1 < 0) {
         return getDist(point, line[1]);
-        // return Math.sqrt(Math.pow(getDist(point,line[0]),2)-dotResult0*Math.pow(getDist(line[1],line[0]),2));
     }
     else {
     	return 1337;
@@ -758,35 +772,67 @@ function dotProd(line1,line2){
 }
 
 function distPointToLine(point,linepoint1,linepoint2){
-	//console.log(point);
-    // return Math.abs((linepoint2[1]-linepoint1[1])*point[0]-(linepoint2[0]-linepoint1[0])*point[1]+linepoint2[0]*linepoint1[1]-linepoint2[1]*linepoint1[0])/Math.sqrt(Math.pow(linepoint2[1]-linepoint1[1],2)+Math.pow(linepoint2[0]-linepoint1[0],2));
     a = (linepoint2[1]-linepoint1[1])/(linepoint2[0]-linepoint1[0]);
     b = -1;
     c = linepoint1[1]-a*linepoint1[0];
     return Math.abs(a*point[0]+b*point[1]+c)/Math.sqrt(Math.pow(a,2)+Math.pow(b,2));
 }
 
-function checkPointSequence(coordinates, index) {
-	for (var i = 0; i < coordinates[index].length; i++) {
-		L.popup().setLatLng(coordinates[index][i]).setContent(i.toString()).addTo(map);
+function checkPointSequence(coordinates) {
+	for (var i = 0; i < coordinates.length; i++) {
+		L.popup().setLatLng(coordinates[i]).setContent(i.toString()).addTo(map);
 	}
 }
 
 function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2){
-    indeces1.sort();
-    indeces2.sort();
-    var shiftedPolygon1 = polygon1.slice(0, polygon1.length-1);
-    for (var i = 0; i < indeces1[0]; i++) {
-        shiftedPolygon1.push(shiftedPolygon1.shift());
+    if (indeces1 != null && indeces2 != null){
+        indeces1.sort();
+        indeces2.sort();
+        var shiftedPolygon1 = polygon1.slice(0, polygon1.length-1);
+        for (var i = 0; i < indeces1[0]; i++) {
+            shiftedPolygon1.push(shiftedPolygon1.shift());
+        }
+        var shiftedPolygon2 = polygon2.slice(0, polygon2.length-1);
+        for (var i = 0; i < indeces2[0]; i++) {
+            shiftedPolygon2.push(shiftedPolygon2.shift());
+        }
+        var partPolygon1 = getLongestPart(shiftedPolygon1, indeces1[1]-indeces1[0]);
+        var partPolygon2 = getLongestPart(shiftedPolygon2, indeces2[1]-indeces2[0]);
+        var mergedPolygon = partPolygon1.concat(partPolygon2,[partPolygon1[0]]);
+        return mergedPolygon;
     }
-    var shiftedPolygon2 = polygon2.slice(0, polygon2.length-1);
-    for (var i = 0; i < indeces2[0]; i++) {
-        shiftedPolygon2.push(shiftedPolygon2.shift());
+    else if (indeces1 == null){
+        console.log("Error: This should not happend");
+        return -1;
     }
-    var partPolygon1 = getLongestPart(shiftedPolygon1, Math.abs(indeces1[1]-indeces1[0]));
-    var partPolygon2 = getLongestPart(shiftedPolygon2, Math.abs(indeces2[1]-indeces2[0]));
-    var mergedPolygon = partPolygon1.concat(partPolygon2,[partPolygon1[0]]);
-    return mergedPolygon;
+    else if (indeces2 == null){
+        if (oneCloseCorner(polygon1, polygon2)){
+            indeces1.sort();
+            var resultIndeces = getClosestCorner(polygon1, polygon2, indeces1);
+            var shiftedPolygon2 = polygon2.slice(0, polygon2.length-1);
+            for (var i = 0; i < resultIndeces[1]+1; i++) {
+                shiftedPolygon2.push(shiftedPolygon2.shift());
+            }
+            shiftedPolygon2.pop();
+
+            var shiftedPolygon1 = polygon1.slice(0, polygon1.length-1);
+            for (var i = 0; i < indeces1[0]; i++) {
+                shiftedPolygon1.push(shiftedPolygon1.shift());
+            }
+            var partPolygon1 = getLongestPartWithoutRemoval(shiftedPolygon1, indeces1[1]-indeces1[0]);
+            var mergedPolygon;
+            mergedPolygon = partPolygon1.concat(shiftedPolygon2,[partPolygon1[0]]);
+            return mergedPolygon;
+        }
+        else {
+            console.log("Did not merge room:");
+            return -1
+        }
+    }
+    else {
+        console.log("Error: This should not happend");
+        return -1;
+    }
 }
 
 function getLongestPart(polygon, index){
@@ -800,6 +846,25 @@ function getLongestPart(polygon, index){
         return part1;
     }
     var part2 = polygon.slice(index+1,polygon.length);
+    if (getRoomCircumference(part1) > getRoomCircumference(part2)){
+        return part1;
+    }
+    else {
+        return part2;
+    }
+}
+
+function getLongestPartWithoutRemoval(polygon, index){
+    if (index > 1){
+        var part1 = polygon.slice(0,index+1);
+    }
+    else {
+        return polygon.slice(index,polygon.length).concat([polygon[0]]);
+    }
+    if (index >= polygon.length){
+        return part1;
+    }
+    var part2 = polygon.slice(index,polygon.length).concat([polygon[0]]);
     if (getRoomCircumference(part1) > getRoomCircumference(part2)){
         return part1;
     }
@@ -831,6 +896,7 @@ function createMergedPolygons(data, roomCoordinates){
 
     var neighbors2 = result[0];
     var indeces = result[1];
+    console.log(neighbors);
 
     neighbors = deepCopy(neighbors2);
 
@@ -857,7 +923,7 @@ function createMergedPolygons(data, roomCoordinates){
 	    			neighbors[j].splice(neighbors[j].indexOf(i), 1);
 
 
-	    			
+
 
 	    			for (var k = 0; k < container[j].length; k++) {
 	    				if (!contains(container[i], container[j][k])) {
@@ -865,7 +931,7 @@ function createMergedPolygons(data, roomCoordinates){
 	    				}
 	    			}
 	    			container[j] = deepCopy(container[i]);
-	    			
+
 	    			for (var k = 0; k < container[i].length; k++) {
 	    				roomCoordinates[container[i][k]] = mergedPolygon;
 	    			}
@@ -898,10 +964,6 @@ function createMergedPolygons(data, roomCoordinates){
     //Maze.polyline(mergedPolygon).addTo(map);
 }
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 function markClosestCorners(data, simplifiedRoomCoordinates){
     var result = getNeighbors(data, simplifiedRoomCoordinates);
     var neighbors = result[0];
@@ -912,4 +974,32 @@ function markClosestCorners(data, simplifiedRoomCoordinates){
             Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][1]]], {color: 'green', weight: stairWeight}).addTo(map);
         }
     }
+}
+
+function getClosestCorner(polygon1, polygon2, indeces1){
+    var minDist = 12343556432;
+    var index1 = 0;
+    var index2 = 0;
+    for (var i = 0; i < polygon2.length; i++) {
+        for (var j = 0; j < indeces1.length; j++) {
+            dist = getDistPoints(polygon2[i],polygon1[indeces1[j]]);
+            if (dist < minDist) {
+                minDist = dist;
+                index1 = indeces1[(j+1)%2];
+                index2 = i;
+            }
+        }
+    }
+    return [index1, index2];
+}
+
+function oneCloseCorner(polygon1, polygon2){
+    for (var i = 0; i < polygon1.length; i++) {
+        for (var j = 0; j < polygon2.length; j++) {
+            if (getDistPoints(polygon1[i],polygon2[j]) < veryImportantDistance){
+                return true;
+            }
+        }
+    }
+    return false;
 }
