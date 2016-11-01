@@ -176,9 +176,8 @@ function removeDuplicatesFromAllRooms(roomCoordinates) {
 
 function simplifyRoomsMadeBySomeDude(roomCoordinates) {
 	var simplifiedCoordinates = [];
-
 	for (var i = 0; i < roomCoordinates.length; i++) {
-		simplifiedCoordinates.push(simplify(roomCoordinates[i]), 0.000004);
+		simplifiedCoordinates.push(simplify(roomCoordinates[i], 0.000004));
 	}
 	return simplifiedCoordinates;
 }
@@ -188,6 +187,15 @@ function simplifyRooms(roomCoordinates) {
 
 	for (var i = 0; i < roomCoordinates.length; i++) {
 		simplifiedCoordinates.push(removeSmallEdges(roomCoordinates, i));
+	}
+	return simplifiedCoordinates;
+}
+
+function simplifyRoomsAlternative(roomCoordinates) {
+	var simplifiedCoordinates = [];
+
+	for (var i = 0; i < roomCoordinates.length; i++) {
+		simplifiedCoordinates.push(removeSmallEdgesAlternative(roomCoordinates, i));
 	}
 	return simplifiedCoordinates;
 }
@@ -211,25 +219,23 @@ function recievedJSONfromServer() {
     removedDuplicatePoints = removeDuplicatesFromAllRooms(roomCoordinates);
     simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);
 
-    tesPoints = simplify(removedDuplicatePoints[5], 0.000004);
-
     //checkPointSequence(tesPoints);
 
-    checkPointSequence(simplifiedRoomCoordinates[5]);
+    //checkPointSequence(simplifiedRoomCoordinates[5]);
 
     // markClosestCorners(geoJSON, simplifiedRoomCoordinates);
 
-    fillPolygons(simplifiedRoomCoordinates, simplifiedRoomPolygons, color, fillColor, "polygon");
+    //fillPolygons(simplifiedRoomCoordinates, simplifiedRoomPolygons, color, fillColor, "polygon");
 
-    drawPolygons(simplifiedRoomPolygons);
+    //drawPolygons(simplifiedRoomPolygons);
 
-    var result = getNeighbors(geoJSON, simplifiedRoomCoordinates);
+    //var result = getNeighbors(geoJSON, simplifiedRoomCoordinates);
 
 
     // checkPointSequence(roomCoordinates[48]);
     // checkPointSequence(removedDuplicatePoints[54]);
 
-    //createMergedPolygons(geoJSON, simplifiedRoomCoordinates);
+    createMergedPolygons(geoJSON, simplifiedRoomCoordinates);
 }
 
   // Function for requesting JSON object from server
@@ -576,6 +582,51 @@ function removeSmallEdges(coordinates, index) {
 			&& getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 1], coordinates[index][1]) < veryImportantDistance)) {
 		simplifiedCoordinates.push(coordinates[index][coordinates[index].length - 1]);
 	}
+    if (coordinates[index].length > 2) {
+        if (simplifiedCoordinates[0][0] == simplifiedCoordinates[simplifiedCoordinates.length - 1][0]
+            && simplifiedCoordinates[0][1] == simplifiedCoordinates[simplifiedCoordinates.length - 1][1]) {
+                // do nothing
+        }
+        else {
+            if (getDistanceBetweenTwoPoints(simplifiedCoordinates[0], simplifiedCoordinates[simplifiedCoordinates.length - 1]) < minimumDistance) {
+                simplifiedCoordinates.pop();
+                simplifiedCoordinates.push(simplifiedCoordinates[0]);
+            }
+            else {
+                simplifiedCoordinates.push(simplifiedCoordinates[0]);
+            }
+        }
+    }
+	return simplifiedCoordinates;
+}
+
+function removeSmallEdgesAlternative(coordinates, index) {
+	simplifiedCoordinates = [];
+
+	if ((getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 2], coordinates[index][0]) < veryImportantDistance
+		&& getDistanceBetweenTwoPoints(coordinates[index][0], coordinates[index][1]) < veryImportantDistance)) {
+			// do nothing
+	}
+	else {
+		simplifiedCoordinates.push(coordinates[index][0]);
+	}
+	for (var i = 1; i < coordinates[index].length - 1; i++) {
+		if ((getDistanceBetweenTwoPoints(coordinates[index][i - 1], coordinates[index][i]) < veryImportantDistance
+			&& getDistanceBetweenTwoPoints(coordinates[index][i], coordinates[index][i + 1]) < veryImportantDistance)) {
+				// do nothing
+		}
+		else {
+			simplifiedCoordinates.push(coordinates[index][i]);
+		}
+	}
+	if ((getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 2], coordinates[index][coordinates[index].length - 1]) < veryImportantDistance
+		&& getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 1], coordinates[index][1]) < veryImportantDistance)) {
+		
+	}
+	else {
+		simplifiedCoordinates.push(coordinates[index][coordinates[index].length - 1]);
+	}
+
     if (coordinates[index].length > 2) {
         if (simplifiedCoordinates[0][0] == simplifiedCoordinates[simplifiedCoordinates.length - 1][0]
             && simplifiedCoordinates[0][1] == simplifiedCoordinates[simplifiedCoordinates.length - 1][1]) {
@@ -971,10 +1022,10 @@ function createMergedPolygons(data, roomCoordinates){
     }
     //checkPointSequence(roomCoordinates, 19);
     for (var i = 0; i < roomCoordinates.length; i++) {
-    	console.log(i);
-    	console.log(roomCoordinates[i]);
         if (roomCoordinates[i].length > 0){
-            Maze.polyline(roomCoordinates[i]).addTo(map);
+            if (roomCoordinates[i][0].constructor == Array){
+            	Maze.polyline(roomCoordinates[i]).addTo(map);
+            }
         }
     }
 
