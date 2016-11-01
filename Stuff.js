@@ -174,6 +174,15 @@ function removeDuplicatesFromAllRooms(roomCoordinates) {
 	return simplifiedCoordinates;
 }
 
+function simplifyRoomsMadeBySomeDude(roomCoordinates) {
+	var simplifiedCoordinates = [];
+
+	for (var i = 0; i < roomCoordinates.length; i++) {
+		simplifiedCoordinates.push(simplify(roomCoordinates[i]), 0.000004);
+	}
+	return simplifiedCoordinates;
+}
+
 function simplifyRooms(roomCoordinates) {
 	var simplifiedCoordinates = [];
 
@@ -200,11 +209,19 @@ function recievedJSONfromServer() {
     fillCoordinateTypeServer(geoJSON, roomCoordinates, roomPolygons, RoomType.ROOM, color, fillColor, "line");
 
     removedDuplicatePoints = removeDuplicatesFromAllRooms(roomCoordinates);
-    simplifiedRoomCoordinates = simplifyRooms(removedDuplicatePoints);
+    simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);
+
+    tesPoints = simplify(removedDuplicatePoints[5], 0.000004);
+
+    //checkPointSequence(tesPoints);
+
+    checkPointSequence(simplifiedRoomCoordinates[5]);
 
     // markClosestCorners(geoJSON, simplifiedRoomCoordinates);
 
-    // fillPolygons(simplifiedRoomCoordinates, simplifiedRoomPolygons, color, fillColor, "polygon");
+    fillPolygons(simplifiedRoomCoordinates, simplifiedRoomPolygons, color, fillColor, "polygon");
+
+    drawPolygons(simplifiedRoomPolygons);
 
     var result = getNeighbors(geoJSON, simplifiedRoomCoordinates);
 
@@ -212,7 +229,7 @@ function recievedJSONfromServer() {
     // checkPointSequence(roomCoordinates[48]);
     // checkPointSequence(removedDuplicatePoints[54]);
 
-    createMergedPolygons(geoJSON, simplifiedRoomCoordinates);
+    //createMergedPolygons(geoJSON, simplifiedRoomCoordinates);
 }
 
   // Function for requesting JSON object from server
@@ -913,9 +930,7 @@ function createMergedPolygons(data, roomCoordinates){
     	for (var j = 0; j < roomCoordinates.length; j++) {
     		if (contains(neighbors[i], j)) {
                 if (!findOne(container[i], container[j])){
-                    if (i==36 || j==36){
-                        console.log(deepCopy(neighbors[36]));
-                    }
+   
                     result0 = getDistPolyToPoly(roomCoordinates[i], roomCoordinates[j]);
                     result1 = getDistPolyToPoly(roomCoordinates[j], roomCoordinates[i]);
                     if (result1[2] < veryImportantDistance) {
@@ -956,6 +971,8 @@ function createMergedPolygons(data, roomCoordinates){
     }
     //checkPointSequence(roomCoordinates, 19);
     for (var i = 0; i < roomCoordinates.length; i++) {
+    	console.log(i);
+    	console.log(roomCoordinates[i]);
         if (roomCoordinates[i].length > 0){
             Maze.polyline(roomCoordinates[i]).addTo(map);
         }
