@@ -389,7 +389,7 @@ function fillMergedPolygons(coordinates, polygonList, container) {
                     polygonList.push(Maze.polyline(coordinates[i], {color: "black", weight: serverWeight}));
                 }
                 else {
-                    polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "gray", fillOpacity: 0.2, weight: serverWeight}));
+                    polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "gray", opacity:0.6, fillOpacity: 0.2, weight: serverWeight}));
                 }
             }
         }
