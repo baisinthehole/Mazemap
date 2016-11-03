@@ -43,7 +43,7 @@ var rawResponse;
 // Create event for handling asynchronous responses from the server
 var event = new Event('responseTextChange');
 
-var zoomLevelsDrawn = {"16": false, "17": false, "18": false, "19": false, "20": false, "corridors": false};
+var zoomLevelsDrawn = {"16": false, "17": false, "18": false, "19": false, "20": false, "corridors": false, "largeRoomNames": false, "smallRoomNames": false};
 
 // Create a map
 var map = Maze.map('mazemap-container', { campusloader: false });
@@ -98,13 +98,18 @@ function zoom() {
 	            zoomLevelsDrawn["17"] = false;
 	        }
 	    }
-	    if (zoomLevelsDrawn["18"]) {
+        if (zoomLevelsDrawn["18"]) {
             if (map.getZoom() < 18 || map.getZoom() >= 20) {
-	            removePolygons(mergedPolygons);
+                removePolygons(mergedPolygons);
+                zoomLevelsDrawn["18"] = false;
+            }
+        }
+        if (zoomLevelsDrawn["largeRoomNames"]) {
+            if (map.getZoom() != 19) {
                 removeNamesBiggerThanThreshold(mergedRoomCoordinates, mergedPolygons, threshold);
-	            zoomLevelsDrawn["18"] = false;
-	        }
-	    }
+                zoomLevelsDrawn["largeRoomNames"] = false;
+            }
+        }
         if (!zoomLevelsDrawn["corridors"]) {
             if (map.getZoom() >= 18) {
                 drawPolygons(corridorPolygons);
@@ -130,7 +135,9 @@ function zoom() {
 	    // }
 	    if (!zoomLevelsDrawn["20"]) {
 	        if (map.getZoom() >= 20) {
-	            // drawPolygonsSmallerThanThreshold(simplifiedRoomCoordinates, simplifiedRoomPolygons, threshold);
+                console.log("Draw small polygons");
+                drawPolygonsSmallerThanThreshold(roomCoordinates, roomPolygons, threshold);
+                addNamesSmallerThanThreshold(roomCoordinates, roomPolygons, threshold);
                 drawPolygons(roomPolygons);
                 drawPolygons(doorPolygons);
 	            drawPolygons(stairPolygons);
@@ -139,7 +146,9 @@ function zoom() {
 	    }
 	    if (zoomLevelsDrawn["20"]) {
 	        if (map.getZoom() < 20) {
-	            // removePolygonsSmallerThanThreshold(simplifiedRoomCoordinates, simplifiedRoomPolygons, threshold);
+                console.log("Remove small polygons");
+	            removePolygonsSmallerThanThreshold(roomCoordinates, roomPolygons, threshold);
+                removeNamesSmallerThanThreshold(roomCoordinates, roomPolygons, threshold);
                 removePolygons(roomPolygons);
 	            removePolygons(doorPolygons);
 	            removePolygons(stairPolygons);
@@ -149,8 +158,13 @@ function zoom() {
         if (!zoomLevelsDrawn["18"]) {
             if (map.getZoom() >= 18 && map.getZoom() < 20) {
                 drawPolygons(mergedPolygons);
-                addNamesBiggerThanThreshold(mergedRoomCoordinates, mergedPolygons, threshold);
                 zoomLevelsDrawn["18"] = true;
+            }
+        }
+        if (!zoomLevelsDrawn["largeRoomNames"]) {
+            if (map.getZoom() == 19) {
+                addNamesBiggerThanThreshold(mergedRoomCoordinates, mergedPolygons, threshold);
+                zoomLevelsDrawn["largeRoomNames"] = true;
             }
         }
 	});
@@ -539,10 +553,16 @@ function removeNamesBiggerThanThreshold(roomCoordinates, polygonList, threshold)
 
 function drawPolygonsSmallerThanThreshold(roomCoordinates, polygonList, threshold) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) < threshold) {
+        if (getRoomCircumference(roomCoordinates[i]) <= threshold) {
             map.addLayer(polygonList[i]);
-            //map.addLayer(roomNames[i]);
-            map.addLayer(mergedRoomNameMarkers[i]);
+        }
+    }
+}
+
+function addNamesSmallerThanThreshold(roomCoordinates, polygonList, threshold) {
+    for (var i = 0; i < polygonList.length; i++) {
+        if (getRoomCircumference(roomCoordinates[i]) <= threshold) {
+            map.addLayer(roomNames[i]);
         }
         else if (getRoomCircumference(roomCoordinates[i]) >= threshold){
         }
@@ -554,10 +574,23 @@ function drawPolygonsSmallerThanThreshold(roomCoordinates, polygonList, threshol
 
 function removePolygonsSmallerThanThreshold(roomCoordinates, polygonList, threshold) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) < threshold) {
+        if (getRoomCircumference(roomCoordinates[i]) <= threshold) {
             map.removeLayer(polygonList[i]);
             //map.removeLayer(roomNames[i]);
             map.removeLayer(mergedRoomNameMarkers[i]);
+        }
+        else if (getRoomCircumference(roomCoordinates[i]) >= threshold){
+        }
+        else {
+            map.removeLayer(roomNames[i]);
+        }
+    }
+}
+
+function removeNamesSmallerThanThreshold(roomCoordinates, polygonList, threshold) {
+    for (var i = 0; i < polygonList.length; i++) {
+        if (getRoomCircumference(roomCoordinates[i]) <= threshold) {
+            map.removeLayer(roomNames[i]);
         }
         else if (getRoomCircumference(roomCoordinates[i]) >= threshold){
         }
