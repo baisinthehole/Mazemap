@@ -13,9 +13,9 @@ Maze.Map = Maze.Map.extend({
 var RoomType = {"OFFICE": 1, "CORRIDOR": 2, "STAIRS": 3, "COMPUTER_LAB": 4, "MEETING_ROOM": 5, "LECTURE_HALL": 6, "STUDY_ROOM": 7, "NOT_AVAILABLE": 8, "TOILETS": 9, "STORAGE_ROOM": 10, "LAB": 11, "COPY_ROOM": 12, "TECHNICAL": 13, "WARDROBE": 14, "SHOWER": 15, "GROUP_ROOM": 16, "INSTITUTE": 17, "FRAT": 18, "DRAWING_ROOM": 19, "LIBRARY": 20, "TEACHING_ROOM": 21, "STORE": 22, "CANTEEN": 23, "SIT": 24, "BUS_STOP": 27, "PARKING_LOT": 28, "WORKSHOP": 29, "ROOM":91};
 
 var corridorStyle = {"color": "gray", "fillColor": "red", "opacity": 1};
-var stairWeight = 1;
+var stairWeight = 0.2;
 var serverWeight = 1;
-var localWeight = 1;
+var localWeight = 0.5;
 var drawn = false;
 
 var veryImportantDistance = 0.0000011523708237294147*5;
@@ -136,11 +136,13 @@ function zoom() {
 	    // }
 	    if (!zoomLevelsDrawn["20"]) {
 	        if (map.getZoom() >= 20) {
+                removePolygons(corridorPolygons);
                 drawPolygonsSmallerThanThreshold(roomCoordinates, roomPolygons, threshold);
                 addAllNames(roomCoordinates, roomPolygons, threshold);
                 drawPolygons(roomPolygons);
                 drawPolygons(doorPolygons);
 	            drawPolygons(stairPolygons);
+                drawPolygons(corridorPolygons);
 	            zoomLevelsDrawn["20"] = true;
 	        }
 	    }
@@ -156,7 +158,9 @@ function zoom() {
 	    }
         if (!zoomLevelsDrawn["18"]) {
             if (map.getZoom() >= 18 && map.getZoom() < 20) {
+                removePolygons(corridorPolygons);
                 drawPolygons(mergedPolygons);
+                drawPolygons(corridorPolygons);
                 zoomLevelsDrawn["18"] = true;
             }
         }
@@ -246,8 +250,8 @@ function recievedJSONfromServer() {
     var geoJSON = JSON.parse(rawResponse);
     var color = "gray";
     var fillColor = "red";
-    fillCoordinateTypeServer(geoJSON, corridorCoordinates, corridorPolygons, RoomType.CORRIDOR, color, fillColor, "polygon");
-    fillCoordinateTypeServer(geoJSON, roomCoordinates, roomPolygons, RoomType.ROOM, color, fillColor, "line");
+    fillCoordinateTypeServer(geoJSON, corridorCoordinates, corridorPolygons, RoomType.CORRIDOR, color, fillColor, 0.2, "polygon");
+    fillCoordinateTypeServer(geoJSON, roomCoordinates, roomPolygons, RoomType.ROOM, color, 'white', 1, "polygon");
 
     nameList = makeListOfNames(geoJSON);
 
@@ -307,7 +311,7 @@ function recievedLocalJSON(data) {
 
 
     // Fill the coordinate arrays for each type of polygon and draw to map
-    fillCoordinateTypeLocal(data, stairCoordinates, stairPolygons, 'stairsfull', color[0], "line");
+    fillCoordinateTypeLocal(data, stairCoordinates, stairPolygons, 'stairsfull', 'black', "line");
     // fillCoordinateTypeLocal(data, roomCoordinates, roomPolygons, 'rooms', color[1], "line");
     fillCoordinateTypeLocal(data, doorCoordinates, doorPolygons, 'doors', color[2], "line");
     fillCoordinateTypeLocal(data, outlineCoordinates, outlinePolygons, 'outlines', color[3], "line");
@@ -362,7 +366,7 @@ function fillCoordinateTypeLocal(data, coordinates, polygonList, coordinateType,
 	}
 }
 
-function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, fillColor, lineOrPolygon) {
+function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, fillColor, fillOpacity, lineOrPolygon) {
     var temp;
 
     for (var i = 0; i < data.pois.length; i++) {
@@ -397,7 +401,7 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
             polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: serverWeight}));
         }
         else {
-            polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, weight: serverWeight}));
+            polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, weight: serverWeight, fillOpacity: fillOpacity}));
         }
     }
 }
@@ -453,10 +457,10 @@ function fillMergedPolygons(coordinates, polygonList, container) {
         if (coordinates[i].length > 0){
             if (coordinates[i][0].constructor == Array){
                 if (container[i].length == 1) {
-                    polygonList.push(Maze.polyline(coordinates[i], {color: "black", weight: serverWeight}));
+                    polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "white", fillOpacity: 1, weight: serverWeight}));
                 }
                 else {
-                    polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "gray", opacity:0.6, fillOpacity: 0.2, weight: serverWeight}));
+                    polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "#F1F1F1", fillOpacity: 1, weight: serverWeight}));
                 }
             }
         }
