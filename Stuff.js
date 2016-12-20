@@ -10,45 +10,45 @@ Maze.Map = Maze.Map.extend({
 });
 
 // enum
-var RoomType = {"OFFICE": 1, "CORRIDOR": 2, "STAIRS": 3, "COMPUTER_LAB": 4, "MEETING_ROOM": 5, "LECTURE_HALL": 6, "STUDY_ROOM": 7, "NOT_AVAILABLE": 8, "TOILETS": 9, "STORAGE_ROOM": 10, "LAB": 11, "COPY_ROOM": 12, "TECHNICAL": 13, "WARDROBE": 14, "SHOWER": 15, "GROUP_ROOM": 16, "INSTITUTE": 17, "FRAT": 18, "DRAWING_ROOM": 19, "LIBRARY": 20, "TEACHING_ROOM": 21, "STORE": 22, "CANTEEN": 23, "SIT": 24, "BUS_STOP": 27, "PARKING_LOT": 28, "WORKSHOP": 29, "ROOM":91};
+var ROOM_TYPE = {"OFFICE": 1, "CORRIDOR": 2, "STAIRS": 3, "COMPUTER_LAB": 4, "MEETING_ROOM": 5, "LECTURE_HALL": 6, "STUDY_ROOM": 7, "NOT_AVAILABLE": 8, "TOILETS": 9, "STORAGE_ROOM": 10, "LAB": 11, "COPY_ROOM": 12, "TECHNICAL": 13, "WARDROBE": 14, "SHOWER": 15, "GROUP_ROOM": 16, "INSTITUTE": 17, "FRAT": 18, "DRAWING_ROOM": 19, "LIBRARY": 20, "TEACHING_ROOM": 21, "STORE": 22, "CANTEEN": 23, "SIT": 24, "BUS_STOP": 27, "PARKING_LOT": 28, "WORKSHOP": 29, "ROOM":91};
 
-var corridorStyle = {"color": "gray", "fillColor": "red", "opacity": 1};
-var stairWeight = 0.2;
-var serverWeight = 1;
-var localWeight = 0.5;
-var drawn = false;
+// var CORRIDOR_STYLE = {"color": "gray", "fillColor": "red", "opacity": 1};
+var STAIR_WEIGHT = 0.2;
+var SERVER_WEIGHT = 1;
+var LOCAL_WEIGHT = 0.5;
+// var drawn = false;
 
-var veryImportantDistance = 0.0000011523708237294147*5;
-var minimumDistance = 0.000001;
+var VERY_IMPORTANCE_DISTANCE = 0.0000011523708237294147*5;
+var MINIMUM_DISTANCE = 0.000001;
 
-var threshold = 0.0005;
+var THRESHOLD = 0.0005;
 
-var samplePointsF468 = [[63.417384664953005, 10.406250513492122], [63.41739364337911, 10.406294312445722]];
-var samplePointsF478 = [[63.417406805234194, 10.40651019029917], [63.41739724808647, 10.40651974733363]];
-var samplePointsE431 = [[63.4174782787972, 10.405782380151525], [63.41749614672632, 10.405764493778864]];
-var samplePointsE412 = [[63.4175660937696, 10.406341755013518], [63.417508542197204, 10.406399367422187]];
-var samplePointsF474 = [[63.417412724012586, 10.406387465333047], [63.417425900220415, 10.406451773171284]];
+// var samplePointsF468 = [[63.417384664953005, 10.406250513492122], [63.41739364337911, 10.406294312445722]];
+// var samplePointsF478 = [[63.417406805234194, 10.40651019029917], [63.41739724808647, 10.40651974733363]];
+// var samplePointsE431 = [[63.4174782787972, 10.405782380151525], [63.41749614672632, 10.405764493778864]];
+// var samplePointsE412 = [[63.4175660937696, 10.406341755013518], [63.417508542197204, 10.406399367422187]];
+// var samplePointsF474 = [[63.417412724012586, 10.406387465333047], [63.417425900220415, 10.406451773171284]];
 
-var samplePointA447 = [63.41731907765723, 10.406050119273738];
-var samplePointA443 = [63.4173210363056, 10.405903295624785];
-var samplePointE410 = [63.417485920375306, 10.406102020193284];
-var samplePointE419 = [63.4175266385428, 10.406006228436468];
-var samplePointE412 = [63.417506589477995, 10.406399635491226];
-var samplePointE412Again = [63.417497420625914, 10.406354906632803];
+// var samplePointA447 = [63.41731907765723, 10.406050119273738];
+// var samplePointA443 = [63.4173210363056, 10.405903295624785];
+// var samplePointE410 = [63.417485920375306, 10.406102020193284];
+// var samplePointE419 = [63.4175266385428, 10.406006228436468];
+// var samplePointE412 = [63.417506589477995, 10.406399635491226];
+// var samplePointE412Again = [63.417497420625914, 10.406354906632803];
 
-// initialize rawResponse and event for asynchronous response from server
+// initialize RAW_RESPONSE and event for asynchronous response from server
 // Create global variable for storing the geography JSON in
-var rawResponse;
+var RAW_RESPONSE;
 
 // Create event for handling asynchronous responses from the server
 var event = new Event('responseTextChange');
 
-var zoomLevelsDrawn = {"16": false, "17": false, "18": false, "19": false, "20": false, "corridors": false, "largeRoomNames": false, "smallRoomNames": false};
+var ZOOM_LEVELS_DRAWN = {"16": false, "17": false, "18": false, "19": false, "20": false, "corridors": false, "largeRoomNames": false, "smallRoomNames": false};
 
 // Create a map
-var map = Maze.map('mazemap-container', { campusloader: false });
+var MAP = Maze.map('mazemap-container', { campusloader: false });
 // map.setView([10.406426561608821,63.417421008760335], 15);
-map.setView([63.417421008760335,10.406426561608821], 15);
+MAP.setView([63.417421008760335,10.406426561608821], 15);
 
 // One array of coordinates for each type of polygon
 var roomCoordinates = [];
@@ -85,89 +85,89 @@ var myIcon;
 
 function zoom() {
 	// Zoom listener
-	map.on('zoomend', function () {
-	    console.log(map.getZoom());
-	    if (!zoomLevelsDrawn["17"]) {
-	        if (map.getZoom() >= 17) {
+	MAP.on('zoomend', function () {
+	    console.log(MAP.getZoom());
+	    if (!ZOOM_LEVELS_DRAWN["17"]) {
+	        if (MAP.getZoom() >= 17) {
 	            drawPolygons(outlinePolygons);
-	            zoomLevelsDrawn["17"] = true;
+	            ZOOM_LEVELS_DRAWN["17"] = true;
 	        }
 	    }
-	    if (zoomLevelsDrawn["17"]) {
-	        if (map.getZoom() < 17) {
+	    if (ZOOM_LEVELS_DRAWN["17"]) {
+	        if (MAP.getZoom() < 17) {
 	            removePolygons(outlinePolygons);
-	            zoomLevelsDrawn["17"] = false;
+	            ZOOM_LEVELS_DRAWN["17"] = false;
 	        }
 	    }
-        if (zoomLevelsDrawn["18"]) {
-            if (map.getZoom() < 18 || map.getZoom() >= 20) {
+        if (ZOOM_LEVELS_DRAWN["18"]) {
+            if (MAP.getZoom() < 18 || MAP.getZoom() >= 20) {
                 removePolygons(mergedPolygons);
-                zoomLevelsDrawn["18"] = false;
+                ZOOM_LEVELS_DRAWN["18"] = false;
             }
         }
-        if (zoomLevelsDrawn["largeRoomNames"]) {
-            if (map.getZoom() != 19) {
-                removeNamesBiggerThanThreshold(mergedRoomCoordinates, mergedPolygons, threshold);
-                zoomLevelsDrawn["largeRoomNames"] = false;
+        if (ZOOM_LEVELS_DRAWN["largeRoomNames"]) {
+            if (MAP.getZoom() != 19) {
+                removeNamesBiggerThanTHRESHOLD(mergedRoomCoordinates, mergedPolygons, THRESHOLD);
+                ZOOM_LEVELS_DRAWN["largeRoomNames"] = false;
             }
         }
-        if (!zoomLevelsDrawn["corridors"]) {
-            if (map.getZoom() >= 18) {
+        if (!ZOOM_LEVELS_DRAWN["corridors"]) {
+            if (MAP.getZoom() >= 18) {
                 drawPolygons(corridorPolygons);
-                zoomLevelsDrawn["corridors"] = true;
+                ZOOM_LEVELS_DRAWN["corridors"] = true;
             }
         }
-        if (zoomLevelsDrawn["corridors"]) {
-            if (map.getZoom() < 18) {
+        if (ZOOM_LEVELS_DRAWN["corridors"]) {
+            if (MAP.getZoom() < 18) {
                 removePolygons(corridorPolygons);
-                zoomLevelsDrawn["corridors"] = false;
+                ZOOM_LEVELS_DRAWN["corridors"] = false;
             }
         }
-	    // if (!zoomLevelsDrawn["19"]) {
+	    // if (!ZOOM_LEVELS_DRAWN["19"]) {
 	    //     if (map.getZoom() >= 19) {
 	    //     	console.log("bulba");
-	    //         zoomLevelsDrawn["19"] = true;
+	    //         ZOOM_LEVELS_DRAWN["19"] = true;
 	    //     }
 	    // }
-	    // if (zoomLevelsDrawn["19"]) {
+	    // if (ZOOM_LEVELS_DRAWN["19"]) {
 	    //     if (map.getZoom() < 19) {
-	    //         zoomLevelsDrawn["19"] = false;
+	    //         ZOOM_LEVELS_DRAWN["19"] = false;
 	    //     }
 	    // }
-	    if (!zoomLevelsDrawn["20"]) {
-	        if (map.getZoom() >= 20) {
+	    if (!ZOOM_LEVELS_DRAWN["20"]) {
+	        if (MAP.getZoom() >= 20) {
                 removePolygons(corridorPolygons);
-                drawPolygonsSmallerThanThreshold(roomCoordinates, roomPolygons, threshold);
-                addAllNames(roomCoordinates, roomPolygons, threshold);
+                drawPolygonsSmallerThanTHRESHOLD(roomCoordinates, roomPolygons, THRESHOLD);
+                addAllNames(roomCoordinates, roomPolygons, THRESHOLD);
                 drawPolygons(roomPolygons);
                 drawPolygons(doorPolygons);
 	            drawPolygons(stairPolygons);
                 drawPolygons(corridorPolygons);
-	            zoomLevelsDrawn["20"] = true;
+	            ZOOM_LEVELS_DRAWN["20"] = true;
 	        }
 	    }
-	    if (zoomLevelsDrawn["20"]) {
-	        if (map.getZoom() < 20) {
-	            removePolygonsSmallerThanThreshold(roomCoordinates, roomPolygons, threshold);
-                removeAllNames(roomCoordinates, roomPolygons, threshold);
+	    if (ZOOM_LEVELS_DRAWN["20"]) {
+	        if (MAP.getZoom() < 20) {
+	            removePolygonsSmallerThanTHRESHOLD(roomCoordinates, roomPolygons, THRESHOLD);
+                removeAllNames(roomCoordinates, roomPolygons, THRESHOLD);
                 removePolygons(roomPolygons);
 	            removePolygons(doorPolygons);
 	            removePolygons(stairPolygons);
-	            zoomLevelsDrawn["20"] = false;
+	            ZOOM_LEVELS_DRAWN["20"] = false;
 	        }
 	    }
-        if (!zoomLevelsDrawn["18"]) {
-            if (map.getZoom() >= 18 && map.getZoom() < 20) {
+        if (!ZOOM_LEVELS_DRAWN["18"]) {
+            if (MAP.getZoom() >= 18 && MAP.getZoom() < 20) {
                 removePolygons(corridorPolygons);
                 drawPolygons(mergedPolygons);
                 drawPolygons(corridorPolygons);
-                zoomLevelsDrawn["18"] = true;
+                ZOOM_LEVELS_DRAWN["18"] = true;
             }
         }
-        if (!zoomLevelsDrawn["largeRoomNames"]) {
-            if (map.getZoom() == 19) {
-                addNamesBiggerThanThreshold(mergedRoomCoordinates, mergedPolygons, threshold);
-                zoomLevelsDrawn["largeRoomNames"] = true;
+        if (!ZOOM_LEVELS_DRAWN["largeRoomNames"]) {
+            if (MAP.getZoom() == 19) {
+                addNamesBiggerThanTHRESHOLD(mergedRoomCoordinates, mergedPolygons, THRESHOLD);
+                ZOOM_LEVELS_DRAWN["largeRoomNames"] = true;
             }
         }
 	});
@@ -176,18 +176,18 @@ function zoom() {
 zoom();
 
 function drawDirectedTestLine(samplePoints) {
-	Maze.polyline(samplePoints).addTo(map);
+	Maze.polyline(samplePoints).addTo(MAP);
 }
 
 function testDotProduct(samplePoints, samplePoint, whichPoint) {
 	if (whichPoint == "first") {
-		Maze.polyline([samplePoints[0], samplePoint]).addTo(map);
-		L.marker(samplePoints[1]).addTo(map);
-		L.marker(samplePoint).addTo(map);
+		Maze.polyline([samplePoints[0], samplePoint]).addTo(MAP);
+		L.marker(samplePoints[1]).addTo(MAP);
+		L.marker(samplePoint).addTo(MAP);
 		console.log(dotProd(makeLine(samplePoints[0], samplePoints[1]), makeLine(samplePoints[0], samplePoint)));
 	}
 	else {
-		Maze.polyline([samplePoints[1], samplePoint]).addTo(map);
+		Maze.polyline([samplePoints[1], samplePoint]).addTo(MAP);
 		L.marker(samplePoints[0]).addTo(map);
 		L.marker(samplePoint).addTo(map);
 		console.log(dotProd(makeLine(samplePoints[1], samplePoints[0]), makeLine(samplePoints[1], samplePoint)));
@@ -199,7 +199,7 @@ function getJSONfromServer() {
     // Listen for the event.
     document.getElementById('mazemap-container').addEventListener('responseTextChange', function () { recievedJSONfromServer() }, false);
 
-    getHttp("http://api.mazemap.com/api/pois/?campusid=1&floorid=159&srid=4326");
+    getHttp("http://api.mazemap.com/api/pois/?campusid=1&floorid=15&srid=4326");
 }
 
 function removeDuplicatesFromAllRooms(roomCoordinates) {
@@ -247,11 +247,11 @@ function drawPolygonFromOnlyCoordinates(coordinates, fillColor, outlineColor) {
 
 // This will contain the rest of the program, and will be run when we know we have received the JSON from the server
 function recievedJSONfromServer() {
-    var geoJSON = JSON.parse(rawResponse);
+    var geoJSON = JSON.parse(RAW_RESPONSE);
     var color = "gray";
     var fillColor = "red";
-    fillCoordinateTypeServer(geoJSON, corridorCoordinates, corridorPolygons, RoomType.CORRIDOR, color, fillColor, 0.2, "polygon");
-    fillCoordinateTypeServer(geoJSON, roomCoordinates, roomPolygons, RoomType.ROOM, color, 'white', 1, "polygon");
+    fillCoordinateTypeServer(geoJSON, corridorCoordinates, corridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
+    fillCoordinateTypeServer(geoJSON, roomCoordinates, roomPolygons, ROOM_TYPE.ROOM, color, 'white', 1, "polygon");
 
     nameList = makeListOfNames(geoJSON);
 
@@ -288,7 +288,7 @@ function getHttp(url) {
     info.onreadystatechange = function(error) {
         if (info.readyState == 4 && info.status == 200) {
             console.log("successfully retrieved response from the server");
-            rawResponse = info.responseText;
+            RAW_RESPONSE = info.responseText;
             // Dispatch the event, which will make the rest of the program happen
             document.getElementById('mazemap-container').dispatchEvent(event);
         }
@@ -334,10 +334,10 @@ function fillStairCoordinates(data, coordinates, polygonList, coordinateType, co
 		}
 		for (var i = 0; i < coordinates.length; i++) {
 	        if (lineOrPolygon == "line") {
-	            polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: stairWeight}));
+	            polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: STAIR_WEIGHT}));
 	        }
 	        else {
-	            polygonList.push(Maze.polygon(coordinates[i], {color: color, weight: stairWeight}));
+	            polygonList.push(Maze.polygon(coordinates[i], {color: color, weight: STAIR_WEIGHT}));
 	        }
 	    }
 }
@@ -357,10 +357,10 @@ function fillCoordinateTypeLocal(data, coordinates, polygonList, coordinateType,
 	            coordinates[i][j][1] = temp;
 	        }
 	        if (lineOrPolygon == "line") {
-	            polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: localWeight}));
+	            polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: LOCAL_WEIGHT}));
 	        }
 	        else {
-	            polygonList.push(Maze.polygon(coordinates[i], {color: color, weight: localWeight}));
+	            polygonList.push(Maze.polygon(coordinates[i], {color: color, weight: LOCAL_WEIGHT}));
 	        }
 	    }
 	}
@@ -389,8 +389,8 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
                     coordinates[coordinates.length - 1][1] = temp;
                 }
 
-                // if (coordinateType == RoomType.ROOM && coordinates[i].constructor === Array){
-                if (coordinateType == RoomType.ROOM){
+                // if (coordinateType == ROOM_TYPE.ROOM && coordinates[i].constructor === Array){
+                if (coordinateType == ROOM_TYPE.ROOM){
                     makeRoomNames(coordinates[i], data.pois[i].title);
                 }
             }
@@ -398,10 +398,10 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
     }
     for (var i = 0; i < coordinates.length; i++) {
         if (lineOrPolygon == "line") {
-            polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: serverWeight}));
+            polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: SERVER_WEIGHT}));
         }
         else {
-            polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, weight: serverWeight, fillOpacity: fillOpacity}));
+            polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, weight: SERVER_WEIGHT, fillOpacity: fillOpacity}));
         }
     }
 }
@@ -443,10 +443,10 @@ function makeMergedNames(container, nameList) {
 function fillPolygons(coordinates, polygonList, color, fillColor, lineOrPolygon) {
     for (var i = 0; i < coordinates.length; i++) {
         if (lineOrPolygon == "line") {
-            polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: serverWeight}));
+            polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: SERVER_WEIGHT}));
         }
         else {
-            polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, fillOpacity: 1, weight: serverWeight}));
+            polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, fillOpacity: 1, weight: SERVER_WEIGHT}));
         }
     }
 }
@@ -457,10 +457,10 @@ function fillMergedPolygons(coordinates, polygonList, container) {
         if (coordinates[i].length > 0){
             if (coordinates[i][0].constructor == Array){
                 if (container[i].length == 1) {
-                    polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "white", fillOpacity: 1, weight: serverWeight}));
+                    polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "white", fillOpacity: 1, weight: SERVER_WEIGHT}));
                 }
                 else {
-                    polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "#F1F1F1", fillOpacity: 1, weight: serverWeight}));
+                    polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "#F1F1F1", fillOpacity: 1, weight: SERVER_WEIGHT}));
                 }
             }
         }
@@ -522,52 +522,52 @@ function removePolygons(polygonList) {
     }
 }
 
-function drawPolygonsBiggerThanThreshold(roomCoordinates, polygonList, threshold) {
+function drawPolygonsBiggerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) > threshold) {
+        if (getRoomCircumference(roomCoordinates[i]) > THRESHOLD) {
             map.addLayer(polygonList[i]);
         }
     }
 }
 
-function addNamesBiggerThanThreshold(roomCoordinates, polygonList, threshold) {
+function addNamesBiggerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) > threshold) {
+        if (getRoomCircumference(roomCoordinates[i]) > THRESHOLD) {
             map.addLayer(mergedRoomNameMarkers[i]);
         }
     }
 }
 
-function removePolygonsBiggerThanThreshold(roomCoordinates, polygonList, threshold) {
+function removePolygonsBiggerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) > threshold) {
+        if (getRoomCircumference(roomCoordinates[i]) > THRESHOLD) {
             map.removeLayer(polygonList[i]);
         }
     }
 }
 
-function removeNamesBiggerThanThreshold(roomCoordinates, polygonList, threshold) {
+function removeNamesBiggerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) > threshold) {
+        if (getRoomCircumference(roomCoordinates[i]) > THRESHOLD) {
             map.removeLayer(mergedRoomNameMarkers[i]);
         }
     }
 }
 
-function drawPolygonsSmallerThanThreshold(roomCoordinates, polygonList, threshold) {
+function drawPolygonsSmallerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) <= threshold) {
+        if (getRoomCircumference(roomCoordinates[i]) <= THRESHOLD) {
             map.addLayer(polygonList[i]);
         }
     }
 }
 
-function addNamesSmallerThanThreshold(roomCoordinates, polygonList, threshold) {
+function addNamesSmallerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) <= threshold) {
+        if (getRoomCircumference(roomCoordinates[i]) <= THRESHOLD) {
             map.addLayer(roomNames[i]);
         }
-        else if (getRoomCircumference(roomCoordinates[i]) >= threshold){
+        else if (getRoomCircumference(roomCoordinates[i]) >= THRESHOLD){
         }
         else {
             map.addLayer(roomNames[i]);
@@ -575,26 +575,26 @@ function addNamesSmallerThanThreshold(roomCoordinates, polygonList, threshold) {
     }
 }
 
-function addAllNames(roomCoordinates, polygonList, threshold) {
+function addAllNames(roomCoordinates, polygonList, THRESHOLD) {
     for (var i = 0; i < polygonList.length; i++) {
         map.addLayer(roomNames[i]);
     }
 }
 
-function removePolygonsSmallerThanThreshold(roomCoordinates, polygonList, threshold) {
+function removePolygonsSmallerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) <= threshold) {
+        if (getRoomCircumference(roomCoordinates[i]) <= THRESHOLD) {
             map.removeLayer(polygonList[i]);
         }
     }
 }
 
-function removeNamesSmallerThanThreshold(roomCoordinates, polygonList, threshold) {
+function removeNamesSmallerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) <= threshold) {
+        if (getRoomCircumference(roomCoordinates[i]) <= THRESHOLD) {
             map.removeLayer(roomNames[i]);
         }
-        else if (getRoomCircumference(roomCoordinates[i]) >= threshold){
+        else if (getRoomCircumference(roomCoordinates[i]) >= THRESHOLD){
         }
         else {
             map.removeLayer(roomNames[i]);
@@ -602,7 +602,7 @@ function removeNamesSmallerThanThreshold(roomCoordinates, polygonList, threshold
     }
 }
 
-function removeAllNames(roomCoordinates, polygonList, threshold) {
+function removeAllNames(roomCoordinates, polygonList, THRESHOLD) {
     for (var i = 0; i < polygonList.length; i++) {
         map.removeLayer(roomNames[i]);
     }
@@ -703,7 +703,7 @@ function removeDuplicatePoints(coordinates, index) {
 	simplifiedCoordinates = [];
 
 	for (var i = 0; i < coordinates[index].length - 1; i++) {
-		if (getDistanceBetweenTwoPoints(coordinates[index][i], coordinates[index][i + 1]) > minimumDistance) {
+		if (getDistanceBetweenTwoPoints(coordinates[index][i], coordinates[index][i + 1]) > MINIMUM_DISTANCE) {
 			simplifiedCoordinates.push(coordinates[index][i]);
 		}
 	}
@@ -715,24 +715,24 @@ function removeDuplicatePoints(coordinates, index) {
 function removeSmallEdges(coordinates, index) {
 	simplifiedCoordinates = [];
 
-	if ((getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 2], coordinates[index][0]) >= veryImportantDistance
-		&& getDistanceBetweenTwoPoints(coordinates[index][0], coordinates[index][1]) >= veryImportantDistance)
-		|| (getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 2], coordinates[index][0]) < veryImportantDistance
-			&& getDistanceBetweenTwoPoints(coordinates[index][0], coordinates[index][1]) < veryImportantDistance)) {
+	if ((getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 2], coordinates[index][0]) >= VERY_IMPORTANCE_DISTANCE
+		&& getDistanceBetweenTwoPoints(coordinates[index][0], coordinates[index][1]) >= VERY_IMPORTANCE_DISTANCE)
+		|| (getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 2], coordinates[index][0]) < VERY_IMPORTANCE_DISTANCE
+			&& getDistanceBetweenTwoPoints(coordinates[index][0], coordinates[index][1]) < VERY_IMPORTANCE_DISTANCE)) {
 		simplifiedCoordinates.push(coordinates[index][0]);
 	}
 	for (var i = 1; i < coordinates[index].length - 1; i++) {
-		if ((getDistanceBetweenTwoPoints(coordinates[index][i - 1], coordinates[index][i]) >= veryImportantDistance
-			&& getDistanceBetweenTwoPoints(coordinates[index][i], coordinates[index][i + 1]) >= veryImportantDistance)
-			|| (getDistanceBetweenTwoPoints(coordinates[index][i - 1], coordinates[index][i]) < veryImportantDistance
-				&& getDistanceBetweenTwoPoints(coordinates[index][i], coordinates[index][i + 1]) < veryImportantDistance)) {
+		if ((getDistanceBetweenTwoPoints(coordinates[index][i - 1], coordinates[index][i]) >= VERY_IMPORTANCE_DISTANCE
+			&& getDistanceBetweenTwoPoints(coordinates[index][i], coordinates[index][i + 1]) >= VERY_IMPORTANCE_DISTANCE)
+			|| (getDistanceBetweenTwoPoints(coordinates[index][i - 1], coordinates[index][i]) < VERY_IMPORTANCE_DISTANCE
+				&& getDistanceBetweenTwoPoints(coordinates[index][i], coordinates[index][i + 1]) < VERY_IMPORTANCE_DISTANCE)) {
 			simplifiedCoordinates.push(coordinates[index][i]);
 		}
 	}
-	if ((getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 2], coordinates[index][coordinates[index].length - 1]) >= veryImportantDistance
-		&& getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 1], coordinates[index][1]) >= veryImportantDistance)
-		|| (getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 2], coordinates[index][coordinates[index].length - 1]) < veryImportantDistance
-			&& getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 1], coordinates[index][1]) < veryImportantDistance)) {
+	if ((getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 2], coordinates[index][coordinates[index].length - 1]) >= VERY_IMPORTANCE_DISTANCE
+		&& getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 1], coordinates[index][1]) >= VERY_IMPORTANCE_DISTANCE)
+		|| (getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 2], coordinates[index][coordinates[index].length - 1]) < VERY_IMPORTANCE_DISTANCE
+			&& getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 1], coordinates[index][1]) < VERY_IMPORTANCE_DISTANCE)) {
 		simplifiedCoordinates.push(coordinates[index][coordinates[index].length - 1]);
 	}
     if (coordinates[index].length > 2) {
@@ -741,7 +741,7 @@ function removeSmallEdges(coordinates, index) {
                 // do nothing
         }
         else {
-            if (getDistanceBetweenTwoPoints(simplifiedCoordinates[0], simplifiedCoordinates[simplifiedCoordinates.length - 1]) < minimumDistance) {
+            if (getDistanceBetweenTwoPoints(simplifiedCoordinates[0], simplifiedCoordinates[simplifiedCoordinates.length - 1]) < MINIMUM_DISTANCE) {
                 simplifiedCoordinates.pop();
                 simplifiedCoordinates.push(simplifiedCoordinates[0]);
             }
@@ -756,24 +756,24 @@ function removeSmallEdges(coordinates, index) {
 function removeSmallEdgesAlternative(coordinates, index) {
 	simplifiedCoordinates = [];
 
-	if ((getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 2], coordinates[index][0]) < veryImportantDistance
-		&& getDistanceBetweenTwoPoints(coordinates[index][0], coordinates[index][1]) < veryImportantDistance)) {
+	if ((getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 2], coordinates[index][0]) < VERY_IMPORTANCE_DISTANCE
+		&& getDistanceBetweenTwoPoints(coordinates[index][0], coordinates[index][1]) < VERY_IMPORTANCE_DISTANCE)) {
 			// do nothing
 	}
 	else {
 		simplifiedCoordinates.push(coordinates[index][0]);
 	}
 	for (var i = 1; i < coordinates[index].length - 1; i++) {
-		if ((getDistanceBetweenTwoPoints(coordinates[index][i - 1], coordinates[index][i]) < veryImportantDistance
-			&& getDistanceBetweenTwoPoints(coordinates[index][i], coordinates[index][i + 1]) < veryImportantDistance)) {
+		if ((getDistanceBetweenTwoPoints(coordinates[index][i - 1], coordinates[index][i]) < VERY_IMPORTANCE_DISTANCE
+			&& getDistanceBetweenTwoPoints(coordinates[index][i], coordinates[index][i + 1]) < VERY_IMPORTANCE_DISTANCE)) {
 				// do nothing
 		}
 		else {
 			simplifiedCoordinates.push(coordinates[index][i]);
 		}
 	}
-	if ((getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 2], coordinates[index][coordinates[index].length - 1]) < veryImportantDistance
-		&& getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 1], coordinates[index][1]) < veryImportantDistance)) {
+	if ((getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 2], coordinates[index][coordinates[index].length - 1]) < VERY_IMPORTANCE_DISTANCE
+		&& getDistanceBetweenTwoPoints(coordinates[index][coordinates[index].length - 1], coordinates[index][1]) < VERY_IMPORTANCE_DISTANCE)) {
 
 	}
 	else {
@@ -786,7 +786,7 @@ function removeSmallEdgesAlternative(coordinates, index) {
                 // do nothing
         }
         else {
-            if (getDistanceBetweenTwoPoints(simplifiedCoordinates[0], simplifiedCoordinates[simplifiedCoordinates.length - 1]) < minimumDistance) {
+            if (getDistanceBetweenTwoPoints(simplifiedCoordinates[0], simplifiedCoordinates[simplifiedCoordinates.length - 1]) < MINIMUM_DISTANCE) {
                 simplifiedCoordinates.pop();
                 simplifiedCoordinates.push(simplifiedCoordinates[0]);
             }
@@ -1134,7 +1134,7 @@ function createMergedPolygons(data, roomCoordinates){
 
                     result0 = getDistPolyToPoly(roomCoordinates[i], roomCoordinates[j]);
                     result1 = getDistPolyToPoly(roomCoordinates[j], roomCoordinates[i]);
-                    if (result1[2] < veryImportantDistance) {
+                    if (result1[2] < VERY_IMPORTANCE_DISTANCE) {
                         var mergedPolygon = mergeTwoPolygons(roomCoordinates[i], roomCoordinates[j], [result0[0],result0[1]], [result1[0],result1[1]]);
                     }
                     else {
@@ -1202,8 +1202,8 @@ function markClosestCorners(data, simplifiedRoomCoordinates){
     var indeces = result[1];
     for (var i = 0; i < neighbors.length; i++) {
         for (var j = 0; j < neighbors[i].length; j++) {
-            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][0]]], {color: 'blue', weight: stairWeight}).addTo(map);
-            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][1]]], {color: 'green', weight: stairWeight}).addTo(map);
+            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][0]]], {color: 'blue', weight: STAIR_WEIGHT}).addTo(map);
+            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][1]]], {color: 'green', weight: STAIR_WEIGHT}).addTo(map);
         }
     }
 }
@@ -1228,7 +1228,7 @@ function getClosestCorner(polygon1, polygon2, indeces1){
 function oneCloseCorner(polygon1, polygon2){
     for (var i = 0; i < polygon1.length; i++) {
         for (var j = 0; j < polygon2.length; j++) {
-            if (getDistPoints(polygon1[i],polygon2[j]) < veryImportantDistance){
+            if (getDistPoints(polygon1[i],polygon2[j]) < VERY_IMPORTANCE_DISTANCE){
                 return true;
             }
         }
