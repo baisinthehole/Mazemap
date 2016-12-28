@@ -12,36 +12,22 @@ Maze.Map = Maze.Map.extend({
 // enum
 var ROOM_TYPE = {"OFFICE": 1, "CORRIDOR": 2, "STAIRS": 3, "COMPUTER_LAB": 4, "MEETING_ROOM": 5, "LECTURE_HALL": 6, "STUDY_ROOM": 7, "NOT_AVAILABLE": 8, "TOILETS": 9, "STORAGE_ROOM": 10, "LAB": 11, "COPY_ROOM": 12, "TECHNICAL": 13, "WARDROBE": 14, "SHOWER": 15, "GROUP_ROOM": 16, "INSTITUTE": 17, "FRAT": 18, "DRAWING_ROOM": 19, "LIBRARY": 20, "TEACHING_ROOM": 21, "STORE": 22, "CANTEEN": 23, "SIT": 24, "BUS_STOP": 27, "PARKING_LOT": 28, "WORKSHOP": 29, "ROOM":91};
 
-// var CORRIDOR_STYLE = {"color": "gray", "fillColor": "red", "opacity": 1};
+var FLOOR_ID = "159";
+var FILENAME = "floor_4_35.json";
+
 var STAIR_WEIGHT = 0.2;
 var SERVER_WEIGHT = 1;
 var LOCAL_WEIGHT = 0.5;
-// var drawn = false;
 
 var VERY_IMPORTANCE_DISTANCE = 0.0000011523708237294147*5;
 var MINIMUM_DISTANCE = 0.000001;
 
 var THRESHOLD = 0.0005;
 
-// var samplePointsF468 = [[63.417384664953005, 10.406250513492122], [63.41739364337911, 10.406294312445722]];
-// var samplePointsF478 = [[63.417406805234194, 10.40651019029917], [63.41739724808647, 10.40651974733363]];
-// var samplePointsE431 = [[63.4174782787972, 10.405782380151525], [63.41749614672632, 10.405764493778864]];
-// var samplePointsE412 = [[63.4175660937696, 10.406341755013518], [63.417508542197204, 10.406399367422187]];
-// var samplePointsF474 = [[63.417412724012586, 10.406387465333047], [63.417425900220415, 10.406451773171284]];
 
-// var samplePointA447 = [63.41731907765723, 10.406050119273738];
-// var samplePointA443 = [63.4173210363056, 10.405903295624785];
-// var samplePointE410 = [63.417485920375306, 10.406102020193284];
-// var samplePointE419 = [63.4175266385428, 10.406006228436468];
-// var samplePointE412 = [63.417506589477995, 10.406399635491226];
-// var samplePointE412Again = [63.417497420625914, 10.406354906632803];
-
-// initialize RAW_RESPONSE and event for asynchronous response from server
-// Create global variable for storing the geography JSON in
 var RAW_RESPONSE;
 
-// Create event for handling asynchronous responses from the server
-var event = new Event('responseTextChange');
+
 
 var ZOOM_LEVELS_DRAWN = {"16": false, "17": false, "18": false, "19": false, "20": false, "corridors": false, "largeRoomNames": false, "smallRoomNames": false};
 
@@ -51,17 +37,9 @@ var MAP = Maze.map('mazemap-container', { campusloader: false });
 MAP.setView([63.417421008760335,10.406426561608821], 15);
 
 // One array of coordinates for each type of polygon
-var roomCoordinates = [];
-var simplifiedRoomCoordinates = [];
-var stairCoordinates = [];
-var outlineCoordinates = [];
-var doorCoordinates = [];
-var corridorCoordinates = [];
-var mergedRoomCoordinates = [];
-var unmergedRoomIndeces = [];
+var ROOM_COORDINATES = [];
 
 var roomPolygons = [];
-var simplifiedRoomPolygons = [];
 var stairPolygons = [];
 var outlinePolygons = [];
 var doorPolygons = [];
@@ -75,13 +53,14 @@ var mergedRoomNameMarkers = [];
 
 var nameList = [];
 
-var neighbors;
 
 // Uncomment the preferred JSON file
-getLocalJSON('floor_4_35.json');
+getLocalJSON(FILENAME);
 getJSONfromServer();
 
-var myIcon;
+zoom();
+
+
 
 function zoom() {
 	// Zoom listener
@@ -107,7 +86,7 @@ function zoom() {
         }
         if (ZOOM_LEVELS_DRAWN["largeRoomNames"]) {
             if (MAP.getZoom() != 19) {
-                removeNamesBiggerThanTHRESHOLD(mergedRoomCoordinates, mergedPolygons, THRESHOLD);
+                removeNamesBiggerThanThreshold(mergedRoomCoordinates, mergedPolygons);
                 ZOOM_LEVELS_DRAWN["largeRoomNames"] = false;
             }
         }
@@ -137,8 +116,8 @@ function zoom() {
 	    if (!ZOOM_LEVELS_DRAWN["20"]) {
 	        if (MAP.getZoom() >= 20) {
                 removePolygons(corridorPolygons);
-                drawPolygonsSmallerThanTHRESHOLD(roomCoordinates, roomPolygons, THRESHOLD);
-                addAllNames(roomCoordinates, roomPolygons, THRESHOLD);
+                drawPolygonsSmallerThanThreshold(ROOM_COORDINATES, roomPolygons);
+                addAllNames(ROOM_COORDINATES, roomPolygons);
                 drawPolygons(roomPolygons);
                 drawPolygons(doorPolygons);
 	            drawPolygons(stairPolygons);
@@ -148,8 +127,8 @@ function zoom() {
 	    }
 	    if (ZOOM_LEVELS_DRAWN["20"]) {
 	        if (MAP.getZoom() < 20) {
-	            removePolygonsSmallerThanTHRESHOLD(roomCoordinates, roomPolygons, THRESHOLD);
-                removeAllNames(roomCoordinates, roomPolygons, THRESHOLD);
+	            removePolygonsSmallerThanThreshold(ROOM_COORDINATES, roomPolygons);
+                removeAllNames(ROOM_COORDINATES, roomPolygons);
                 removePolygons(roomPolygons);
 	            removePolygons(doorPolygons);
 	            removePolygons(stairPolygons);
@@ -166,14 +145,12 @@ function zoom() {
         }
         if (!ZOOM_LEVELS_DRAWN["largeRoomNames"]) {
             if (MAP.getZoom() == 19) {
-                addNamesBiggerThanTHRESHOLD(mergedRoomCoordinates, mergedPolygons, THRESHOLD);
+                addNamesBiggerThanThreshold(mergedRoomCoordinates, mergedPolygons);
                 ZOOM_LEVELS_DRAWN["largeRoomNames"] = true;
             }
         }
 	});
 }
-
-zoom();
 
 function drawDirectedTestLine(samplePoints) {
 	Maze.polyline(samplePoints).addTo(MAP);
@@ -182,14 +159,14 @@ function drawDirectedTestLine(samplePoints) {
 function testDotProduct(samplePoints, samplePoint, whichPoint) {
 	if (whichPoint == "first") {
 		Maze.polyline([samplePoints[0], samplePoint]).addTo(MAP);
-		L.marker(samplePoints[1]).addTo(MAP);
-		L.marker(samplePoint).addTo(MAP);
+		Maze.marker(samplePoints[1]).addTo(MAP);
+		Maze.marker(samplePoint).addTo(MAP);
 		console.log(dotProd(makeLine(samplePoints[0], samplePoints[1]), makeLine(samplePoints[0], samplePoint)));
 	}
 	else {
 		Maze.polyline([samplePoints[1], samplePoint]).addTo(MAP);
-		L.marker(samplePoints[0]).addTo(map);
-		L.marker(samplePoint).addTo(map);
+		Maze.marker(samplePoints[0]).addTo(MAP);
+		Maze.marker(samplePoint).addTo(MAP);
 		console.log(dotProd(makeLine(samplePoints[1], samplePoints[0]), makeLine(samplePoints[1], samplePoint)));
 	}
 }
@@ -199,7 +176,7 @@ function getJSONfromServer() {
     // Listen for the event.
     document.getElementById('mazemap-container').addEventListener('responseTextChange', function () { recievedJSONfromServer() }, false);
 
-    getHttp("http://api.mazemap.com/api/pois/?campusid=1&floorid=15&srid=4326");
+    getHttp("http://api.mazemap.com/api/pois/?campusid=1&floorid="+FLOOR_ID+"&srid=4326");
 }
 
 function removeDuplicatesFromAllRooms(roomCoordinates) {
@@ -242,7 +219,7 @@ function drawPolygonFromOnlyCoordinates(coordinates, fillColor, outlineColor) {
 	for (var i = 0; i < coordinates.length; i++) {
 		simplifiedCoordinates.push(coordinates[i]);
 	}
-	map.addLayer(Maze.polygon(simplifiedCoordinates, {color: outlineColor, fillColor: fillColor}));
+	MAP.addLayer(Maze.polygon(simplifiedCoordinates, {color: outlineColor, fillColor: fillColor}));
 }
 
 // This will contain the rest of the program, and will be run when we know we have received the JSON from the server
@@ -250,29 +227,14 @@ function recievedJSONfromServer() {
     var geoJSON = JSON.parse(RAW_RESPONSE);
     var color = "gray";
     var fillColor = "red";
-    fillCoordinateTypeServer(geoJSON, corridorCoordinates, corridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
-    fillCoordinateTypeServer(geoJSON, roomCoordinates, roomPolygons, ROOM_TYPE.ROOM, color, 'white', 1, "polygon");
+    fillCoordinateTypeServer(geoJSON, [], corridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
+    fillCoordinateTypeServer(geoJSON, ROOM_COORDINATES, roomPolygons, ROOM_TYPE.ROOM, color, 'white', 1, "polygon");
 
     nameList = makeListOfNames(geoJSON);
 
-    removedDuplicatePoints = removeDuplicatesFromAllRooms(roomCoordinates);
-    simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);
+    removedDuplicatePoints = removeDuplicatesFromAllRooms(ROOM_COORDINATES);
+    var simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);
 
-    //checkPointSequence(tesPoints);
-
-    //checkPointSequence(simplifiedRoomCoordinates[5]);
-
-    // markClosestCorners(geoJSON, simplifiedRoomCoordinates);
-
-    fillPolygons(simplifiedRoomCoordinates, simplifiedRoomPolygons, color, 'white', "polygon");
-
-    //drawPolygons(simplifiedRoomPolygons);
-
-    //var result = getNeighbors(geoJSON, simplifiedRoomCoordinates);
-
-
-    // checkPointSequence(roomCoordinates[48]);
-    // checkPointSequence(removedDuplicatePoints[54]);
 
     createMergedPolygons(geoJSON, simplifiedRoomCoordinates);
 
@@ -281,6 +243,8 @@ function recievedJSONfromServer() {
 
   // Function for requesting JSON object from server
 function getHttp(url) {
+    // Create event for handling asynchronous responses from the server
+    var event = new Event('responseTextChange');
     var info = new XMLHttpRequest();
     // Asynchronous HTTP request
     info.open( "GET", url, true );
@@ -309,12 +273,10 @@ function getLocalJSON(filename) {
 function recievedLocalJSON(data) {
     var color = ['blue', 'gray', 'green', 'black'];
 
-
     // Fill the coordinate arrays for each type of polygon and draw to map
-    fillCoordinateTypeLocal(data, stairCoordinates, stairPolygons, 'stairsfull', 'black', "line");
-    // fillCoordinateTypeLocal(data, roomCoordinates, roomPolygons, 'rooms', color[1], "line");
-    fillCoordinateTypeLocal(data, doorCoordinates, doorPolygons, 'doors', color[2], "line");
-    fillCoordinateTypeLocal(data, outlineCoordinates, outlinePolygons, 'outlines', color[3], "line");
+    fillCoordinateTypeLocal(data, stairPolygons, 'stairsfull', 'black', "line");
+    fillCoordinateTypeLocal(data, doorPolygons, 'doors', color[2], "line");
+    fillCoordinateTypeLocal(data, outlinePolygons, 'outlines', color[3], "line");
 
 
     // Draw markers on all stair coordinates
@@ -342,7 +304,8 @@ function fillStairCoordinates(data, coordinates, polygonList, coordinateType, co
 	    }
 }
 
-function fillCoordinateTypeLocal(data, coordinates, polygonList, coordinateType, color, lineOrPolygon) {
+function fillCoordinateTypeLocal(data, polygonList, coordinateType, color, lineOrPolygon) {
+    var coordinates = [];
 	// stairsfull is organized a little different from the others
 	if (coordinateType == 'stairsfull') {
 		fillStairCoordinates(data, coordinates, polygonList, coordinateType, color, lineOrPolygon);
@@ -367,8 +330,6 @@ function fillCoordinateTypeLocal(data, coordinates, polygonList, coordinateType,
 }
 
 function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, fillColor, fillOpacity, lineOrPolygon) {
-    var temp;
-
     for (var i = 0; i < data.pois.length; i++) {
         for (var j = 0; j < data.pois[i].infos.length; j++) {
             if (data.pois[i].infos[j].poiTypeId == coordinateType){
@@ -389,7 +350,6 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
                     coordinates[coordinates.length - 1][1] = temp;
                 }
 
-                // if (coordinateType == ROOM_TYPE.ROOM && coordinates[i].constructor === Array){
                 if (coordinateType == ROOM_TYPE.ROOM){
                     makeRoomNames(coordinates[i], data.pois[i].title);
                 }
@@ -425,8 +385,8 @@ function makeMergedNames(container, nameList) {
 
 	for (var i = 0; i < container.length; i++) {
 		for (var j = 0; j < container.length; j++) {
-			if (getDistanceBetweenTwoPoints(getPoint(roomCoordinates[container[i]]), getPoint(roomCoordinates[container[j]])) > maxDistance) {
-				maxDistance = getDistanceBetweenTwoPoints(getPoint(roomCoordinates[container[i]]), getPoint(roomCoordinates[container[j]]));
+			if (getDistanceBetweenTwoPoints(getPoint(ROOM_COORDINATES[container[i]]), getPoint(ROOM_COORDINATES[container[j]])) > maxDistance) {
+				maxDistance = getDistanceBetweenTwoPoints(getPoint(ROOM_COORDINATES[container[i]]), getPoint(ROOM_COORDINATES[container[j]]));
 				maxIndex1 = container[i];
 				maxIndex2 = container[j];
 			}
@@ -503,11 +463,11 @@ function drawPolygons(polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
         if (polygonList[i]._latlngs.length > 1) {
             if (polygonList[i]._latlngs[0]) {
-                map.addLayer(polygonList[i]);
+                MAP.addLayer(polygonList[i]);
             }
         }
         else if (polygonList[i]._latlngs[0][0]) {
-            map.addLayer(polygonList[i]);
+            MAP.addLayer(polygonList[i]);
         }
         else {
             console.log("Trying to draw a non-polygon");
@@ -518,97 +478,98 @@ function drawPolygons(polygonList) {
 
 function removePolygons(polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
-        map.removeLayer(polygonList[i]);
+        MAP.removeLayer(polygonList[i]);
     }
 }
 
-function drawPolygonsBiggerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
+function drawPolygonsBiggerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
         if (getRoomCircumference(roomCoordinates[i]) > THRESHOLD) {
-            map.addLayer(polygonList[i]);
+            MAP.addLayer(polygonList[i]);
         }
     }
 }
 
-function addNamesBiggerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
+function addNamesBiggerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
         if (getRoomCircumference(roomCoordinates[i]) > THRESHOLD) {
-            map.addLayer(mergedRoomNameMarkers[i]);
+            MAP.addLayer(mergedRoomNameMarkers[i]);
         }
     }
 }
 
-function removePolygonsBiggerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
+function removePolygonsBiggerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
         if (getRoomCircumference(roomCoordinates[i]) > THRESHOLD) {
-            map.removeLayer(polygonList[i]);
+            MAP.removeLayer(polygonList[i]);
         }
     }
 }
 
-function removeNamesBiggerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
+function removeNamesBiggerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
         if (getRoomCircumference(roomCoordinates[i]) > THRESHOLD) {
-            map.removeLayer(mergedRoomNameMarkers[i]);
+            MAP.removeLayer(mergedRoomNameMarkers[i]);
         }
     }
 }
 
-function drawPolygonsSmallerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
+function drawPolygonsSmallerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
         if (getRoomCircumference(roomCoordinates[i]) <= THRESHOLD) {
-            map.addLayer(polygonList[i]);
+            MAP.addLayer(polygonList[i]);
         }
     }
 }
 
-function addNamesSmallerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
+function addNamesSmallerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
         if (getRoomCircumference(roomCoordinates[i]) <= THRESHOLD) {
-            map.addLayer(roomNames[i]);
+            MAP.addLayer(roomNames[i]);
         }
         else if (getRoomCircumference(roomCoordinates[i]) >= THRESHOLD){
         }
         else {
-            map.addLayer(roomNames[i]);
+            MAP.addLayer(roomNames[i]);
         }
     }
 }
 
-function addAllNames(roomCoordinates, polygonList, THRESHOLD) {
+function addAllNames(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
-        map.addLayer(roomNames[i]);
+        MAP.addLayer(roomNames[i]);
     }
 }
 
-function removePolygonsSmallerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
+function removePolygonsSmallerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
         if (getRoomCircumference(roomCoordinates[i]) <= THRESHOLD) {
-            map.removeLayer(polygonList[i]);
+            MAP.removeLayer(polygonList[i]);
         }
     }
 }
 
-function removeNamesSmallerThanTHRESHOLD(roomCoordinates, polygonList, THRESHOLD) {
+function removeNamesSmallerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
         if (getRoomCircumference(roomCoordinates[i]) <= THRESHOLD) {
-            map.removeLayer(roomNames[i]);
+            MAP.removeLayer(roomNames[i]);
         }
         else if (getRoomCircumference(roomCoordinates[i]) >= THRESHOLD){
         }
         else {
-            map.removeLayer(roomNames[i]);
+            MAP.removeLayer(roomNames[i]);
         }
     }
 }
 
-function removeAllNames(roomCoordinates, polygonList, THRESHOLD) {
+function removeAllNames(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
-        map.removeLayer(roomNames[i]);
+        MAP.removeLayer(roomNames[i]);
     }
 }
 
 function makeRoomNames(coordinates, title) {
+    var myIcon;
     if (coordinates.length == 2) {
         myIcon = Maze.divIcon({
             className: "labelClass",
@@ -993,7 +954,7 @@ function distPointToLine(point,linepoint1,linepoint2){
 
 function checkPointSequence(coordinates) {
 	for (var i = 0; i < coordinates.length; i++) {
-		L.popup().setLatLng(coordinates[i]).setContent(i.toString()).addTo(map);
+		Maze.popup().setLatLng(coordinates[i]).setContent(i.toString()).addTo(MAP);
 	}
 }
 
@@ -1111,25 +1072,29 @@ function contains(a, obj) {
 }
 
 function createMergedPolygons(data, roomCoordinates){
-    var result = getNeighbors(data, roomCoordinates);
+    var neighbors;
+    var indeces;
+    [neighbors, indeces] = getNeighbors(data, roomCoordinates);
 
-    var neighbors2 = result[0];
-    var indeces = result[1];
+    [roomCoordinates, container, mergedRoomNameMarkers] = mergeAllPolygons(neighbors, indeces, roomCoordinates);
 
-    neighbors = deepCopy(neighbors2);
+    [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container, mergedRoomNameMarkers);
 
-    container = [];
+    roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
+
+    fillMergedPolygons(roomCoordinates, mergedPolygons, container);
+}
+
+function mergeAllPolygons(neighbors, indeces, roomCoordinates){
+    var container = [];
 
     for (var i = 0; i < roomCoordinates.length; i++) {
-    	container.push([i]);
+        container.push([i]);
     }
 
-
-    //for (var i = 0; i < roomCoordinates.length; i++) {
-    //	for (var j = 0; j < roomCoordinates.length; j++) {
     for (var i = 0; i < roomCoordinates.length; i++) {
-    	for (var j = 0; j < roomCoordinates.length; j++) {
-    		if (contains(neighbors[i], j)) {
+        for (var j = 0; j < roomCoordinates.length; j++) {
+            if (contains(neighbors[i], j)) {
                 if (!findOne(container[i], container[j])){
 
                     result0 = getDistPolyToPoly(roomCoordinates[i], roomCoordinates[j]);
@@ -1141,59 +1106,43 @@ function createMergedPolygons(data, roomCoordinates){
                         var mergedPolygon = mergeTwoPolygons(roomCoordinates[i], roomCoordinates[j], [result0[0],result0[1]], undefined);
                     }
                     if (mergedPolygon != -1){
-                    	if (neighbors[i].indexOf(j) != -1) {
-            				neighbors[i].splice(neighbors[i].indexOf(j), 1);
-                    	}
-                    	if (neighbors[j].indexOf(i) != -1) {
-            				neighbors[j].splice(neighbors[j].indexOf(i), 1);
-                    	}
+                        if (neighbors[i].indexOf(j) != -1) {
+                            neighbors[i].splice(neighbors[i].indexOf(j), 1);
+                        }
+                        if (neighbors[j].indexOf(i) != -1) {
+                            neighbors[j].splice(neighbors[j].indexOf(i), 1);
+                        }
 
-            			for (var k = 0; k < container[j].length; k++) {
-            				if (!contains(container[i], container[j][k])) {
-            					container[i].push(container[j][k]);
-            				}
-            			}
+                        for (var k = 0; k < container[j].length; k++) {
+                            if (!contains(container[i], container[j][k])) {
+                                container[i].push(container[j][k]);
+                            }
+                        }
 
-        				for (var k = 0; k < neighbors[j].length; k++) {
-            				if (!contains(neighbors[i], neighbors[j][k]) && !contains(container[i], neighbors[j][k]) && neighbors[j][k] != i) {
-            					neighbors[i].push(neighbors[j][k]);
-            				}
-            			}
+                        for (var k = 0; k < neighbors[j].length; k++) {
+                            if (!contains(neighbors[i], neighbors[j][k]) && !contains(container[i], neighbors[j][k]) && neighbors[j][k] != i) {
+                                neighbors[i].push(neighbors[j][k]);
+                            }
+                        }
 
                         for (var k = 0; k < container[i].length; k++) {
                             neighbors[container[i][k]] = neighbors[i];
                             container[container[i][k]] = container[i];
                             roomCoordinates[container[i][k]] = mergedPolygon;
                         }
-        			}
+                    }
                 }
-    		}
-    	}
+            }
+        }
     }
-
-
-
-
-
     for (var i = 0; i < container.length; i++) {
-    	mergedRoomNameStrings.push(makeMergedNames(container[i], nameList));
+        mergedRoomNameStrings.push(makeMergedNames(container[i], nameList));
     }
 
     for (var i = 0; i < roomCoordinates.length; i++) {
-    	makeMergedRoomNames(roomCoordinates[i], mergedRoomNameStrings[i]);
+        makeMergedRoomNames(roomCoordinates[i], mergedRoomNameStrings[i]);
     }
-
-
-    //Maze.polyline(roomCoordinates[13]).addTo(map);
-    //var mergedPolygon = mergeTwoPolygons(roomCoordinates[room1], roomCoordinates[room2], indeces[room1][getNeighborIndex(room1, room2, neighbors)], indeces[room2][getNeighborIndex(room2, room1, neighbors)]);
-    //Maze.polyline(mergedPolygon).addTo(map);
-    [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container, mergedRoomNameMarkers);
-    // var roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
-    roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
-    fillMergedPolygons(roomCoordinates, mergedPolygons, container);
-
-    return [roomCoordinates, container];
-
+    return [roomCoordinates, container, mergedRoomNameMarkers];
 }
 
 function markClosestCorners(data, simplifiedRoomCoordinates){
@@ -1202,8 +1151,8 @@ function markClosestCorners(data, simplifiedRoomCoordinates){
     var indeces = result[1];
     for (var i = 0; i < neighbors.length; i++) {
         for (var j = 0; j < neighbors[i].length; j++) {
-            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][0]]], {color: 'blue', weight: STAIR_WEIGHT}).addTo(map);
-            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][1]]], {color: 'green', weight: STAIR_WEIGHT}).addTo(map);
+            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][0]]], {color: 'blue', weight: STAIR_WEIGHT}).addTo(MAP);
+            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][1]]], {color: 'green', weight: STAIR_WEIGHT}).addTo(MAP);
         }
     }
 }
