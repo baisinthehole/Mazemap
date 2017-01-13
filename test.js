@@ -24,3 +24,9 @@ function drawPolygonFromOnlyCoordinates(coordinates, fillColor, outlineColor) {
     }
     MAP.addLayer(Maze.polygon(simplifiedCoordinates, {color: outlineColor, fillColor: fillColor}));
 }
+
+function checkPointSequence(coordinates) {
+    for (var i = 0; i < coordinates.length; i++) {
+        Maze.popup().setLatLng(coordinates[i]).setContent(i.toString()).addTo(MAP);
+    }
+}

@@ -13,9 +13,6 @@ Maze.Map = Maze.Map.extend({
 // enum
 var ROOM_TYPE = {"OFFICE": 1, "CORRIDOR": 2, "STAIRS": 3, "COMPUTER_LAB": 4, "MEETING_ROOM": 5, "LECTURE_HALL": 6, "STUDY_ROOM": 7, "NOT_AVAILABLE": 8, "TOILETS": 9, "STORAGE_ROOM": 10, "LAB": 11, "COPY_ROOM": 12, "TECHNICAL": 13, "WARDROBE": 14, "SHOWER": 15, "GROUP_ROOM": 16, "INSTITUTE": 17, "FRAT": 18, "DRAWING_ROOM": 19, "LIBRARY": 20, "TEACHING_ROOM": 21, "STORE": 22, "CANTEEN": 23, "SIT": 24, "BUS_STOP": 27, "PARKING_LOT": 28, "WORKSHOP": 29, "ROOM":91};
 
-var FLOOR_ID = "159";
-var FILENAME = "floor_4_35.json";
-
 var STAIR_WEIGHT = 0.2;
 var SERVER_WEIGHT = 1;
 var LOCAL_WEIGHT = 0.5;
@@ -31,11 +28,6 @@ var RAW_RESPONSE;
 
 
 var ZOOM_LEVELS_DRAWN = {"16": false, "17": false, "18": false, "19": false, "20": false, "corridors": false, "largeRoomNames": false, "smallRoomNames": false};
-
-// Create a map
-var MAP = Maze.map('mazemap-container', { campusloader: false });
-// map.setView([10.406426561608821,63.417421008760335], 15);
-MAP.setView([63.417421008760335,10.406426561608821], 15);
 
 // One array of coordinates for each type of polygon
 var globalRoomCoordinates = [];
@@ -53,15 +45,6 @@ var globalMergedRoomNameStrings = [];
 var globalMergedRoomNameMarkers = [];
 
 var globalNameList = [];
-
-
-// Uncomment the preferred JSON file
-getLocalJSON(FILENAME);
-getJSONfromServer();
-
-zoom();
-
-
 
 function zoom() {
 	// Zoom listener
@@ -174,7 +157,7 @@ function recievedJSONfromServer() {
     removedDuplicatePoints = removeDuplicatesFromAllRooms(globalRoomCoordinates);
     var simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);
 
-
+    // This function is defined in main.js
     createglobalMergedPolygons(geoJSON, simplifiedRoomCoordinates);
 
 
@@ -593,6 +576,7 @@ function getDistanceBetweenTwoPoints(point1, point2) {
 	return Math.abs(point1[0] - point2[0]) + Math.abs(point1[1] - point2[1]);
 }
 
+// This function is not used....
 function getAdjacentRooms(data){
     var neighbors = [];
     for (var i = 0; i < data.pois.length; i++) {
@@ -786,12 +770,6 @@ function distPointToLine(point,linepoint1,linepoint2){
     return Math.abs(a*point[0]+b*point[1]+c)/Math.sqrt(Math.pow(a,2)+Math.pow(b,2));
 }
 
-function checkPointSequence(coordinates) {
-	for (var i = 0; i < coordinates.length; i++) {
-		Maze.popup().setLatLng(coordinates[i]).setContent(i.toString()).addTo(MAP);
-	}
-}
-
 function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2){
     if (polygon1 != polygon2){
         if (indeces1 != null && indeces2 != null){
@@ -903,20 +881,6 @@ function contains(a, obj) {
         }
     }
     return false;
-}
-
-function createglobalMergedPolygons(data, roomCoordinates){
-    var neighbors;
-    var indeces;
-    [neighbors, indeces] = getNeighbors(data, roomCoordinates);
-
-    [roomCoordinates, container, globalMergedRoomNameMarkers] = mergeAllPolygons(neighbors, indeces, roomCoordinates);
-
-    [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container, globalMergedRoomNameMarkers);
-
-    roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
-
-    fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
 }
 
 function mergeAllPolygons(neighbors, indeces, roomCoordinates){
