@@ -14,7 +14,7 @@ Maze.Map = Maze.Map.extend({
 var ROOM_TYPE = {"OFFICE": 1, "CORRIDOR": 2, "STAIRS": 3, "COMPUTER_LAB": 4, "MEETING_ROOM": 5, "LECTURE_HALL": 6, "STUDY_ROOM": 7, "NOT_AVAILABLE": 8, "TOILETS": 9, "STORAGE_ROOM": 10, "LAB": 11, "COPY_ROOM": 12, "TECHNICAL": 13, "WARDROBE": 14, "SHOWER": 15, "GROUP_ROOM": 16, "INSTITUTE": 17, "FRAT": 18, "DRAWING_ROOM": 19, "LIBRARY": 20, "TEACHING_ROOM": 21, "STORE": 22, "CANTEEN": 23, "SIT": 24, "BUS_STOP": 27, "PARKING_LOT": 28, "WORKSHOP": 29, "ROOM":91};
 
 var STAIR_WEIGHT = 0.2;
-var SERVER_WEIGHT = 1;
+var SERVER_WEIGHT = 0.5;
 var LOCAL_WEIGHT = 0.5;
 
 var VERY_IMPORTANCE_DISTANCE = 0.0000011523708237294147*5;
@@ -99,13 +99,13 @@ function zoom() {
 	    // }
 	    if (!ZOOM_LEVELS_DRAWN["20"]) {
 	        if (MAP.getZoom() >= 20) {
-                removePolygons(globalCorridorPolygons);
+                // removePolygons(globalCorridorPolygons);
                 drawPolygonsSmallerThanThreshold(globalRoomCoordinates, globalRoomPolygons);
                 addAllNames(globalRoomCoordinates, globalRoomPolygons);
                 drawPolygons(globalRoomPolygons);
                 drawPolygons(globalDoorPolygons);
 	            drawPolygons(globalStairPolygons);
-                drawPolygons(globalCorridorPolygons);
+                // drawPolygons(globalCorridorPolygons);
 	            ZOOM_LEVELS_DRAWN["20"] = true;
 	        }
 	    }
@@ -150,7 +150,7 @@ function recievedJSONfromServer() {
     var color = "gray";
     var fillColor = "red";
     fillCoordinateTypeServer(geoJSON, [], globalCorridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
-    fillCoordinateTypeServer(geoJSON, globalRoomCoordinates, globalRoomPolygons, ROOM_TYPE.ROOM, color, 'white', 1, "polygon");
+    fillCoordinateTypeServer(geoJSON, globalRoomCoordinates, globalRoomPolygons, ROOM_TYPE.ROOM, color, 'white', 0.2, "line");
 
     globalNameList = makeListOfNames(geoJSON);
 
@@ -198,7 +198,7 @@ function recievedLocalJSON(data) {
     // Fill the coordinate arrays for each type of polygon and draw to map
     fillCoordinateTypeLocal(data, globalStairPolygons, 'stairsfull', 'black', "line");
     fillCoordinateTypeLocal(data, globalDoorPolygons, 'doors', color[2], "line");
-    fillCoordinateTypeLocal(data, globalOutlinePolygons, 'outlines', color[3], "line");
+    fillCoordinateTypeLocal(data, globalOutlinePolygons, 'outlines', 'black', "polygon");
 
 
     // Draw markers on all stair coordinates
@@ -245,7 +245,7 @@ function fillCoordinateTypeLocal(data, polygonList, coordinateType, color, lineO
 	            polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: LOCAL_WEIGHT}));
 	        }
 	        else {
-	            polygonList.push(Maze.polygon(coordinates[i], {color: color, weight: LOCAL_WEIGHT}));
+	            polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: "white", fillOpacity: 1, weight: LOCAL_WEIGHT}));
 	        }
 	    }
 	}
