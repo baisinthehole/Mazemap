@@ -30,3 +30,15 @@ function checkPointSequence(coordinates) {
         Maze.popup().setLatLng(coordinates[i]).setContent(i.toString()).addTo(MAP);
     }
 }
+
+function markClosestCorners(data, simplifiedRoomCoordinates){
+    var result = getNeighbors(data, simplifiedRoomCoordinates);
+    var neighbors = result[0];
+    var indeces = result[1];
+    for (var i = 0; i < neighbors.length; i++) {
+        for (var j = 0; j < neighbors[i].length; j++) {
+            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][0]]], {color: 'blue', weight: STAIR_WEIGHT}).addTo(MAP);
+            Maze.polyline([getPoint(simplifiedRoomCoordinates[i]),simplifiedRoomCoordinates[i][indeces[i][j][1]]], {color: 'green', weight: STAIR_WEIGHT}).addTo(MAP);
+        }
+    }
+}
