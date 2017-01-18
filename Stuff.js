@@ -152,7 +152,7 @@ function recievedJSONfromServer() {
     fillCoordinateTypeServer(geoJSON, [], globalCorridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
     fillCoordinateTypeServer(geoJSON, globalRoomCoordinates, globalRoomPolygons, ROOM_TYPE.ROOM, color, 'white', 0.2, "line");
 
-    globalNameList = makeListOfNames(geoJSON);
+    // globalNameList = makeListOfNames(geoJSON);
 
     removedDuplicatePoints = removeDuplicatesFromAllRooms(globalRoomCoordinates);
     var simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);
@@ -273,7 +273,7 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
                 }
 
                 if (coordinateType == ROOM_TYPE.ROOM){
-                    makeRoomNames(coordinates[i], data.pois[i].title);
+                    makeRoomNames(coordinates[coordinates.length-1], data.pois[i].title);
                 }
             }
         }
@@ -288,13 +288,13 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
     }
 }
 
-function makeListOfNames(data) {
-	globalNameList = [];
-	for (var i = 0; i < data.pois.length; i++) {
-		globalNameList.push(data.pois[i].title);
-	}
-	return globalNameList;
-}
+// function makeListOfNames(data) {
+// 	globalNameList = [];
+// 	for (var i = 0; i < data.pois.length; i++) {
+// 		globalNameList.push(data.pois[i].title);
+// 	}
+// 	return globalNameList;
+// }
 
 function makeMergedNames(container, globalNameList) {
 	if (container.length == 1) {
@@ -492,6 +492,7 @@ function removeAllNames(roomCoordinates, polygonList) {
 
 function makeRoomNames(coordinates, title) {
     var myIcon;
+    globalNameList.push(title);
     if (coordinates.length == 2) {
         myIcon = Maze.divIcon({
             className: "labelClass",
