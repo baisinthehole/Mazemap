@@ -1,8 +1,8 @@
 function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2){
     if (polygon1 != polygon2){
         if (indeces1 != null && indeces2 != null){
-            indeces1.sort();
-            indeces2.sort();
+            indeces1.sort(sorter);
+            indeces2.sort(sorter);
             var shiftedPolygon1 = polygon1.slice(0, polygon1.length-1);
             for (var i = 0; i < indeces1[0]; i++) {
                 shiftedPolygon1.push(shiftedPolygon1.shift());
@@ -23,7 +23,7 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2){
         else if (indeces2 == null){
             console.log("indeces2 = null");
             if (oneCloseCorner(polygon1, polygon2)){
-                indeces1.sort();
+                indeces1.sort(sorter);
                 var resultIndeces = getClosestCorner(polygon1, polygon2, indeces1);
                 var shiftedPolygon2 = polygon2.slice(0, polygon2.length-1);
                 for (var i = 0; i < resultIndeces[1]+1; i++) {
@@ -151,4 +151,10 @@ function mergeAllPolygons(neighbors, indeces, roomCoordinates){
         makeMergedRoomNames(roomCoordinates[i], globalMergedRoomNameStrings[i]);
     }
     return [roomCoordinates, container, globalMergedRoomNameMarkers];
+}
+
+function sorter(a, b) {
+    if (a < b) return -1;  // any negative number works
+    if (a > b) return 1;   // any positive number works
+    return 0; // equal values MUST yield zero
 }

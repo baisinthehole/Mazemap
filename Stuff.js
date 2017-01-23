@@ -147,6 +147,19 @@ function getJSONfromServer() {
 // This will contain the rest of the program, and will be run when we know we have received the JSON from the server
 function recievedJSONfromServer() {
     var geoJSON = JSON.parse(RAW_RESPONSE);
+    for (var i = geoJSON.pois.length -1; i >= 0 ; i--) {
+        var poiTypeRoom = false;
+        for (var j = 0; j < geoJSON.pois[i].infos.length; j++) {
+            if (geoJSON.pois[i].infos[j].poiTypeId == ROOM_TYPE.ROOM){
+                poiTypeRoom = true;
+            }
+        }
+        if (!poiTypeRoom){
+            console.log("Trying to delete");
+            geoJSON.pois.splice(i, 1);
+        }
+    }
+    console.log(geoJSON);
     var color = "gray";
     var fillColor = "red";
     fillCoordinateTypeServer(geoJSON, [], globalCorridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
