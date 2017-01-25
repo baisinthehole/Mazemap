@@ -103,17 +103,10 @@ function mergeAllPolygons(neighbors, indeces, roomCoordinates){
     for (var i = 0; i < roomCoordinates.length; i++) {
         for (var j = 0; j < roomCoordinates.length; j++) {
             if (contains(neighbors[i], j)) {
-                if (!findOne(container[i], container[j])){
+                if (!findOne(container[i], container[j])) {
 
-                    result0 = getDistPolyToPoly(roomCoordinates[i], roomCoordinates[j]);
-                    result1 = getDistPolyToPoly(roomCoordinates[j], roomCoordinates[i]);
-                    if (result1[2] < VERY_IMPORTANCE_DISTANCE) {
-                        var mergedPolygon = mergeTwoPolygons(roomCoordinates[i], roomCoordinates[j], [result0[0],result0[1]], [result1[0],result1[1]]);
-                    }
-                    else {
-                        var mergedPolygon = mergeTwoPolygons(roomCoordinates[i], roomCoordinates[j], [result0[0],result0[1]], undefined);
-                    }
-                    if (mergedPolygon != -1){
+                    var mergedPolygon = simpleMergeTwo(roomCoordinates[i], roomCoordinates[j]);
+                    if (mergedPolygon != -1) {
                         if (neighbors[i].indexOf(j) != -1) {
                             neighbors[i].splice(neighbors[i].indexOf(j), 1);
                         }
@@ -151,6 +144,30 @@ function mergeAllPolygons(neighbors, indeces, roomCoordinates){
         makeMergedRoomNames(roomCoordinates[i], globalMergedRoomNameStrings[i]);
     }
     return [roomCoordinates, container, globalMergedRoomNameMarkers];
+}
+
+function simpleMergeTwo(room1, room2, test=false){
+    result0 = getDistPolyToPoly(room1, room2);
+    result1 = getDistPolyToPoly(room2, room1);
+    if (result1[2] < VERY_IMPORTANCE_DISTANCE && result0[2] < VERY_IMPORTANCE_DISTANCE) {
+        if (test){
+            console.log("result1[2] is less than very importance distance");
+        }
+        var mergedPolygon = mergeTwoPolygons(room1, room2, [result0[0],result0[1]], [result1[0],result1[1]], test);
+    }
+    else if (result1[2] >= VERY_IMPORTANCE_DISTANCE && result0[2] < VERY_IMPORTANCE_DISTANCE){
+        if (test){
+            console.log("result1[2] is undefined");
+        }
+        var mergedPolygon = mergeTwoPolygons(room1, room2, [result0[0],result0[1]], undefined);
+    }
+    else if (result1[2] < VERY_IMPORTANCE_DISTANCE && result0[2] >= VERY_IMPORTANCE_DISTANCE){
+        if (test){
+            console.log("result0[2] is undefined");
+        }
+        var mergedPolygon = -1;
+    }
+    return mergedPolygon;
 }
 
 function sorter(a, b) {

@@ -1,4 +1,4 @@
-var FLOOR_ID = "160";
+var FLOOR_ID = "1";
 var FILENAME = "floor_4_35.json";
 
 // Create a map
@@ -15,6 +15,15 @@ zoom();
 function createglobalMergedPolygons(data, roomCoordinates){
     var neighbors;
     var indeces;
+
+    //drawPolygonFromOnlyCoordinates(simpleMergeTwo(simpleMergeTwo(roomCoordinates[19], roomCoordinates[26]), roomCoordinates[31], true), "gray", "black");
+
+    //checkPointSequence(simpleMergeTwo(roomCoordinates[19], roomCoordinates[26]));
+    //checkPointSequence(roomCoordinates[31]);
+
+
+
+
     [neighbors, indeces] = getNeighbors(data, roomCoordinates);
 
     [roomCoordinates, container, globalMergedRoomNameMarkers] = mergeAllPolygons(neighbors, indeces, roomCoordinates);
