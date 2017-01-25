@@ -20,7 +20,7 @@ var LOCAL_WEIGHT = 0.5;
 var VERY_IMPORTANCE_DISTANCE = 0.0000011523708237294147*5;
 var MINIMUM_DISTANCE = 0.000001;
 
-var THRESHOLD = 0.0005;
+var CIRCUMFERENCE_THRESHOLD = 0.0005;
 
 
 var RAW_RESPONSE;
@@ -286,7 +286,7 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
                 }
 
                 if (coordinateType == ROOM_TYPE.ROOM){
-                    makeRoomNames(coordinates[coordinates.length-1], data.pois[i].title);
+                    makeRoomNames(coordinates[coordinates.length-1], i);
                 }
             }
         }
@@ -419,7 +419,7 @@ function removePolygons(polygonList) {
 
 function drawPolygonsBiggerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) > THRESHOLD) {
+        if (getRoomCircumference(roomCoordinates[i]) > CIRCUMFERENCE_THRESHOLD) {
             MAP.addLayer(polygonList[i]);
         }
     }
@@ -427,7 +427,7 @@ function drawPolygonsBiggerThanThreshold(roomCoordinates, polygonList) {
 
 function addNamesBiggerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) > THRESHOLD) {
+        if (getRoomCircumference(roomCoordinates[i]) > CIRCUMFERENCE_THRESHOLD) {
             MAP.addLayer(globalMergedRoomNameMarkers[i]);
         }
     }
@@ -435,7 +435,7 @@ function addNamesBiggerThanThreshold(roomCoordinates, polygonList) {
 
 function removePolygonsBiggerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) > THRESHOLD) {
+        if (getRoomCircumference(roomCoordinates[i]) > CIRCUMFERENCE_THRESHOLD) {
             MAP.removeLayer(polygonList[i]);
         }
     }
@@ -443,7 +443,7 @@ function removePolygonsBiggerThanThreshold(roomCoordinates, polygonList) {
 
 function removeNamesBiggerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) > THRESHOLD) {
+        if (getRoomCircumference(roomCoordinates[i]) > CIRCUMFERENCE_THRESHOLD) {
             MAP.removeLayer(globalMergedRoomNameMarkers[i]);
         }
     }
@@ -451,7 +451,7 @@ function removeNamesBiggerThanThreshold(roomCoordinates, polygonList) {
 
 function drawPolygonsSmallerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) <= THRESHOLD) {
+        if (getRoomCircumference(roomCoordinates[i]) <= CIRCUMFERENCE_THRESHOLD) {
             MAP.addLayer(polygonList[i]);
         }
     }
@@ -459,10 +459,10 @@ function drawPolygonsSmallerThanThreshold(roomCoordinates, polygonList) {
 
 function addNamesSmallerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) <= THRESHOLD) {
+        if (getRoomCircumference(roomCoordinates[i]) <= CIRCUMFERENCE_THRESHOLD) {
             MAP.addLayer(globalRoomNames[i]);
         }
-        else if (getRoomCircumference(roomCoordinates[i]) >= THRESHOLD){
+        else if (getRoomCircumference(roomCoordinates[i]) >= CIRCUMFERENCE_THRESHOLD){
         }
         else {
             MAP.addLayer(globalRoomNames[i]);
@@ -478,7 +478,7 @@ function addAllNames(roomCoordinates, polygonList) {
 
 function removePolygonsSmallerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) <= THRESHOLD) {
+        if (getRoomCircumference(roomCoordinates[i]) <= CIRCUMFERENCE_THRESHOLD) {
             MAP.removeLayer(polygonList[i]);
         }
     }
@@ -486,10 +486,10 @@ function removePolygonsSmallerThanThreshold(roomCoordinates, polygonList) {
 
 function removeNamesSmallerThanThreshold(roomCoordinates, polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (getRoomCircumference(roomCoordinates[i]) <= THRESHOLD) {
+        if (getRoomCircumference(roomCoordinates[i]) <= CIRCUMFERENCE_THRESHOLD) {
             MAP.removeLayer(globalRoomNames[i]);
         }
-        else if (getRoomCircumference(roomCoordinates[i]) >= THRESHOLD){
+        else if (getRoomCircumference(roomCoordinates[i]) >= CIRCUMFERENCE_THRESHOLD){
         }
         else {
             MAP.removeLayer(globalRoomNames[i]);

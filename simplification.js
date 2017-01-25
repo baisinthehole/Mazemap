@@ -10,7 +10,7 @@ function removeDuplicatesFromAllRooms(roomCoordinates) {
 function simplifyRoomsMadeBySomeDude(roomCoordinates) {
     var simplifiedCoordinates = [];
     for (var i = 0; i < roomCoordinates.length; i++) {
-        simplifiedCoordinates.push(simplify(roomCoordinates[i], 0.000004));
+        simplifiedCoordinates.push(simplify(roomCoordinates[i], VERY_IMPORTANCE_DISTANCE));
     }
     return simplifiedCoordinates;
 }
