@@ -284,9 +284,13 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
                     coordinates[coordinates.length - 1][0] = coordinates[coordinates.length - 1][1];
                     coordinates[coordinates.length - 1][1] = temp;
                 }
-
                 if (coordinateType == ROOM_TYPE.ROOM){
-                    makeRoomNames(coordinates[coordinates.length-1], i);
+                    if (checkPoiType(data.pois[i].infos, ROOM_TYPE.CORRIDOR)){
+                        makeRoomNames(coordinates[coordinates.length-1], "");
+                    }
+                    else {
+                        makeRoomNames(coordinates[coordinates.length-1], i);
+                    }
                 }
             }
         }
@@ -747,6 +751,16 @@ function poiTypeOffice(infos1, infos2, roomNumber){
         }
     }
     return nrOffice>=2;
+}
+
+function checkPoiType(infos, poiType){
+    var same = false;
+    for (var i = 0; i < infos.length; i++) {
+        if (infos[i].poiTypeId == poiType){
+            same = true;
+        }
+    }
+    return same;
 }
 
 function getDistPolyToPoly(polygon1, polygon2){
