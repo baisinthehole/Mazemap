@@ -314,25 +314,31 @@ function makeMergedNames(container, globalNameList) {
 		return globalNameList[container[0]];
 	}
 
-	maxDistance = 0;
-	maxIndex1 = 0;
-	maxIndex2 = 0;
+    [maxIndex1, maxIndex2] = findFarthestRooms(container);
 
-	for (var i = 0; i < container.length; i++) {
-		for (var j = 0; j < container.length; j++) {
-			if (getDistanceBetweenTwoPoints(getPoint(globalRoomCoordinates[container[i]]), getPoint(globalRoomCoordinates[container[j]])) > maxDistance) {
-				maxDistance = getDistanceBetweenTwoPoints(getPoint(globalRoomCoordinates[container[i]]), getPoint(globalRoomCoordinates[container[j]]));
-				maxIndex1 = container[i];
-				maxIndex2 = container[j];
-			}
-		}
-	}
 	firstName = globalNameList[maxIndex1];
 	lastName = globalNameList[maxIndex2];
 	if (firstName < lastName) {
 		return firstName + " - " + lastName;
 	}
 	return lastName + " - " + firstName;
+}
+
+function findFarthestRooms(container) {
+    var maxDistance = 0;
+    var maxIndex1 = 0;
+    var maxIndex2 = 0;
+
+    for (var i = 0; i < container.length; i++) {
+        for (var j = 0; j < container.length; j++) {
+            if (getDistanceBetweenTwoPoints(getPoint(globalRoomCoordinates[container[i]]), getPoint(globalRoomCoordinates[container[j]])) > maxDistance) {
+                maxDistance = getDistanceBetweenTwoPoints(getPoint(globalRoomCoordinates[container[i]]), getPoint(globalRoomCoordinates[container[j]]));
+                maxIndex1 = container[i];
+                maxIndex2 = container[j];
+            }
+        }
+    }
+    return [maxIndex1, maxIndex2];
 }
 
 function fillPolygons(coordinates, polygonList, color, fillColor, lineOrPolygon) {
