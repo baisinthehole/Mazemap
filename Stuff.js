@@ -654,8 +654,8 @@ function getNeighbors(data, simplified){
         for (var j = 0; j < simplified.length; j++) {
             if (i!=j){
                 result = getDistPolyToPoly(simplified[i], simplified[j]);
-                if (result[2] < 0.0000011523708237294147*5) {
-                    if (samePoiType(data.pois[i].infos, data.pois[j].infos, i)){
+                if (result[2] < VERY_IMPORTANCE_DISTANCE) {
+                    if (poiTypeOffice(data.pois[i].infos, data.pois[j].infos, i)){
                         adjacent.push(j);
                         index.push([result[0],result[1]]);
                     }
@@ -702,6 +702,51 @@ function samePoiType(infos1, infos2, roomNumber){
         }
     }
     return type1==type2;
+}
+
+function samePoiTypeNotCorridors(infos1, infos2, roomNumber){
+    var type1 = 10000;
+    var type2 = 10000;
+    for (var i = 0; i < infos1.length; i++) {
+        if (infos1[i].poiTypeId < type1){
+            type1 = infos1[i].poiTypeId;
+        }
+        if (infos1[i].poiTypeId == ROOM_TYPE.CORRIDOR){
+            return false;
+        }
+    }
+    for (var i = 0; i < infos2.length; i++) {
+        if (infos2[i].poiTypeId < type2){
+            type2 = infos2[i].poiTypeId;
+        }
+        if (infos2[i].poiTypeId == ROOM_TYPE.CORRIDOR){
+            return false;
+        }
+    }
+    return type1==type2;
+}
+
+function poiTypeOffice(infos1, infos2, roomNumber){
+    var type1 = 10000;
+    var type2 = 10000;
+    var nrOffice = 0;
+    for (var i = 0; i < infos1.length; i++) {
+        if (infos1[i].poiTypeId < type1){
+            type1 = infos1[i].poiTypeId;
+        }
+        if (infos1[i].poiTypeId == ROOM_TYPE.OFFICE){
+            nrOffice++;
+        }
+    }
+    for (var i = 0; i < infos2.length; i++) {
+        if (infos2[i].poiTypeId < type2){
+            type2 = infos2[i].poiTypeId;
+        }
+        if (infos2[i].poiTypeId == ROOM_TYPE.OFFICE){
+            nrOffice++;
+        }
+    }
+    return nrOffice>=2;
 }
 
 function getDistPolyToPoly(polygon1, polygon2){
