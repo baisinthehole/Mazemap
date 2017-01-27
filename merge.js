@@ -202,18 +202,30 @@ function findOrderOfRooms(oldNeighbors, container) {
 
 	var currentIndex = 0;
 
+	console.log(container[13]);
+
 	for (var i = 0; i < container.length; i++) {
 		orderedRooms.push([]);
 		usedIndices.push([]);
 
 		[maxIndex1, maxIndex2] = findFarthestRooms(container[i]);
 
-		orderedRooms[i].push(maxIndex2);
+		if (oldNeighbors[maxIndex1].length > 1) {
 
-		usedIndices[i].push(maxIndex2);
+			orderedRooms[i].push(maxIndex2);
 
-		currentIndex = maxIndex2;
+			usedIndices[i].push(maxIndex2);
 
+			currentIndex = maxIndex2;
+		}
+		else {
+
+			orderedRooms[i].push(maxIndex1);
+
+			usedIndices[i].push(maxIndex1);
+
+			currentIndex = maxIndex1;
+		}
 		for (var j = 0; j < container[i].length; j++) {
 			if (contains(oldNeighbors[currentIndex], container[i][j])) {
 				if (!contains(usedIndices[i], container[i][j])) {
@@ -226,7 +238,7 @@ function findOrderOfRooms(oldNeighbors, container) {
 
 					currentIndex = container[i][j];
 
-					j = 0;
+					j = -1;
 				}
 			}
 		}
@@ -246,7 +258,7 @@ function createDifferentMergingLevels(orderedRooms) {
 
 	var currentInternalEndIndex = 0;
 
-	while (amount > 3) {
+	while (amount > 4) {
 
 		mergingLevels.push([])
 
@@ -280,7 +292,7 @@ function createDifferentMergingLevels(orderedRooms) {
 				currentInternalStartIndex = currentInternalEndIndex;
 				currentInternalEndIndex = currentInternalStartIndex + amount;
 				
-				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, (amount * 2)));
+				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
 				currentInternalStartIndex = currentInternalEndIndex;
 			}
 		}
@@ -291,14 +303,6 @@ function createDifferentMergingLevels(orderedRooms) {
 	}
 
 	return mergingLevels;
-}
-
-function splitArrayInTwo(array) {
-	if (array.length > 0) {
-		if (isOdd(array.length)) {
-			
-		}
-	} 
 }
 
 function isOdd(number) {

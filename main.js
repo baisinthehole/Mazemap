@@ -28,12 +28,9 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     oldNeighbors = deepCopy(neighbors);
 
-    console.log(deepCopy(oldNeighbors));
-
     oldNeighbors = makeNeighborsWhoAreNotNeighborsNeighbors(oldNeighbors);
 
-    console.log(oldNeighbors);
-
+    console.log(deepCopy(oldNeighbors));
 
     [roomCoordinates, container, globalMergedRoomNameMarkers] = mergeAllPolygons(neighbors, indeces, roomCoordinates);
 
