@@ -167,6 +167,9 @@ function simpleMergeTwo(room1, room2, test=false){
         }
         var mergedPolygon = -1;
     }
+    else {
+        var mergedPolygon = -1;
+    }
     return mergedPolygon;
 }
 
