@@ -522,7 +522,7 @@ function makeRoomNames(coordinates, title) {
         point = getPoint(coordinates);
         myIcon = Maze.divIcon({
             className: "labelClass",
-            iconSize: new Maze.Point(30, 20),
+            iconSize: new Maze.Point(15, 20),
             html: title
         });
         globalRoomNames.push(Maze.marker(point, {icon: myIcon}));
