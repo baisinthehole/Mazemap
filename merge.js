@@ -104,8 +104,13 @@ function mergeAllPolygons(neighbors, indeces, roomCoordinates){
         for (var j = 0; j < roomCoordinates.length; j++) {
             if (contains(neighbors[i], j)) {
                 if (!findOne(container[i], container[j])) {
+                    
 
                     var mergedPolygon = simpleMergeTwo(roomCoordinates[i], roomCoordinates[j]);
+                    
+
+                    
+
                     if (mergedPolygon != -1) {
                         if (neighbors[i].indexOf(j) != -1) {
                             neighbors[i].splice(neighbors[i].indexOf(j), 1);
@@ -132,6 +137,12 @@ function mergeAllPolygons(neighbors, indeces, roomCoordinates){
                             roomCoordinates[container[i][k]] = mergedPolygon;
                         }
                     }
+                    if (deepCopy(roomCoordinates[110]) == undefined) {
+                        console.log(deepCopy(i));
+                        console.log(deepCopy(j));
+                        console.log("da fuck?");
+                        console.log(deepCopy(mergedPolygon));
+                    }
                 }
             }
         }
@@ -152,12 +163,16 @@ function simpleMergeTwo(room1, room2, test=false){
     if (result1[2] < VERY_IMPORTANCE_DISTANCE && result0[2] < VERY_IMPORTANCE_DISTANCE) {
         if (test){
             console.log("result1[2] is less than very importance distance");
+            console.log(result0);
+            console.log(result1);
         }
         var mergedPolygon = mergeTwoPolygons(room1, room2, [result0[0],result0[1]], [result1[0],result1[1]], test);
     }
     else if (result1[2] >= VERY_IMPORTANCE_DISTANCE && result0[2] < VERY_IMPORTANCE_DISTANCE){
         if (test){
             console.log("result1[2] is undefined");
+            console.log(result0);
+            console.log(result1);
         }
         var mergedPolygon = mergeTwoPolygons(room1, room2, [result0[0],result0[1]], undefined);
     }
@@ -165,6 +180,10 @@ function simpleMergeTwo(room1, room2, test=false){
         if (test){
             console.log("result0[2] is undefined");
         }
+        console.log("")
+        var mergedPolygon = -1;
+    }
+    else {
         var mergedPolygon = -1;
     }
     else {
@@ -177,4 +196,130 @@ function sorter(a, b) {
     if (a < b) return -1;  // any negative number works
     if (a > b) return 1;   // any positive number works
     return 0; // equal values MUST yield zero
+}
+
+function findOrderOfRooms(oldNeighbors, container) {
+	var orderedRooms = [];
+
+	var usedIndices = [];
+
+	var currentIndex = 0;
+
+	console.log(container[13]);
+
+	for (var i = 0; i < container.length; i++) {
+		orderedRooms.push([]);
+		usedIndices.push([]);
+
+		[maxIndex1, maxIndex2] = findFarthestRooms(container[i]);
+
+		if (oldNeighbors[maxIndex1].length > 1) {
+
+			orderedRooms[i].push(maxIndex2);
+
+			usedIndices[i].push(maxIndex2);
+
+			currentIndex = maxIndex2;
+		}
+		else {
+
+			orderedRooms[i].push(maxIndex1);
+
+			usedIndices[i].push(maxIndex1);
+
+			currentIndex = maxIndex1;
+		}
+		for (var j = 0; j < container[i].length; j++) {
+			if (contains(oldNeighbors[currentIndex], container[i][j])) {
+				if (!contains(usedIndices[i], container[i][j])) {
+					
+
+
+					orderedRooms[i].push(container[i][j]);
+					
+					usedIndices[i].push(container[i][j]);
+
+					currentIndex = container[i][j];
+
+					j = -1;
+				}
+			}
+		}
+
+	}
+	return orderedRooms;
+}
+
+function createDifferentMergingLevels(orderedRooms) {
+	var mergingLevels = [[orderedRooms]];
+
+	var amount = orderedRooms.length;
+
+	var currentIndex = 0;
+
+	var currentInternalStartIndex = 0;
+
+	var currentInternalEndIndex = 0;
+
+	while (amount > 4) {
+
+		mergingLevels.push([])
+
+
+
+		for (var i = 0; i < mergingLevels[currentIndex].length; i++) {
+			if (isOdd(mergingLevels[currentIndex][i].length)) {
+
+				amount = Math.floor(mergingLevels[currentIndex][i].length / 2);
+
+				currentInternalEndIndex = currentInternalStartIndex + amount;
+
+				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+				
+				currentInternalStartIndex = currentInternalEndIndex;
+				currentInternalEndIndex = currentInternalStartIndex + amount + 1;
+				
+				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+				currentInternalStartIndex = currentInternalEndIndex;
+
+
+
+			}
+			else {
+				amount = mergingLevels[currentIndex][i].length / 2;
+
+				currentInternalEndIndex = currentInternalStartIndex + amount;
+
+				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+				
+				currentInternalStartIndex = currentInternalEndIndex;
+				currentInternalEndIndex = currentInternalStartIndex + amount;
+				
+				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+				currentInternalStartIndex = currentInternalEndIndex;
+			}
+		}
+
+		currentIndex++;
+
+		currentInternalStartIndex = 0;
+	}
+
+	return mergingLevels;
+}
+
+function isOdd(number) {
+	return number % 2 != 0;
+}
+
+// Only use this function on a copied version of neighbors and not the neighbors used for merging!
+function makeNeighborsWhoAreNotNeighborsNeighbors(neighbors) {
+	for (var i = 0; i < neighbors.length; i++) {
+		for (var j = 0; j < neighbors[i].length; j++) {
+			if (!contains(neighbors[neighbors[i][j]], i)) {
+				neighbors[neighbors[i][j]].push(i);
+			}
+		}
+	}
+	return neighbors;
 }

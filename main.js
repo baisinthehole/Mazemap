@@ -19,16 +19,30 @@ function createglobalMergedPolygons(data, roomCoordinates){
     //drawPolygonFromOnlyCoordinates(simpleMergeTwo(simpleMergeTwo(roomCoordinates[19], roomCoordinates[26]), roomCoordinates[31], true), "gray", "black");
 
     //checkPointSequence(simpleMergeTwo(roomCoordinates[19], roomCoordinates[26]));
-    //checkPointSequence(roomCoordinates[31]);
+    //drawPolygonFromOnlyCoordinates(roomCoordinates[0], "gray", "black");
 
 
-
+    //drawPolygonFromOnlyCoordinates(roomCoordinates[0], "gray", "black");
 
     [neighbors, indeces] = getNeighbors(data, roomCoordinates);
+
+    oldNeighbors = deepCopy(neighbors);
+
+    oldNeighbors = makeNeighborsWhoAreNotNeighborsNeighbors(oldNeighbors);
+
+    console.log(deepCopy(oldNeighbors));
 
     [roomCoordinates, container, globalMergedRoomNameMarkers] = mergeAllPolygons(neighbors, indeces, roomCoordinates);
 
     [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container, globalMergedRoomNameMarkers);
+
+    console.log(container);
+
+    orderedRooms = findOrderOfRooms(oldNeighbors, container);
+
+    console.log(orderedRooms);
+
+    console.log(createDifferentMergingLevels(orderedRooms[13]));
 
     roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
