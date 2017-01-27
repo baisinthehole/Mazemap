@@ -367,6 +367,9 @@ function fillglobalMergedPolygons(coordinates, polygonList, container) {
                     polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "#F1F1F1", fillOpacity: 1, weight: SERVER_WEIGHT}));
                 }
             }
+            else {
+                polygonList.push(Maze.polygon([0,0], {opacity: 0, fillOpacity: 0, weight: 0}));
+            }
         }
     }
 }
