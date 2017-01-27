@@ -208,11 +208,11 @@ function findOrderOfRooms(oldNeighbors, container) {
 
 		[maxIndex1, maxIndex2] = findFarthestRooms(container[i]);
 
-		orderedRooms[i].push(maxIndex1);
+		orderedRooms[i].push(maxIndex2);
 
-		usedIndices[i].push(maxIndex1);
+		usedIndices[i].push(maxIndex2);
 
-		currentIndex = maxIndex1;
+		currentIndex = maxIndex2;
 
 		for (var j = 0; j < container[i].length; j++) {
 			if (contains(oldNeighbors[currentIndex], container[i][j])) {
@@ -235,35 +235,84 @@ function findOrderOfRooms(oldNeighbors, container) {
 	return orderedRooms;
 }
 
-function createDifferentMergingLevels(orderedRooms, splitArray) {
-	amount = orderedRooms.length;
+function createDifferentMergingLevels(orderedRooms) {
+	var mergingLevels = [[orderedRooms]];
+
+	var amount = orderedRooms.length;
+
+	var currentIndex = 0;
+
+	var currentInternalStartIndex = 0;
+
+	var currentInternalEndIndex = 0;
+
+	while (amount > 3) {
+
+		mergingLevels.push([])
 
 
-	if (amount < 4) {
-		
+
+		for (var i = 0; i < mergingLevels[currentIndex].length; i++) {
+			if (isOdd(mergingLevels[currentIndex][i].length)) {
+
+				amount = Math.floor(mergingLevels[currentIndex][i].length / 2);
+
+				currentInternalEndIndex = currentInternalStartIndex + amount;
+
+				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+				
+				currentInternalStartIndex = currentInternalEndIndex;
+				currentInternalEndIndex = currentInternalStartIndex + amount + 1;
+				
+				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+				currentInternalStartIndex = currentInternalEndIndex;
+
+
+
+			}
+			else {
+				amount = mergingLevels[currentIndex][i].length / 2;
+
+				currentInternalEndIndex = currentInternalStartIndex + amount;
+
+				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+				
+				currentInternalStartIndex = currentInternalEndIndex;
+				currentInternalEndIndex = currentInternalStartIndex + amount;
+				
+				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, (amount * 2)));
+				currentInternalStartIndex = currentInternalEndIndex;
+			}
+		}
+
+		currentIndex++;
+
+		currentInternalStartIndex = 0;
 	}
-	else {
-		if (isOdd(amount)) {
-			splitRooms1 = orderedRooms.slice(0, Math.ceil(amount / 2));
 
-			splitRooms2 = orderedRooms.slice(Math.ceil(amount / 2), amount);
+	return mergingLevels;
+}
+
+function splitArrayInTwo(array) {
+	if (array.length > 0) {
+		if (isOdd(array.length)) {
 			
 		}
-		else {
-			splitRooms1 = orderedRooms.slice(0, (amount / 2));
-
-			splitRooms2 = orderedRooms.slice((amount / 2), amount);
-			
-		}
-		splitArray.push(splitRooms1);
-		splitArray.push(splitRooms2);
-		createDifferentMergingLevels(splitRooms1, splitArray);
-		createDifferentMergingLevels(splitRooms2, splitArray);
-
-	}
-
+	} 
 }
 
 function isOdd(number) {
 	return number % 2 != 0;
+}
+
+// Only use this function on a copied version of neighbors and not the neighbors used for merging!
+function makeNeighborsWhoAreNotNeighborsNeighbors(neighbors) {
+	for (var i = 0; i < neighbors.length; i++) {
+		for (var j = 0; j < neighbors[i].length; j++) {
+			if (!contains(neighbors[neighbors[i][j]], i)) {
+				neighbors[neighbors[i][j]].push(i);
+			}
+		}
+	}
+	return neighbors;
 }

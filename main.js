@@ -1,4 +1,4 @@
-var FLOOR_ID = "159";
+var FLOOR_ID = "56";
 var FILENAME = "floor_4_35.json";
 
 // Create a map
@@ -28,18 +28,24 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     oldNeighbors = deepCopy(neighbors);
 
+    console.log(deepCopy(oldNeighbors));
+
+    oldNeighbors = makeNeighborsWhoAreNotNeighborsNeighbors(oldNeighbors);
+
+    console.log(oldNeighbors);
+
 
     [roomCoordinates, container, globalMergedRoomNameMarkers] = mergeAllPolygons(neighbors, indeces, roomCoordinates);
 
     [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container, globalMergedRoomNameMarkers);
 
+    console.log(container);
+
     orderedRooms = findOrderOfRooms(oldNeighbors, container);
 
     console.log(orderedRooms);
 
-    var array = [deepCopy(orderedRooms[5])];
-    createDifferentMergingLevels(orderedRooms[5], array);
-    console.log(array);
+    console.log(createDifferentMergingLevels(orderedRooms[13]));
 
     roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
