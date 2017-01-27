@@ -1,4 +1,4 @@
-var FLOOR_ID = "15";
+var FLOOR_ID = "159";
 var FILENAME = "floor_4_35.json";
 
 // Create a map
@@ -32,11 +32,5 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
-    console.log("Length roomCoordinates");
-    console.log(roomCoordinates.length);
-
     fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
-
-    console.log("Length merged polygons");
-    console.log(globalMergedPolygons.length);
 }

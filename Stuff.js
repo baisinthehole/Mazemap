@@ -266,9 +266,17 @@ function fillCoordinateTypeLocal(data, polygonList, coordinateType, color, lineO
 
 function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, fillColor, fillOpacity, lineOrPolygon) {
     for (var i = 0; i < data.pois.length; i++) {
-        // Add an empty room name, if the room is a corridor
+        // Add empty room coordinates with empty name if the room is a corridor
         if (checkPoiType(data.pois[i].infos, ROOM_TYPE.CORRIDOR) && coordinateType == ROOM_TYPE.ROOM){
-            coordinates.push([]);
+            if (data.pois[i].geometry.coordinates[0].constructor === Array){
+                coordinates.push([]);
+            }
+            else {
+                coordinates.push(deepCopy(data.pois[i].geometry.coordinates));
+                temp = coordinates[coordinates.length - 1][0];
+                coordinates[coordinates.length - 1][0] = coordinates[coordinates.length - 1][1];
+                coordinates[coordinates.length - 1][1] = temp;
+            }
             makeRoomNames([0,0], "");
         }
         else{
@@ -357,7 +365,6 @@ function fillPolygons(coordinates, polygonList, color, fillColor, lineOrPolygon)
 
 function fillglobalMergedPolygons(coordinates, polygonList, container) {
     mergedRoomCoordinates = deepCopy(coordinates);
-    console.log(mergedRoomCoordinates);
     for (var i = 0; i < coordinates.length; i++) {
         if (coordinates[i].length > 0){
             if (coordinates[i][0].constructor == Array){
@@ -368,14 +375,6 @@ function fillglobalMergedPolygons(coordinates, polygonList, container) {
                     polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "#F1F1F1", fillOpacity: 1, weight: SERVER_WEIGHT}));
                 }
             }
-            // else {
-            //     console.log("No coordinates");
-            //     polygonList.push(Maze.polygon([0,0], {opacity: 0, fillOpacity: 0, weight: 0}));
-            // }
-        }
-        else {
-            console.log("Length <= 0");
-            polygonList.push(Maze.polygon([0,0], {opacity: 0, fillOpacity: 0, weight: 0}));
         }
     }
 }
@@ -424,7 +423,7 @@ function drawPolygons(polygonList) {
         }
         else {
             console.log("Trying to draw a non-polygon");
-            console.log(polygonList[i]._latlngs);
+            // console.log(polygonList[i]._latlngs);
         }
     }
 }
@@ -563,6 +562,15 @@ function makeMergedRoomNames(coordinates, title) {
                 html: title
             });
             globalMergedRoomNameMarkers.push(Maze.marker(point, {icon: myIcon}));
+        }
+        else {
+            // Add an empty name to globalMergedRoomNameMarkes for the corridors
+            myIcon = Maze.divIcon({
+                className: "labelClass",
+                iconSize: new Maze.Point(0,0),
+                html: ""
+            });
+            globalMergedRoomNameMarkers.push(Maze.marker(point, {icon: myIcon}))
         }
     }
 }
