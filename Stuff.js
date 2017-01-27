@@ -105,7 +105,7 @@ function zoom() {
                 drawPolygons(globalRoomPolygons);
                 drawPolygons(globalDoorPolygons);
 	            drawPolygons(globalStairPolygons);
-                // drawPolygons(globalCorridorPolygons);
+                drawPolygons(globalCorridorPolygons);
 	            ZOOM_LEVELS_DRAWN["20"] = true;
 	        }
 	    }
@@ -266,37 +266,42 @@ function fillCoordinateTypeLocal(data, polygonList, coordinateType, color, lineO
 
 function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, fillColor, fillOpacity, lineOrPolygon) {
     for (var i = 0; i < data.pois.length; i++) {
-        for (var j = 0; j < data.pois[i].infos.length; j++) {
-            if (data.pois[i].infos[j].poiTypeId == coordinateType) {
-                if (data.pois[i].geometry.coordinates[0].constructor === Array){
-                    coordinates.push(deepCopy(data.pois[i].geometry.coordinates[0]));
-                    // if (coordinates[coordinates.length - 1][0][0] < 30){
-                        for (k = 0; k < coordinates[coordinates.length - 1].length; k++) {
-                            temp = coordinates[coordinates.length - 1][k][0];
-                            coordinates[coordinates.length - 1][k][0] = coordinates[coordinates.length - 1][k][1];
-                            coordinates[coordinates.length - 1][k][1] = temp;
-                        }
-                    // }
-                }
-                else {
-                    coordinates.push(deepCopy(data.pois[i].geometry.coordinates));
-                    temp = coordinates[coordinates.length - 1][0];
-                    coordinates[coordinates.length - 1][0] = coordinates[coordinates.length - 1][1];
-                    coordinates[coordinates.length - 1][1] = temp;
-                }
-                if (coordinateType == ROOM_TYPE.ROOM){
-                    if (checkPoiType(data.pois[i].infos, ROOM_TYPE.CORRIDOR)){
-                        makeRoomNames(coordinates[coordinates.length-1], "");
+        // Add an empty room name, if the room is a corridor
+        if (checkPoiType(data.pois[i].infos, ROOM_TYPE.CORRIDOR) && coordinateType == ROOM_TYPE.ROOM){
+            coordinates.push([]);
+            makeRoomNames([0,0], "");
+        }
+        else{
+            for (var j = 0; j < data.pois[i].infos.length; j++) {
+                if (data.pois[i].infos[j].poiTypeId == coordinateType) {
+                    if (data.pois[i].geometry.coordinates[0].constructor === Array){
+                        coordinates.push(deepCopy(data.pois[i].geometry.coordinates[0]));
+                        // if (coordinates[coordinates.length - 1][0][0] < 30){
+                            for (k = 0; k < coordinates[coordinates.length - 1].length; k++) {
+                                temp = coordinates[coordinates.length - 1][k][0];
+                                coordinates[coordinates.length - 1][k][0] = coordinates[coordinates.length - 1][k][1];
+                                coordinates[coordinates.length - 1][k][1] = temp;
+                            }
+                        // }
                     }
                     else {
-                        makeRoomNames(coordinates[coordinates.length-1], i);
+                        coordinates.push(deepCopy(data.pois[i].geometry.coordinates));
+                        temp = coordinates[coordinates.length - 1][0];
+                        coordinates[coordinates.length - 1][0] = coordinates[coordinates.length - 1][1];
+                        coordinates[coordinates.length - 1][1] = temp;
+                    }
+                    if (coordinateType == ROOM_TYPE.ROOM){
+                        makeRoomNames(coordinates[coordinates.length-1], data.pois[i].title);
                     }
                 }
             }
         }
     }
     for (var i = 0; i < coordinates.length; i++) {
-        if (lineOrPolygon == "line") {
+        if (coordinates[i].length == 0){
+            polygonList.push(Maze.polyline([[0,0]], {color: color, weight: 0}));
+        }
+        else if (lineOrPolygon == "line") {
             polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: SERVER_WEIGHT}));
         }
         else {
@@ -519,13 +524,15 @@ function makeRoomNames(coordinates, title) {
         globalRoomNames.push(Maze.marker(coordinates, {icon: myIcon}));
     }
     else {
-        point = getPoint(coordinates);
-        myIcon = Maze.divIcon({
-            className: "labelClass",
-            iconSize: new Maze.Point(15, 20),
-            html: title
-        });
-        globalRoomNames.push(Maze.marker(point, {icon: myIcon}));
+        if (coordinates.length > 0){
+            point = getPoint(coordinates);
+            myIcon = Maze.divIcon({
+                className: "labelClass",
+                iconSize: new Maze.Point(30, 20),
+                html: title
+            });
+            globalRoomNames.push(Maze.marker(point, {icon: myIcon}));
+        }
     }
 }
 
@@ -539,13 +546,15 @@ function makeMergedRoomNames(coordinates, title) {
         globalMergedRoomNameMarkers.push(Maze.marker(coordinates, {icon: myIcon}));
     }
     else {
-        point = getPoint(coordinates);
-        myIcon = Maze.divIcon({
-            className: "labelClass",
-            iconSize: new Maze.Point(title.length * 6, 20),
-            html: title
-        });
-        globalMergedRoomNameMarkers.push(Maze.marker(point, {icon: myIcon}));
+        if (coordinates.length > 0){
+            point = getPoint(coordinates);
+            myIcon = Maze.divIcon({
+                className: "labelClass",
+                iconSize: new Maze.Point(title.length * 6, 20),
+                html: title
+            });
+            globalMergedRoomNameMarkers.push(Maze.marker(point, {icon: myIcon}));
+        }
     }
 }
 

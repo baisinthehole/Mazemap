@@ -1,4 +1,4 @@
-var FLOOR_ID = "159";
+var FLOOR_ID = "15";
 var FILENAME = "floor_4_35.json";
 
 // Create a map
