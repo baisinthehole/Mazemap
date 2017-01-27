@@ -357,6 +357,7 @@ function fillPolygons(coordinates, polygonList, color, fillColor, lineOrPolygon)
 
 function fillglobalMergedPolygons(coordinates, polygonList, container) {
     mergedRoomCoordinates = deepCopy(coordinates);
+    console.log(mergedRoomCoordinates);
     for (var i = 0; i < coordinates.length; i++) {
         if (coordinates[i].length > 0){
             if (coordinates[i][0].constructor == Array){
@@ -367,9 +368,14 @@ function fillglobalMergedPolygons(coordinates, polygonList, container) {
                     polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "#F1F1F1", fillOpacity: 1, weight: SERVER_WEIGHT}));
                 }
             }
-            else {
-                polygonList.push(Maze.polygon([0,0], {opacity: 0, fillOpacity: 0, weight: 0}));
-            }
+            // else {
+            //     console.log("No coordinates");
+            //     polygonList.push(Maze.polygon([0,0], {opacity: 0, fillOpacity: 0, weight: 0}));
+            // }
+        }
+        else {
+            console.log("Length <= 0");
+            polygonList.push(Maze.polygon([0,0], {opacity: 0, fillOpacity: 0, weight: 0}));
         }
     }
 }
