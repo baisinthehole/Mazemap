@@ -105,7 +105,7 @@ function zoom() {
                 drawPolygons(globalRoomPolygons);
                 drawPolygons(globalDoorPolygons);
 	            drawPolygons(globalStairPolygons);
-                // drawPolygons(globalCorridorPolygons);
+                drawPolygons(globalCorridorPolygons);
 	            ZOOM_LEVELS_DRAWN["20"] = true;
 	        }
 	    }
@@ -266,33 +266,50 @@ function fillCoordinateTypeLocal(data, polygonList, coordinateType, color, lineO
 
 function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, fillColor, fillOpacity, lineOrPolygon) {
     for (var i = 0; i < data.pois.length; i++) {
-        for (var j = 0; j < data.pois[i].infos.length; j++) {
-            if (data.pois[i].infos[j].poiTypeId == coordinateType) {
-                if (data.pois[i].geometry.coordinates[0].constructor === Array){
-                    coordinates.push(deepCopy(data.pois[i].geometry.coordinates[0]));
-                    // if (coordinates[coordinates.length - 1][0][0] < 30){
-                        for (k = 0; k < coordinates[coordinates.length - 1].length; k++) {
-                            temp = coordinates[coordinates.length - 1][k][0];
-                            coordinates[coordinates.length - 1][k][0] = coordinates[coordinates.length - 1][k][1];
-                            coordinates[coordinates.length - 1][k][1] = temp;
-                        }
-                    // }
-                }
-                else {
-                    coordinates.push(deepCopy(data.pois[i].geometry.coordinates));
-                    temp = coordinates[coordinates.length - 1][0];
-                    coordinates[coordinates.length - 1][0] = coordinates[coordinates.length - 1][1];
-                    coordinates[coordinates.length - 1][1] = temp;
-                }
-
-                if (coordinateType == ROOM_TYPE.ROOM){
-                    makeRoomNames(coordinates[coordinates.length-1], i);
+        // Add empty room coordinates with empty name if the room is a corridor
+        if (checkPoiType(data.pois[i].infos, ROOM_TYPE.CORRIDOR) && coordinateType == ROOM_TYPE.ROOM){
+            if (data.pois[i].geometry.coordinates[0].constructor === Array){
+                coordinates.push([]);
+            }
+            else {
+                coordinates.push(deepCopy(data.pois[i].geometry.coordinates));
+                temp = coordinates[coordinates.length - 1][0];
+                coordinates[coordinates.length - 1][0] = coordinates[coordinates.length - 1][1];
+                coordinates[coordinates.length - 1][1] = temp;
+            }
+            makeRoomNames([0,0], "");
+        }
+        else{
+            for (var j = 0; j < data.pois[i].infos.length; j++) {
+                if (data.pois[i].infos[j].poiTypeId == coordinateType) {
+                    if (data.pois[i].geometry.coordinates[0].constructor === Array){
+                        coordinates.push(deepCopy(data.pois[i].geometry.coordinates[0]));
+                        // if (coordinates[coordinates.length - 1][0][0] < 30){
+                            for (k = 0; k < coordinates[coordinates.length - 1].length; k++) {
+                                temp = coordinates[coordinates.length - 1][k][0];
+                                coordinates[coordinates.length - 1][k][0] = coordinates[coordinates.length - 1][k][1];
+                                coordinates[coordinates.length - 1][k][1] = temp;
+                            }
+                        // }
+                    }
+                    else {
+                        coordinates.push(deepCopy(data.pois[i].geometry.coordinates));
+                        temp = coordinates[coordinates.length - 1][0];
+                        coordinates[coordinates.length - 1][0] = coordinates[coordinates.length - 1][1];
+                        coordinates[coordinates.length - 1][1] = temp;
+                    }
+                    if (coordinateType == ROOM_TYPE.ROOM){
+                        makeRoomNames(coordinates[coordinates.length-1], data.pois[i].title);
+                    }
                 }
             }
         }
     }
     for (var i = 0; i < coordinates.length; i++) {
-        if (lineOrPolygon == "line") {
+        if (coordinates[i].length == 0){
+            polygonList.push(Maze.polyline([[0,0]], {color: color, weight: 0}));
+        }
+        else if (lineOrPolygon == "line") {
             polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: SERVER_WEIGHT}));
         }
         else {
@@ -406,7 +423,7 @@ function drawPolygons(polygonList) {
         }
         else {
             console.log("Trying to draw a non-polygon");
-            console.log(polygonList[i]._latlngs);
+            // console.log(polygonList[i]._latlngs);
         }
     }
 }
@@ -515,13 +532,15 @@ function makeRoomNames(coordinates, title) {
         globalRoomNames.push(Maze.marker(coordinates, {icon: myIcon}));
     }
     else {
-        point = getPoint(coordinates);
-        myIcon = Maze.divIcon({
-            className: "labelClass",
-            iconSize: new Maze.Point(30, 20),
-            html: title
-        });
-        globalRoomNames.push(Maze.marker(point, {icon: myIcon}));
+        if (coordinates.length > 0){
+            point = getPoint(coordinates);
+            myIcon = Maze.divIcon({
+                className: "labelClass",
+                iconSize: new Maze.Point(30, 20),
+                html: title
+            });
+            globalRoomNames.push(Maze.marker(point, {icon: myIcon}));
+        }
     }
 }
 
@@ -535,13 +554,24 @@ function makeMergedRoomNames(coordinates, title) {
         globalMergedRoomNameMarkers.push(Maze.marker(coordinates, {icon: myIcon}));
     }
     else {
-        point = getPoint(coordinates);
-        myIcon = Maze.divIcon({
-            className: "labelClass",
-            iconSize: new Maze.Point(title.length * 6, 20),
-            html: title
-        });
-        globalMergedRoomNameMarkers.push(Maze.marker(point, {icon: myIcon}));
+        if (coordinates.length > 0){
+            point = getPoint(coordinates);
+            myIcon = Maze.divIcon({
+                className: "labelClass",
+                iconSize: new Maze.Point(title.length * 6, 20),
+                html: title
+            });
+            globalMergedRoomNameMarkers.push(Maze.marker(point, {icon: myIcon}));
+        }
+        else {
+            // Add an empty name to globalMergedRoomNameMarkes for the corridors
+            myIcon = Maze.divIcon({
+                className: "labelClass",
+                iconSize: new Maze.Point(0,0),
+                html: ""
+            });
+            globalMergedRoomNameMarkers.push(Maze.marker(point, {icon: myIcon}))
+        }
     }
 }
 
@@ -654,8 +684,8 @@ function getNeighbors(data, simplified){
         for (var j = 0; j < simplified.length; j++) {
             if (i!=j){
                 result = getDistPolyToPoly(simplified[i], simplified[j]);
-                if (result[2] < 0.0000011523708237294147*5) {
-                    if (samePoiType(data.pois[i].infos, data.pois[j].infos, i)){
+                if (result[2] < VERY_IMPORTANCE_DISTANCE) {
+                    if (poiTypeOffice(data.pois[i].infos, data.pois[j].infos, i)){
                         adjacent.push(j);
                         index.push([result[0],result[1]]);
                     }
@@ -702,6 +732,61 @@ function samePoiType(infos1, infos2, roomNumber){
         }
     }
     return type1==type2;
+}
+
+function samePoiTypeNotCorridors(infos1, infos2, roomNumber){
+    var type1 = 10000;
+    var type2 = 10000;
+    for (var i = 0; i < infos1.length; i++) {
+        if (infos1[i].poiTypeId < type1){
+            type1 = infos1[i].poiTypeId;
+        }
+        if (infos1[i].poiTypeId == ROOM_TYPE.CORRIDOR){
+            return false;
+        }
+    }
+    for (var i = 0; i < infos2.length; i++) {
+        if (infos2[i].poiTypeId < type2){
+            type2 = infos2[i].poiTypeId;
+        }
+        if (infos2[i].poiTypeId == ROOM_TYPE.CORRIDOR){
+            return false;
+        }
+    }
+    return type1==type2;
+}
+
+function poiTypeOffice(infos1, infos2, roomNumber){
+    var type1 = 10000;
+    var type2 = 10000;
+    var nrOffice = 0;
+    for (var i = 0; i < infos1.length; i++) {
+        if (infos1[i].poiTypeId < type1){
+            type1 = infos1[i].poiTypeId;
+        }
+        if (infos1[i].poiTypeId == ROOM_TYPE.OFFICE){
+            nrOffice++;
+        }
+    }
+    for (var i = 0; i < infos2.length; i++) {
+        if (infos2[i].poiTypeId < type2){
+            type2 = infos2[i].poiTypeId;
+        }
+        if (infos2[i].poiTypeId == ROOM_TYPE.OFFICE){
+            nrOffice++;
+        }
+    }
+    return nrOffice>=2;
+}
+
+function checkPoiType(infos, poiType){
+    var same = false;
+    for (var i = 0; i < infos.length; i++) {
+        if (infos[i].poiTypeId == poiType){
+            same = true;
+        }
+    }
+    return same;
 }
 
 function getDistPolyToPoly(polygon1, polygon2){
