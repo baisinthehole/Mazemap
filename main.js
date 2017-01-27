@@ -32,6 +32,9 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
+    console.log("Length roomCoordinates");
+    console.log(roomCoordinates.length);
+
     fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
 
     console.log("Length merged polygons");
