@@ -30,21 +30,16 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     oldNeighbors = makeNeighborsWhoAreNotNeighborsNeighbors(oldNeighbors);
 
-    console.log(deepCopy(oldNeighbors));
 
     [roomCoordinates, container, globalMergedRoomNameMarkers] = mergeAllPolygons(neighbors, indeces, roomCoordinates);
 
     [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container, globalMergedRoomNameMarkers);
 
-    console.log(container);
 
     orderedRooms = findOrderOfRooms(oldNeighbors, container);
-
-    console.log(orderedRooms);
-
-    console.log(createDifferentMergingLevels(orderedRooms[13]));
 
     roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
     fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
+
 }

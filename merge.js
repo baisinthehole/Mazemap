@@ -104,12 +104,12 @@ function mergeAllPolygons(neighbors, indeces, roomCoordinates){
         for (var j = 0; j < roomCoordinates.length; j++) {
             if (contains(neighbors[i], j)) {
                 if (!findOne(container[i], container[j])) {
-                    
+
 
                     var mergedPolygon = simpleMergeTwo(roomCoordinates[i], roomCoordinates[j]);
-                    
 
-                    
+
+
 
                     if (mergedPolygon != -1) {
                         if (neighbors[i].indexOf(j) != -1) {
@@ -136,12 +136,6 @@ function mergeAllPolygons(neighbors, indeces, roomCoordinates){
                             container[container[i][k]] = container[i];
                             roomCoordinates[container[i][k]] = mergedPolygon;
                         }
-                    }
-                    if (deepCopy(roomCoordinates[110]) == undefined) {
-                        console.log(deepCopy(i));
-                        console.log(deepCopy(j));
-                        console.log("da fuck?");
-                        console.log(deepCopy(mergedPolygon));
                     }
                 }
             }
@@ -181,9 +175,6 @@ function simpleMergeTwo(room1, room2, test=false){
             console.log("result0[2] is undefined");
         }
         console.log("")
-        var mergedPolygon = -1;
-    }
-    else {
         var mergedPolygon = -1;
     }
     else {
@@ -232,11 +223,11 @@ function findOrderOfRooms(oldNeighbors, container) {
 		for (var j = 0; j < container[i].length; j++) {
 			if (contains(oldNeighbors[currentIndex], container[i][j])) {
 				if (!contains(usedIndices[i], container[i][j])) {
-					
+
 
 
 					orderedRooms[i].push(container[i][j]);
-					
+
 					usedIndices[i].push(container[i][j]);
 
 					currentIndex = container[i][j];
@@ -275,10 +266,10 @@ function createDifferentMergingLevels(orderedRooms) {
 				currentInternalEndIndex = currentInternalStartIndex + amount;
 
 				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
-				
+
 				currentInternalStartIndex = currentInternalEndIndex;
 				currentInternalEndIndex = currentInternalStartIndex + amount + 1;
-				
+
 				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
 				currentInternalStartIndex = currentInternalEndIndex;
 
@@ -291,10 +282,10 @@ function createDifferentMergingLevels(orderedRooms) {
 				currentInternalEndIndex = currentInternalStartIndex + amount;
 
 				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
-				
+
 				currentInternalStartIndex = currentInternalEndIndex;
 				currentInternalEndIndex = currentInternalStartIndex + amount;
-				
+
 				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
 				currentInternalStartIndex = currentInternalEndIndex;
 			}

@@ -299,7 +299,7 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
                         coordinates[coordinates.length - 1][1] = temp;
                     }
                     if (coordinateType == ROOM_TYPE.ROOM){
-                        makeRoomNames(coordinates[coordinates.length-1], data.pois[i].title);
+                        makeRoomNames(coordinates[coordinates.length-1], i);
                     }
                 }
             }
@@ -345,13 +345,14 @@ function findFarthestRooms(container) {
     var maxDistance = 0;
     var maxIndex1 = 0;
     var maxIndex2 = 0;
-
     for (var i = 0; i < container.length; i++) {
         for (var j = 0; j < container.length; j++) {
-            if (getDistanceBetweenTwoPoints(getPoint(globalRoomCoordinates[container[i]]), getPoint(globalRoomCoordinates[container[j]])) > maxDistance) {
-                maxDistance = getDistanceBetweenTwoPoints(getPoint(globalRoomCoordinates[container[i]]), getPoint(globalRoomCoordinates[container[j]]));
-                maxIndex1 = container[i];
-                maxIndex2 = container[j];
+            if (container[i] != container[j]) {
+                if (getDistanceBetweenTwoPoints(getPoint(globalRoomCoordinates[container[i]]), getPoint(globalRoomCoordinates[container[j]])) > maxDistance) {
+                    maxDistance = getDistanceBetweenTwoPoints(getPoint(globalRoomCoordinates[container[i]]), getPoint(globalRoomCoordinates[container[j]]));
+                    maxIndex1 = container[i];
+                    maxIndex2 = container[j];
+                }
             }
         }
     }
