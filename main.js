@@ -36,6 +36,8 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     [roomCoordinates, container, globalMergedRoomNameMarkers] = mergeAllPolygons(neighbors, indeces, roomCoordinates);
 
+    getUnmergedRooms(container, oldRooms);
+
     [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container, globalMergedRoomNameMarkers);
 
 
@@ -49,9 +51,4 @@ function createglobalMergedPolygons(data, roomCoordinates){
     roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
     fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
-
-    console.log("mergedLarge");
-    console.log(mergedLarge);
-    console.log(mergedMedium);
-    console.log(mergedSmall);
 }

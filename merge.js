@@ -376,7 +376,23 @@ function fillZoomLevels(dynamicMergedRooms, oldRooms){
 }
 
 function fillZoomLevelPolygons(coordinates){
-    fillPolygons(coordinates[0], mergedLarge, "gray", "white", "polygon");
-    fillPolygons(coordinates[1], mergedMedium, "gray", "white", "polygon");
-    fillPolygons(coordinates[2], mergedSmall, "gray", "white", "polygon");
+    fillPolygons(coordinates[0], mergedLarge, "gray", "lemonchiffon", "polygon");
+    fillPolygons(coordinates[1], mergedMedium, "gray", "lemonchiffon", "polygon");
+    fillPolygons(coordinates[2], mergedSmall, "gray", "lemonchiffon", "polygon");
+}
+
+function getUnmergedRooms(container, coordinates) {
+    var geoJSON = JSON.parse(RAW_RESPONSE);
+    for (var i = 0; i < container.length; i++) {
+        if (container[i].length == 1) {
+            if (GLOBAL_ROOM_COORDINATES[i].length > 0){
+                globalUnmergedRoomsSimplified.push(coordinates[i]);
+                globalUnmergedRooms.push(GLOBAL_ROOM_COORDINATES[i]);
+                globalUnmergedNames.push(makeLocalRoomNames(GLOBAL_ROOM_COORDINATES[i], geoJSON.pois[i].title));
+            }
+        }
+    }
+    fillPolygons(globalUnmergedRoomsSimplified, globalUnmergedPolygonsSimplified, "gray", "white", "polygon");
+    fillPolygons(globalUnmergedRooms, globalUnmergedPolygons, "gray", "white", "polygon");
+
 }
