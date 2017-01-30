@@ -196,8 +196,6 @@ function findOrderOfRooms(oldNeighbors, container) {
 
 	var currentIndex = 0;
 
-	console.log(container[13]);
-
 	for (var i = 0; i < container.length; i++) {
 		orderedRooms.push([]);
 		usedIndices.push([]);
@@ -354,18 +352,22 @@ function mergeZoomLevel(index, rooms){
 }
 
 function fillZoomLevels(dynamicMergedRooms, oldRooms){
-    var globalZoomLevels = [];
-    globalZoomLevels.push([]);
-    globalZoomLevels.push([]);
-    globalZoomLevels.push([]);
+    var globalZoomLevels = [[],[],[]];
+    var index;
+    var lastPolygon;
 
     for (var i = 0; i < dynamicMergedRooms.length; i++) {
         if (dynamicMergedRooms[i][0][0].length > 1){
             for (var j = 0; j < 3; j++) {
-                if (j < dynamicMergedRooms[i].length) {
-                    for (var k = 0; k < dynamicMergedRooms[i][j].length; k++) {
-                        globalZoomLevels[j].push(mergeZoomLevel(dynamicMergedRooms[i][j][k], oldRooms));
+                index = dynamicMergedRooms[i].length-1-j;
+                if (index >= 0){
+                    for (var k = 0; k < dynamicMergedRooms[i][index].length; k++) {
+                        lastPolygon = mergeZoomLevel(dynamicMergedRooms[i][index][k], oldRooms);
+                        globalZoomLevels[2-j].push(deepCopy(lastPolygon));
                     }
+                }
+                else {
+                    globalZoomLevels[2-j].push(lastPolygon);
                 }
             }
         }
