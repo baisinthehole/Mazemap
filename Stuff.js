@@ -24,6 +24,9 @@ var CIRCUMFERENCE_THRESHOLD = 0.0005;
 
 
 var RAW_RESPONSE;
+var mergedLarge = [];
+var mergedMedium = [];
+var mergedSmall = [];
 
 
 
@@ -47,93 +50,56 @@ var globalMergedRoomNameMarkers = [];
 var globalNameList = [];
 
 function zoom() {
+    var polygonList = [globalOutlinePolygons, globalCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons];
+    var now = [];
+    var drawings;
+    for (var i = 0; i < polygonList.length; i++) {
+        now.push(false);
+    }
 	// Zoom listener
 	MAP.on('zoomend', function () {
 	    console.log(MAP.getZoom());
-	    if (!ZOOM_LEVELS_DRAWN["17"]) {
-	        if (MAP.getZoom() >= 17) {
-	            drawPolygons(globalOutlinePolygons);
-	            ZOOM_LEVELS_DRAWN["17"] = true;
-	        }
-	    }
-	    if (ZOOM_LEVELS_DRAWN["17"]) {
-	        if (MAP.getZoom() < 17) {
-	            removePolygons(globalOutlinePolygons);
-	            ZOOM_LEVELS_DRAWN["17"] = false;
-	        }
-	    }
-        if (ZOOM_LEVELS_DRAWN["18"]) {
-            if (MAP.getZoom() < 18 || MAP.getZoom() >= 20) {
-                removePolygons(globalMergedPolygons);
-                ZOOM_LEVELS_DRAWN["18"] = false;
-            }
+        if (MAP.getZoom() == 16){
+            drawings = [true, false, false, false, false, false, false, false];
+            now = superZoom(drawings, now, polygonList);
         }
-        if (ZOOM_LEVELS_DRAWN["largeRoomNames"]) {
-            if (MAP.getZoom() != 19) {
-                removeNamesBiggerThanThreshold(mergedRoomCoordinates, globalMergedPolygons);
-                ZOOM_LEVELS_DRAWN["largeRoomNames"] = false;
-            }
+        else if (MAP.getZoom() == 17){
+            drawings = [true, true, true, false, false, false, false, false];
+            now = superZoom(drawings, now, polygonList);
         }
-        if (!ZOOM_LEVELS_DRAWN["corridors"]) {
-            if (MAP.getZoom() >= 18) {
-                drawPolygons(globalCorridorPolygons);
-                ZOOM_LEVELS_DRAWN["corridors"] = true;
-            }
+        else if (MAP.getZoom() == 18){
+            drawings = [true, true, false, true, false, false, false, false];
+            now = superZoom(drawings, now, polygonList);
         }
-        if (ZOOM_LEVELS_DRAWN["corridors"]) {
-            if (MAP.getZoom() < 18) {
-                removePolygons(globalCorridorPolygons);
-                ZOOM_LEVELS_DRAWN["corridors"] = false;
-            }
+        else if (MAP.getZoom() == 19){
+            drawings = [true, true, false, false, true, false, false, false];
+            now = superZoom(drawings, now, polygonList);
         }
-	    // if (!ZOOM_LEVELS_DRAWN["19"]) {
-	    //     if (map.getZoom() >= 19) {
-	    //     	console.log("bulba");
-	    //         ZOOM_LEVELS_DRAWN["19"] = true;
-	    //     }
-	    // }
-	    // if (ZOOM_LEVELS_DRAWN["19"]) {
-	    //     if (map.getZoom() < 19) {
-	    //         ZOOM_LEVELS_DRAWN["19"] = false;
-	    //     }
-	    // }
-	    if (!ZOOM_LEVELS_DRAWN["20"]) {
-	        if (MAP.getZoom() >= 20) {
-                // removePolygons(globalCorridorPolygons);
-                drawPolygonsSmallerThanThreshold(globalRoomCoordinates, globalRoomPolygons);
-                addAllNames(globalRoomCoordinates, globalRoomPolygons);
-                drawPolygons(globalRoomPolygons);
-                drawPolygons(globalDoorPolygons);
-	            drawPolygons(globalStairPolygons);
-                drawPolygons(globalCorridorPolygons);
-	            ZOOM_LEVELS_DRAWN["20"] = true;
-	        }
-	    }
-	    if (ZOOM_LEVELS_DRAWN["20"]) {
-	        if (MAP.getZoom() < 20) {
-	            removePolygonsSmallerThanThreshold(globalRoomCoordinates, globalRoomPolygons);
-                removeAllNames(globalRoomCoordinates, globalRoomPolygons);
-                removePolygons(globalRoomPolygons);
-	            removePolygons(globalDoorPolygons);
-	            removePolygons(globalStairPolygons);
-	            ZOOM_LEVELS_DRAWN["20"] = false;
-	        }
-	    }
-        if (!ZOOM_LEVELS_DRAWN["18"]) {
-            if (MAP.getZoom() >= 18 && MAP.getZoom() < 20) {
-                removePolygons(globalCorridorPolygons);
-                drawPolygons(globalMergedPolygons);
-                drawPolygons(globalCorridorPolygons);
-                ZOOM_LEVELS_DRAWN["18"] = true;
-            }
-        }
-        if (!ZOOM_LEVELS_DRAWN["largeRoomNames"]) {
-            if (MAP.getZoom() == 19) {
-                addNamesBiggerThanThreshold(mergedRoomCoordinates, globalMergedPolygons);
-                ZOOM_LEVELS_DRAWN["largeRoomNames"] = true;
-            }
+        else if (MAP.getZoom() == 20){
+            drawings = [true, true, false, false, false, true, true, true];
+            now = superZoom(drawings, now, polygonList);
         }
 	});
+}
+
+function superZoom(drawings, now, polygonList) {
+    console.log(drawings);
+    console.log(now);
+    for (var i = 0; i < drawings.length; i++) {
+        if (drawings[i] != now[i]){
+            console.log(drawings[i]);
+            if (!now[i]){
+                console.log("Draw");
+                console.log(i);
+                drawPolygons(polygonList[i]);
+            }
+            if (now[i]){
+                removePolygons(polygonList[i]);
+            }
+            now[i] = !now[i];
+        }
+    }
+    return now;
 }
 
 /* JSON object from server */

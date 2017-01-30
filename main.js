@@ -1,4 +1,4 @@
-var FLOOR_ID = "56";
+var FLOOR_ID = "159";
 var FILENAME = "floor_4_35.json";
 
 // Create a map
@@ -43,24 +43,15 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms);
 
-    globalZoomLevels = fillZoomLevels(dynamicMergedRooms, oldRooms);
-
+    var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
+    fillZoomLevelPolygons(zoomLevelsCoordinates);
 
     roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
     fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
 
-    // for (var i = 0; i < globalZoomLevels[0].length; i++) {
-    //     drawPolygonFromOnlyCoordinates(globalZoomLevels[0][i], "white", "gray");
-    // }
-
-    // for (var i = 0; i < globalZoomLevels[1].length; i++) {
-    //     drawPolygonFromOnlyCoordinates(globalZoomLevels[1][i], "white", "red");
-    // }
-
-    // for (var i = 0; i < globalZoomLevels[2].length; i++) {
-    //     drawPolygonFromOnlyCoordinates(globalZoomLevels[2][i], "white", "blue");
-    // }
-
-
+    console.log("mergedLarge");
+    console.log(mergedLarge);
+    console.log(mergedMedium);
+    console.log(mergedSmall);
 }

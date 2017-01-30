@@ -374,3 +374,9 @@ function fillZoomLevels(dynamicMergedRooms, oldRooms){
     }
     return globalZoomLevels;
 }
+
+function fillZoomLevelPolygons(coordinates){
+    fillPolygons(coordinates[0], mergedLarge, "gray", "white", "polygon");
+    fillPolygons(coordinates[1], mergedMedium, "gray", "white", "polygon");
+    fillPolygons(coordinates[2], mergedSmall, "gray", "white", "polygon");
+}
