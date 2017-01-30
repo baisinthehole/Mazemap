@@ -327,7 +327,7 @@ function mergeAllPolygonsDynamic(allOrderedRooms, roomCoordinates) {
 
         if (allOrderedRooms[i].length > 1) {
             for (var j = 0; j < allOrderedRooms[i].length; j++) {
-                
+
             }
         }
 
@@ -335,4 +335,40 @@ function mergeAllPolygonsDynamic(allOrderedRooms, roomCoordinates) {
 
         }
     }
+}
+
+
+function mergeZoomLevel(index, rooms){
+    var resultRoom = simpleMergeTwo(rooms[index[0]], rooms[index[1]]);
+    var tempResultRoom;
+    for (var i = 2; i < index.length; i++) {
+        tempResultRoom = simpleMergeTwo(resultRoom, rooms[index[i]]);
+        if (tempResultRoom == -1){
+            resultRoom = simpleMergeTwo(rooms[index[i]],resultRoom);
+        }
+        else {
+            resultRoom = tempResultRoom;
+        }
+    }
+    return resultRoom;
+}
+
+function fillZoomLevels(dynamicMergedRooms, oldRooms){
+    var globalZoomLevels = [];
+    globalZoomLevels.push([]);
+    globalZoomLevels.push([]);
+    globalZoomLevels.push([]);
+
+    for (var i = 0; i < dynamicMergedRooms.length; i++) {
+        if (dynamicMergedRooms[i][0][0].length > 1){
+            for (var j = 0; j < 3; j++) {
+                if (j < dynamicMergedRooms[i].length) {
+                    for (var k = 0; k < dynamicMergedRooms[i][j].length; k++) {
+                        globalZoomLevels[j].push(mergeZoomLevel(dynamicMergedRooms[i][j][k], oldRooms));
+                    }
+                }
+            }
+        }
+    }
+    return globalZoomLevels;
 }

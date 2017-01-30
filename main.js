@@ -33,6 +33,7 @@ function createglobalMergedPolygons(data, roomCoordinates){
     oldNeighbors = makeNeighborsWhoAreNotNeighborsNeighbors(oldNeighbors);
 
     console.log(deepCopy(roomCoordinates));
+    var oldRooms = deepCopy(roomCoordinates);
 
     [roomCoordinates, container, globalMergedRoomNameMarkers] = mergeAllPolygons(neighbors, indeces, roomCoordinates);
 
@@ -43,10 +44,27 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms);
 
+    globalZoomLevels = fillZoomLevels(dynamicMergedRooms, oldRooms);
+
+    console.log("dynamicMergedRooms");
     console.log(dynamicMergedRooms);
+    console.log(globalZoomLevels);
 
     roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
     fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
+
+    for (var i = 0; i < globalZoomLevels[0].length; i++) {
+        drawPolygonFromOnlyCoordinates(globalZoomLevels[0][i], "white", "gray");
+    }
+
+    for (var i = 0; i < globalZoomLevels[1].length; i++) {
+        drawPolygonFromOnlyCoordinates(globalZoomLevels[1][i], "white", "red");
+    }
+
+    for (var i = 0; i < globalZoomLevels[2].length; i++) {
+        drawPolygonFromOnlyCoordinates(globalZoomLevels[2][i], "white", "blue");
+    }
+
 
 }
