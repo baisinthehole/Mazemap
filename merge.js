@@ -314,3 +314,25 @@ function makeNeighborsWhoAreNotNeighborsNeighbors(neighbors) {
 	}
 	return neighbors;
 }
+
+function dynamicMergeAllRooms(allOrderedRooms) {
+    for (var i = 0; i < allOrderedRooms.length; i++) {
+        allOrderedRooms[i] = createDifferentMergingLevels(allOrderedRooms[i]);
+    }
+    return allOrderedRooms;
+}
+
+function mergeAllPolygonsDynamic(allOrderedRooms, roomCoordinates) {
+    for (var i = 0; i < allOrderedRooms.length; i++) {
+
+        if (allOrderedRooms[i].length > 1) {
+            for (var j = 0; j < allOrderedRooms[i].length; j++) {
+                
+            }
+        }
+
+        for (var j = 0; j < allOrderedRooms[i].length; j++) {
+
+        }
+    }
+}

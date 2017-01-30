@@ -1,4 +1,4 @@
-var FLOOR_ID = "159";
+var FLOOR_ID = "56";
 var FILENAME = "floor_4_35.json";
 
 // Create a map
@@ -16,6 +16,8 @@ function createglobalMergedPolygons(data, roomCoordinates){
     var neighbors;
     var indeces;
 
+    alterJSONfile(data, FLOOR_ID);
+
     //drawPolygonFromOnlyCoordinates(simpleMergeTwo(simpleMergeTwo(roomCoordinates[19], roomCoordinates[26]), roomCoordinates[31], true), "gray", "black");
 
     //checkPointSequence(simpleMergeTwo(roomCoordinates[19], roomCoordinates[26]));
@@ -30,6 +32,7 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     oldNeighbors = makeNeighborsWhoAreNotNeighborsNeighbors(oldNeighbors);
 
+    console.log(deepCopy(roomCoordinates));
 
     [roomCoordinates, container, globalMergedRoomNameMarkers] = mergeAllPolygons(neighbors, indeces, roomCoordinates);
 
@@ -37,6 +40,10 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
 
     orderedRooms = findOrderOfRooms(oldNeighbors, container);
+
+    dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms);
+
+    console.log(dynamicMergedRooms);
 
     roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
