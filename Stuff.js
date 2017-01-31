@@ -69,27 +69,30 @@ function zoom() {
 	// Zoom listener
 	MAP.on('zoomend', function () {
 	    console.log(MAP.getZoom());
-        if (MAP.getZoom() == 16){
+        if (MAP.getZoom() < 16){
+        }
+        else if (MAP.getZoom() < 17){
             drawings = [true, false, false, false, false, false, false, false, false, false];
             names = [false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
-        else if (MAP.getZoom() == 17){
+        else if (MAP.getZoom() < 18){
             drawings = [true, true, true, false, false, false, false, false, true, false];
             names = [false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
-        else if (MAP.getZoom() == 18){
+        else if (MAP.getZoom() < 19){
             drawings = [true, true, false, true, false, false, false, false, true, false];
             names = [false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
-        else if (MAP.getZoom() == 19){
+        else if (MAP.getZoom() < 20){
             drawings = [true, true, false, false, true, false, false, false, false, true];
             names = [false, true, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
-        else if (MAP.getZoom() == 20){
+        // else if (MAP.getZoom() < 21){
+        else {
             drawings = [true, true, false, false, false, true, true, true, false, false];
             names = [true, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);

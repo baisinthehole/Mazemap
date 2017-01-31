@@ -2,7 +2,14 @@ var FLOOR_ID = "159";
 var FILENAME = "floor_4_35.json";
 
 // Create a map
-var MAP = Maze.map('mazemap-container', { campusloader: false });
+// center = Maze.latLng(63.41, 10.41);
+var MAP = Maze.map('mazemap-container', {
+            campusloader: false,
+            // center: center,
+            zoom: 5,
+            zoomSnap: 0.25,
+            zoomDelta: 0.5,
+            wheelPxPerZoomLevel: 1000 });
 // map.setView([10.406426561608821,63.417421008760335], 15);
 MAP.setView([63.417421008760335,10.406426561608821], 15);
 
