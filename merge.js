@@ -396,3 +396,54 @@ function getUnmergedRooms(container, coordinates) {
     fillPolygons(globalUnmergedRooms, globalUnmergedPolygons, "gray", "white", "polygon");
 
 }
+
+function makeMergedNameStrings(mergedRooms, nameList) {
+    var textZoomLevels = [[],[],[]];
+    var index;
+    var lastText;
+
+    for (var i = 0; i < dynamicMergedRooms.length; i++) {
+        if (dynamicMergedRooms[i][0][0].length > 1){
+            for (var j = 0; j < 3; j++) {
+                index = dynamicMergedRooms[i].length-1-j;
+                if (index >= 0){
+                    for (var k = 0; k < dynamicMergedRooms[i][index].length; k++) {
+                        if (nameList[dynamicMergedRooms[i][index][k][0]] < nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]]) {
+                            lastText = nameList[dynamicMergedRooms[i][index][k][0]] + " - " + nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]];
+                        }
+                        else {
+                            lastText = nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]] + " - " + nameList[dynamicMergedRooms[i][index][k][0]];
+                        }
+                        textZoomLevels[2-j].push(lastText);
+                    }
+                }
+                else {
+                    textZoomLevels[2-j].push(lastText);
+                }
+            }
+        }
+    }
+    return textZoomLevels;
+}
+
+function convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates) {
+    for (var i = 0; i < textZoomLevels.length; i++) {
+        for (var j = 0; j < textZoomLevels[i].length; j++) {
+            point = getPoint(zoomLevelsCoordinates[i][j]);
+            myIcon = Maze.divIcon({
+                className: "labelClass",
+                iconSize: new Maze.Point(textZoomLevels[i][j].length * 6.5, 20),
+                html: textZoomLevels[i][j]
+            });
+            if (i == 0) {
+                mergedTextLarge.push(Maze.marker(point, {icon: myIcon}));
+            }
+            else if (i == 1) {
+                mergedTextMedium.push(Maze.marker(point, {icon: myIcon}));
+            }
+            else {
+                mergedTextSmall.push(Maze.marker(point, {icon: myIcon}));
+            }
+        }
+    }
+}
