@@ -24,6 +24,7 @@ var CIRCUMFERENCE_THRESHOLD = 0.0005;
 
 
 var RAW_RESPONSE;
+var GEO_JSON;
 var GLOBAL_ROOM_COORDINATES;
 var mergedLarge = [];
 var mergedMedium = [];
@@ -153,7 +154,7 @@ function recievedJSONfromServer() {
             geoJSON.pois.splice(i, 1);
         }
     }
-    console.log(geoJSON);
+    GEO_JSON = geoJSON;
     var color = "gray";
     var fillColor = "red";
     fillCoordinateTypeServer(geoJSON, [], globalCorridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");

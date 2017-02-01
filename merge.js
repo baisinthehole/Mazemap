@@ -382,13 +382,12 @@ function fillZoomLevelPolygons(coordinates){
 }
 
 function getUnmergedRooms(container, coordinates) {
-    var geoJSON = JSON.parse(RAW_RESPONSE);
     for (var i = 0; i < container.length; i++) {
         if (container[i].length == 1) {
             if (GLOBAL_ROOM_COORDINATES[i].length > 0){
                 globalUnmergedRoomsSimplified.push(coordinates[i]);
                 globalUnmergedRooms.push(GLOBAL_ROOM_COORDINATES[i]);
-                globalUnmergedNames.push(makeLocalRoomNames(GLOBAL_ROOM_COORDINATES[i], geoJSON.pois[i].title));
+                globalUnmergedNames.push(makeLocalRoomNames(GLOBAL_ROOM_COORDINATES[i], GEO_JSON.pois[i].title));
             }
         }
     }

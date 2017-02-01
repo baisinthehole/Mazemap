@@ -7,9 +7,9 @@ var MAP = Maze.map('mazemap-container', {
             campusloader: false,
             // center: center,
             zoom: 5,
-            zoomSnap: 0.25,
+            zoomSnap: 0,
             zoomDelta: 0.5,
-            wheelPxPerZoomLevel: 1000 });
+            wheelPxPerZoomLevel: 100 });
 // map.setView([10.406426561608821,63.417421008760335], 15);
 MAP.setView([63.417421008760335,10.406426561608821], 15);
 
