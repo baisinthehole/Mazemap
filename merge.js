@@ -196,8 +196,6 @@ function findOrderOfRooms(oldNeighbors, container) {
 
 	var currentIndex = 0;
 
-	console.log(container[13]);
-
 	for (var i = 0; i < container.length; i++) {
 		orderedRooms.push([]);
 		usedIndices.push([]);
@@ -313,4 +311,87 @@ function makeNeighborsWhoAreNotNeighborsNeighbors(neighbors) {
 		}
 	}
 	return neighbors;
+}
+
+function dynamicMergeAllRooms(allOrderedRooms) {
+    for (var i = 0; i < allOrderedRooms.length; i++) {
+        allOrderedRooms[i] = createDifferentMergingLevels(allOrderedRooms[i]);
+    }
+    return allOrderedRooms;
+}
+
+function mergeAllPolygonsDynamic(allOrderedRooms, roomCoordinates) {
+    for (var i = 0; i < allOrderedRooms.length; i++) {
+
+        if (allOrderedRooms[i].length > 1) {
+            for (var j = 0; j < allOrderedRooms[i].length; j++) {
+
+            }
+        }
+
+        for (var j = 0; j < allOrderedRooms[i].length; j++) {
+
+        }
+    }
+}
+
+
+function mergeZoomLevel(index, rooms){
+    var resultRoom = simpleMergeTwo(rooms[index[0]], rooms[index[1]]);
+    var tempResultRoom;
+    for (var i = 2; i < index.length; i++) {
+        tempResultRoom = simpleMergeTwo(resultRoom, rooms[index[i]]);
+        if (tempResultRoom == -1){
+            resultRoom = simpleMergeTwo(rooms[index[i]],resultRoom);
+        }
+        else {
+            resultRoom = tempResultRoom;
+        }
+    }
+    return resultRoom;
+}
+
+function fillZoomLevels(dynamicMergedRooms, oldRooms){
+    var globalZoomLevels = [[],[],[]];
+    var index;
+    var lastPolygon;
+
+    for (var i = 0; i < dynamicMergedRooms.length; i++) {
+        if (dynamicMergedRooms[i][0][0].length > 1){
+            for (var j = 0; j < 3; j++) {
+                index = dynamicMergedRooms[i].length-1-j;
+                if (index >= 0){
+                    for (var k = 0; k < dynamicMergedRooms[i][index].length; k++) {
+                        lastPolygon = mergeZoomLevel(dynamicMergedRooms[i][index][k], oldRooms);
+                        globalZoomLevels[2-j].push(deepCopy(lastPolygon));
+                    }
+                }
+                else {
+                    globalZoomLevels[2-j].push(lastPolygon);
+                }
+            }
+        }
+    }
+    return globalZoomLevels;
+}
+
+function fillZoomLevelPolygons(coordinates){
+    fillPolygons(coordinates[0], mergedLarge, "gray", "lemonchiffon", "polygon");
+    fillPolygons(coordinates[1], mergedMedium, "gray", "lemonchiffon", "polygon");
+    fillPolygons(coordinates[2], mergedSmall, "gray", "lemonchiffon", "polygon");
+}
+
+function getUnmergedRooms(container, coordinates) {
+    for (var i = 0; i < container.length; i++) {
+        if (container[i].length == 1) {
+            if (GLOBAL_ROOM_COORDINATES[i].length > 0){
+                globalUnmergedRoomsSimplified.push(coordinates[i]);
+                globalUnmergedRooms.push(GLOBAL_ROOM_COORDINATES[i]);
+                globalUnmergedNames.push(makeLocalRoomNames(GLOBAL_ROOM_COORDINATES[i], GEO_JSON.pois[i].title));
+            }
+        }
+    }
+    fillPolygons(globalUnmergedRoomsSimplified, globalUnmergedPolygonsSimplified, "gray", "white", "polygon");
+    fillPolygons(globalUnmergedRooms, globalUnmergedPolygons, "gray", "white", "polygon");
+
 }
