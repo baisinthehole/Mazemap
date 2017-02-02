@@ -93,7 +93,7 @@ function getLongestPartWithoutRemoval(polygon, index){
     }
 }
 
-function mergeAllPolygons(neighbors, indeces, roomCoordinates){
+function mergeAllPolygons(neighbors, roomCoordinates){
     var container = [];
 
     for (var i = 0; i < roomCoordinates.length; i++) {
@@ -141,14 +141,7 @@ function mergeAllPolygons(neighbors, indeces, roomCoordinates){
             }
         }
     }
-    for (var i = 0; i < container.length; i++) {
-        globalMergedRoomNameStrings.push(makeMergedNames(container[i], globalNameList));
-    }
-
-    for (var i = 0; i < roomCoordinates.length; i++) {
-        makeMergedRoomNames(roomCoordinates[i], globalMergedRoomNameStrings[i]);
-    }
-    return [roomCoordinates, container, globalMergedRoomNameMarkers];
+    return [roomCoordinates, container];
 }
 
 function simpleMergeTwo(room1, room2, test=false){
