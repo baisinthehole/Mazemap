@@ -10,61 +10,113 @@ Maze.Map = Maze.Map.extend({
     }
 });
 
-// enum
+// enum for all room types
 var ROOM_TYPE = {"OFFICE": 1, "CORRIDOR": 2, "STAIRS": 3, "COMPUTER_LAB": 4, "MEETING_ROOM": 5, "LECTURE_HALL": 6, "STUDY_ROOM": 7, "NOT_AVAILABLE": 8, "TOILETS": 9, "STORAGE_ROOM": 10, "LAB": 11, "COPY_ROOM": 12, "TECHNICAL": 13, "WARDROBE": 14, "SHOWER": 15, "GROUP_ROOM": 16, "INSTITUTE": 17, "FRAT": 18, "DRAWING_ROOM": 19, "LIBRARY": 20, "TEACHING_ROOM": 21, "STORE": 22, "CANTEEN": 23, "SIT": 24, "BUS_STOP": 27, "PARKING_LOT": 28, "WORKSHOP": 29, "ROOM":91};
 
+// thickness of stairs
 var STAIR_WEIGHT = 0.2;
+
+// thickness of rooms received from server
 var SERVER_WEIGHT = 0.5;
+
+// thickness of rooms received from local files
 var LOCAL_WEIGHT = 0.5;
 
+// distance between rooms, when determining neighbors
 var VERY_IMPORTANCE_DISTANCE = 0.0000011523708237294147*5;
+
+// radial distance between points when removing duplicate points
 var MINIMUM_DISTANCE = 0.000001;
 
+// threshold for circumference of rooms
 var CIRCUMFERENCE_THRESHOLD = 0.0005;
 
-
+// raw data received from server
 var RAW_RESPONSE;
+
+// geoJSON parsed from the raw data
 var GEO_JSON;
+
+// all room coordinates
 var GLOBAL_ROOM_COORDINATES;
+
+// three levels of merged room polygons
 var mergedLarge = [];
 var mergedMedium = [];
 var mergedSmall = [];
 
+// three levels of merged room name markers
 var mergedTextSmall = [];
 var mergedTextMedium = [];
 var mergedTextLarge = [];
 
+// simplified room coordinates that are never merged
 var globalUnmergedRoomsSimplified = [];
+
+// simplified room polygons that are never merged
 var globalUnmergedPolygonsSimplified = [];
+
+// orginal room coordinates that are never merged
 var globalUnmergedRooms = [];
+
+// original room polygons that are never merged
 var globalUnmergedPolygons = [];
 
+// room names that are never merged
 var globalUnmergedNames = [];
 
 
 // One array of coordinates for each type of polygon
 var globalRoomCoordinates = [];
 
+// all individual room ploygons
 var globalRoomPolygons = [];
+
+// stair polygons
 var globalStairPolygons = [];
+
+// outline polygons
 var globalOutlinePolygons = [];
+
+// door polygons
 var globalDoorPolygons = [];
+
+// corridor polygons
 var globalCorridorPolygons = [];
+
+// only merged polygons
 var globalMergedPolygons = [];
 
+// all room name markers
 var globalRoomNames = [];
+
+// all coordinates of the room name markers
 var globalRoomNameCoordinates = [];
 
+// all room name strings
 var globalNameList = [];
 
 
-
+// contains all the data that are displayed on different zoom levels and updates display accordingly
 function zoom() {
+
+    // contains all kinds of polygons displayed on different levels
     var polygonList = [globalOutlinePolygons, globalCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons];
+    
+    // contains all kinds of room names displayed on different levels
     var nameList = [globalRoomNames, globalUnmergedNames, mergedTextLarge, mergedTextMedium, mergedTextSmall];
+    
+    // contains all polygons that are currently displayed
     var nowDrawings = [];
+
+    // contains all room names that are currently displayed 
     var nowNames = [];
+
+    // keeps information about which zoom levels different polygons will be displayed or not
     var drawings;
+
+    // keeps information about which zoom levels different room names will be displayed or not
+    var names;
 
     for (var i = 0; i < polygonList.length; i++) {
         nowDrawings.push(false);
@@ -72,7 +124,7 @@ function zoom() {
     for (var i = 0; i < nameList.length; i++) {
         nowNames.push(false);
     }
-	// Zoom listener
+	// Zoom listener, is triggered on every change in zoom level
 	MAP.on('zoomend', function () {
 	    console.log(MAP.getZoom());
         if (MAP.getZoom() < 16){
@@ -106,6 +158,7 @@ function zoom() {
 	});
 }
 
+// draws and removes polygons and room names when zooming
 function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList) {
     for (var i = 0; i < drawings.length; i++) {
         if (drawings[i] != nowDrawings[i]){
@@ -141,10 +194,11 @@ function getJSONfromServer() {
     // Listen for the event.
     document.getElementById('mazemap-container').addEventListener('responseTextChange', function () { recievedJSONfromServer() }, false);
 
+    // url for requesting the data
     getHttp("http://api.mazemap.com/api/pois/?campusid=1&floorid="+FLOOR_ID+"&srid=4326");
 }
 
-// This will contain the rest of the program, and will be run when we know we have received the JSON from the server
+// This will be run when we know we have received the data from the server
 function recievedJSONfromServer() {
     var geoJSON = JSON.parse(RAW_RESPONSE);
     for (var i = geoJSON.pois.length -1; i >= 0 ; i--) {
