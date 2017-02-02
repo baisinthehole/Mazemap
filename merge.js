@@ -174,7 +174,6 @@ function simpleMergeTwo(room1, room2, test=false){
         if (test){
             console.log("result0[2] is undefined");
         }
-        console.log("")
         var mergedPolygon = -1;
     }
     else {
@@ -250,29 +249,35 @@ function createDifferentMergingLevels(orderedRooms) {
 
 	var currentInternalEndIndex = 0;
 
-	while (amount > 4) {
+    var maxNrOfRooms = 3;
 
-		mergingLevels.push([])
+	while (amount > maxNrOfRooms) {
+
+		mergingLevels.push([]);
 
 
 
 		for (var i = 0; i < mergingLevels[currentIndex].length; i++) {
 			if (isOdd(mergingLevels[currentIndex][i].length)) {
 
-				amount = Math.floor(mergingLevels[currentIndex][i].length / 2);
+				amount = Math.ceil(mergingLevels[currentIndex][i].length / 2);
 
-				currentInternalEndIndex = currentInternalStartIndex + amount;
+                if (mergingLevels[currentIndex][i].length != maxNrOfRooms) {
+                    currentInternalEndIndex = currentInternalStartIndex + amount - 1;
 
-				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
 
-				currentInternalStartIndex = currentInternalEndIndex;
-				currentInternalEndIndex = currentInternalStartIndex + amount + 1;
+                    currentInternalStartIndex = currentInternalEndIndex;
+                    currentInternalEndIndex = currentInternalStartIndex + amount;
 
-				mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
-				currentInternalStartIndex = currentInternalEndIndex;
-
-
-
+                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+                    currentInternalStartIndex = currentInternalEndIndex;
+                }
+                else {
+                    currentInternalEndIndex = currentInternalStartIndex+2*amount-1;
+                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+                    currentInternalStartIndex = currentInternalEndIndex;
+                }
 			}
 			else {
 				amount = mergingLevels[currentIndex][i].length / 2;
@@ -337,7 +342,13 @@ function mergeAllPolygonsDynamic(allOrderedRooms, roomCoordinates) {
 
 
 function mergeZoomLevel(index, rooms){
+    if (index.length < 2){
+        return rooms[index[0]];
+    }
     var resultRoom = simpleMergeTwo(rooms[index[0]], rooms[index[1]]);
+    if (resultRoom==-1){
+        resultRoom = simpleMergeTwo(rooms[index[1]], rooms[index[0]]);
+    }
     var tempResultRoom;
     for (var i = 2; i < index.length; i++) {
         tempResultRoom = simpleMergeTwo(resultRoom, rooms[index[i]]);
