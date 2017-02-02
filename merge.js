@@ -395,8 +395,8 @@ function getUnmergedRooms(container, coordinates) {
             }
         }
     }
-    fillPolygons(globalUnmergedRoomsSimplified, globalUnmergedPolygonsSimplified, "gray", "white", "polygon");
-    fillPolygons(globalUnmergedRooms, globalUnmergedPolygons, "gray", "white", "polygon");
+    fillPolygons(globalUnmergedRoomsSimplified, globalUnmergedPolygonsSimplified, "gray", "white", "line");
+    fillPolygons(globalUnmergedRooms, globalUnmergedPolygons, "gray", "white", "line");
 
 }
 

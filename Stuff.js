@@ -93,7 +93,7 @@ function zoom() {
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 20){
-            drawings = [true, true, false, false, true, false, false, false, false, true];
+            drawings = [true, true, false, false, true, false, false, true, false, true];
             names = [false, true, false, false, true];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
@@ -768,4 +768,14 @@ function removeDuplicateRooms(roomCoordinates, container){
         }
     }
     return [resultRooms, resultContainer];
+}
+
+
+function getArea(polygon){
+    var sum = 0;
+    for (var i = 0; i < polygon.length-1; i++) {
+        sum+=polygon[i][0]*polygon[i+1][1]-polygon[i+1][0]*polygon[i][1];
+    }
+    sum+=polygon[polygon.length-1][0]*polygon[0][1]-polygon[0][0]*polygon[polygon.length-1][1];
+    return Math.abs(sum)/2;
 }

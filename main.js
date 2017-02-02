@@ -52,4 +52,5 @@ function createglobalMergedPolygons(data, roomCoordinates){
     var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
 
     convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
+
 }
