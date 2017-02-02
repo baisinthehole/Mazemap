@@ -859,3 +859,10 @@ function getArea(polygon){
     sum+=polygon[polygon.length-1][0]*polygon[0][1]-polygon[0][0]*polygon[polygon.length-1][1];
     return Math.abs(sum)/2;
 }
+
+function mergeablePoint(AB, AC){
+    if (dotProd(AB, AC) <= 0 && crossProd(AB, AC) > 0){
+            return true;
+    }
+    return false;
+}
