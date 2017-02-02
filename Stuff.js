@@ -784,6 +784,10 @@ function dotProd(line1,line2){
     return sum;
 }
 
+function crossProd(line1,line2){
+    return line1[0]*line2[1]-line1[1]*line2[0];
+}
+
 function distPointToLine(point,linepoint1,linepoint2){
     a = (linepoint2[1]-linepoint1[1])/(linepoint2[0]-linepoint1[0]);
     b = -1;

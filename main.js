@@ -62,4 +62,22 @@ function createglobalMergedPolygons(data, roomCoordinates){
     //         // Maze.marker(getPoint(globalCorridorCoordinates[i]), {html: i}).addTo(MAP);
     //     }
     // }
+
+    // var a = [0, 0];
+    // var b = [5, 0];
+    // var c = [2, -2];
+    // var AB = makeLine(a,b);
+    // var AC = makeLine(a,c);
+    // if (dotProd(AB, AC) > 0 && crossProd(AB, AC) > 0){
+    //     console.log("First quadrant");
+    // }
+    // else if (dotProd(AB, AC) <= 0 && crossProd(AB, AC) > 0){
+    //     console.log("Second quadrant");
+    // }
+    // else if (dotProd(AB, AC) <= 0 && crossProd(AB, AC) <= 0){
+    //     console.log("Third quadrant");
+    // }
+    // else if (dotProd(AB, AC) > 0 && crossProd(AB, AC) <= 0){
+    //     console.log("Forth quadrant");
+    // }
 }
