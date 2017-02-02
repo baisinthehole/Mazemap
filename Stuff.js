@@ -784,6 +784,10 @@ function dotProd(line1,line2){
     return sum;
 }
 
+function crossProd(line1,line2){
+    return line1[0]*line2[1]-line1[1]*line2[0];
+}
+
 function distPointToLine(point,linepoint1,linepoint2){
     a = (linepoint2[1]-linepoint1[1])/(linepoint2[0]-linepoint1[0]);
     b = -1;
@@ -856,6 +860,13 @@ function getArea(polygon){
     return Math.abs(sum)/2;
 }
 
+function mergeablePoint(AB, AC){
+    if (dotProd(AB, AC) <= 0 && crossProd(AB, AC) > 0){
+            return true;
+    }
+    return false;
+}
+
 function crosses(a,b,c,d){
     // Tests if the segment a-b intersects with the segment c-d. 
     // Ex: crosses({x:0,y:0},{x:1,y:1},{x:1,y:0},{x:0,y:1}) === true
@@ -867,6 +878,3 @@ function crosses(a,b,c,d){
     var dSide = (b[1] - a[1]) * (d[0] - a[0]) - (b[0] - a[0]) * (d[1] - a[1]) > 0;
     return aSide !== bSide && cSide !== dSide;
 }
-
-
-

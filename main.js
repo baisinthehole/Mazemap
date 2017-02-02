@@ -62,4 +62,11 @@ function createglobalMergedPolygons(data, roomCoordinates){
     //         // Maze.marker(getPoint(globalCorridorCoordinates[i]), {html: i}).addTo(MAP);
     //     }
     // }
+
+    // var a = [0, 0];
+    // var b = [5, 0];
+    // var c = [-2, 2];
+    // var AB = makeLine(a,b);
+    // var AC = makeLine(a,c);
+    // console.log(mergeablePoint(AB, AC));
 }
