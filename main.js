@@ -1,4 +1,4 @@
-var FLOOR_ID = "159";
+var FLOOR_ID = "155";
 var FILENAME = "floor_4_35.json";
 
 // Create a map
@@ -53,6 +53,7 @@ function createglobalMergedPolygons(data, roomCoordinates){
     var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
 
     convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
+
     // console.log(globalCorridorCoordinates);
     // console.log(getNeighborsCorridors(globalCorridorCoordinates));
     // var colors = ["red", "blue", "yellow", "green", "black", "orange"];
@@ -66,7 +67,15 @@ function createglobalMergedPolygons(data, roomCoordinates){
     // var a = [0, 0];
     // var b = [5, 0];
     // var c = [-2, 2];
-    // var AB = makeLine(a,b);
-    // var AC = makeLine(a,c);
-    // console.log(mergeablePoint(AB, AC));
+    // cs = [[-2, 2],[2,2],[7,2],[7,-2],[2,-2],[-2,-2]];
+    // for (var i = 0; i < cs.length; i++) {
+    //     c = cs[i];
+    //     var AB = makeLine(a,b);
+    //     var BA = makeLine(b,a);
+    //     var AC = makeLine(a,c);
+    //     var BC = makeLine(b,c);
+    //     console.log(i);
+    //     console.log(mergeablePoint(AB, AC));
+    //     console.log(mergeablePoint(BC, BA));
+    // }
 }

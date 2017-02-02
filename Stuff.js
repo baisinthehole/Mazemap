@@ -868,7 +868,7 @@ function mergeablePoint(AB, AC){
 }
 
 function crosses(a,b,c,d){
-    // Tests if the segment a-b intersects with the segment c-d. 
+    // Tests if the segment a-b intersects with the segment c-d.
     // Ex: crosses({x:0,y:0},{x:1,y:1},{x:1,y:0},{x:0,y:1}) === true
     // Credit: Beta at http://stackoverflow.com/questions/7069420/check-if-two-line-segments-are-colliding-only-check-if-they-are-intersecting-n
     // Implementation by Viclib (viclib.com).
@@ -877,4 +877,13 @@ function crosses(a,b,c,d){
     var cSide = (b[1] - a[1]) * (c[0] - a[0]) - (b[0] - a[0]) * (c[1] - a[1]) > 0;
     var dSide = (b[1] - a[1]) * (d[0] - a[0]) - (b[0] - a[0]) * (d[1] - a[1]) > 0;
     return aSide !== bSide && cSide !== dSide;
+}
+
+function crossesPolygon(a,b, polygon){
+    for (var i = 0; i < polygon.length-1; i++) {
+        if (crosses(a,b,polygon[i],polygon[i+1])){
+            return true;
+        }
+    }
+    return false;
 }
