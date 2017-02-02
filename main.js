@@ -10,7 +10,6 @@ var MAP = Maze.map('mazemap-container', {
             zoomSnap: 0,
             zoomDelta: 0.5,
             wheelPxPerZoomLevel: 100 });
-// map.setView([10.406426561608821,63.417421008760335], 15);
 MAP.setView([63.417421008760335,10.406426561608821], 15);
 
 // Uncomment the preferred JSON file
@@ -25,38 +24,25 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     alterJSONfile(data, FLOOR_ID);
 
-    //drawPolygonFromOnlyCoordinates(simpleMergeTwo(simpleMergeTwo(roomCoordinates[19], roomCoordinates[26]), roomCoordinates[31], true), "gray", "black");
-
-    //checkPointSequence(simpleMergeTwo(roomCoordinates[19], roomCoordinates[26]));
-    //drawPolygonFromOnlyCoordinates(roomCoordinates[0], "gray", "black");
-
-
-    //drawPolygonFromOnlyCoordinates(roomCoordinates[0], "gray", "black");
-
-    [neighbors, indeces] = getNeighbors(data, roomCoordinates);
-
+    neighbors = getNeighbors(data, roomCoordinates);
     oldNeighbors = deepCopy(neighbors);
 
     oldNeighbors = makeNeighborsWhoAreNotNeighborsNeighbors(oldNeighbors);
 
     var oldRooms = deepCopy(roomCoordinates);
 
-    [roomCoordinates, container, globalMergedRoomNameMarkers] = mergeAllPolygons(neighbors, indeces, roomCoordinates);
+    [roomCoordinates, container] = mergeAllPolygons(neighbors, roomCoordinates);
 
     getUnmergedRooms(container, oldRooms);
 
-    [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container, globalMergedRoomNameMarkers);
+    [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container);
 
 
     orderedRooms = findOrderOfRooms(oldNeighbors, container);
 
     dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms);
-    console.log("dynamicMergedRooms");
-    console.log(deepCopy(dynamicMergedRooms));
 
     var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
-    console.log("zoomLevelsCoordinates");
-    console.log(zoomLevelsCoordinates);
     fillZoomLevelPolygons(zoomLevelsCoordinates);
 
     roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
