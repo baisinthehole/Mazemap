@@ -23,7 +23,7 @@ var SERVER_WEIGHT = 0.5;
 var LOCAL_WEIGHT = 0.5;
 
 // distance between rooms, when determining neighbors
-var VERY_IMPORTANCE_DISTANCE = 0.0000011523708237294147*5;
+var VERY_IMPORTANCE_DISTANCE = 0.0000011523708237294147*4;
 
 // radial distance between points when removing duplicate points
 var MINIMUM_DISTANCE = 0.000001;
@@ -593,6 +593,25 @@ function getNeighbors(data, simplified){
                     if (poiTypeOffice(data.pois[i].infos, data.pois[j].infos, i)){
                         adjacent.push(j);
                     }
+                }
+            }
+        }
+        neighbors.push(adjacent);
+    }
+    return neighbors;
+}
+
+function getNeighborsCorridors(corridorCoordinates){
+    var neighbors = [];
+    var result;
+    var indeces = [];
+    for (var i = 0; i < corridorCoordinates.length; i++) {
+        var adjacent = [];
+        for (var j = 0; j < corridorCoordinates.length; j++) {
+            if (i!=j){
+                result = getDistPolyToPoly(corridorCoordinates[i], corridorCoordinates[j]);
+                if (result[2] < VERY_IMPORTANCE_DISTANCE) {
+                    adjacent.push(j);
                 }
             }
         }

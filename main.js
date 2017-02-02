@@ -37,6 +37,7 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container);
 
+    globalMergedCorridorsCoordinates = mergeCorridors();
 
     orderedRooms = findOrderOfRooms(oldNeighbors, container);
 
@@ -52,5 +53,13 @@ function createglobalMergedPolygons(data, roomCoordinates){
     var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
 
     convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
-    console.log(globalCorridorCoordinates);
+    // console.log(globalCorridorCoordinates);
+    // console.log(getNeighborsCorridors(globalCorridorCoordinates));
+    // var colors = ["red", "blue", "yellow", "green", "black", "orange"];
+    // for (var i = 0; i < globalCorridorCoordinates.length; i++) {
+    //     if (globalCorridorCoordinates[i].length != 2){
+    //         Maze.popup().setLatLng(getPoint(globalCorridorCoordinates[i])).setContent(i.toString()).addTo(MAP);
+    //         // Maze.marker(getPoint(globalCorridorCoordinates[i]), {html: i}).addTo(MAP);
+    //     }
+    // }
 }

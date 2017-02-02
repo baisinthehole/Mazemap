@@ -450,3 +450,19 @@ function convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates) {
         }
     }
 }
+
+function mergeCorridors(){
+    for (var i = globalCorridorCoordinates.length-1; i >= 0; i--) {
+        if (globalCorridorCoordinates[i].length == 2){
+            globalCorridorCoordinates.splice(i, 1);
+        }
+    }
+    globalCorridorCoordinates = removeDuplicatesFromAllRooms(globalCorridorCoordinates);
+    var neighborCorridors = getNeighborsCorridors(globalCorridorCoordinates);
+    console.log(neighborCorridors);
+    [mergedCorridors, corridorContainer] = mergeAllPolygons(neighborCorridors, globalCorridorCoordinates);
+    // for (var i = 0; i < mergedCorridors.length; i++) {
+    //     drawPolygonFromOnlyCoordinates(mergedCorridors[i], "white", "blue");
+    // }
+    return mergedCorridors;
+}
