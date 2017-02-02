@@ -58,4 +58,8 @@ function createglobalMergedPolygons(data, roomCoordinates){
     roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
     fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
+
+    var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
+
+    convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
 }

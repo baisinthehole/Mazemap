@@ -30,6 +30,10 @@ var mergedLarge = [];
 var mergedMedium = [];
 var mergedSmall = [];
 
+var mergedTextSmall = [];
+var mergedTextMedium = [];
+var mergedTextLarge = [];
+
 var globalUnmergedRoomsSimplified = [];
 var globalUnmergedPolygonsSimplified = [];
 var globalUnmergedRooms = [];
@@ -55,12 +59,15 @@ var globalMergedRoomNameMarkers = [];
 
 var globalNameList = [];
 
+
+
 function zoom() {
     var polygonList = [globalOutlinePolygons, globalCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons];
-    var nameList = [globalRoomNames, globalUnmergedNames, globalMergedRoomNameMarkers];
+    var nameList = [globalRoomNames, globalUnmergedNames, mergedTextLarge, mergedTextMedium, mergedTextSmall];
     var nowDrawings = [];
     var nowNames = [];
     var drawings;
+
     for (var i = 0; i < polygonList.length; i++) {
         nowDrawings.push(false);
     }
@@ -74,28 +81,28 @@ function zoom() {
         }
         else if (MAP.getZoom() < 17){
             drawings = [true, false, false, false, false, false, false, false, false, false];
-            names = [false, false, false];
+            names = [false, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 18){
             drawings = [true, true, true, false, false, false, false, false, true, false];
-            names = [false, false, false];
+            names = [false, false, true, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 19){
             drawings = [true, true, false, true, false, false, false, false, true, false];
-            names = [false, false, false];
+            names = [false, false, false, true, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 20){
             drawings = [true, true, false, false, true, false, false, false, false, true];
-            names = [false, true, false];
+            names = [false, true, false, false, true];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         // else if (MAP.getZoom() < 21){
         else {
             drawings = [true, true, false, false, false, true, true, true, false, false];
-            names = [true, false, false];
+            names = [true, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
 	});
@@ -965,6 +972,6 @@ function removeDuplicateRooms(roomCoordinates, container, nameMarkers){
             resultNameMarkers.push(nameMarkers[i]);
         }
     }
-    globalMergedRoomNameMarkers = resultNameMarkers;
+    //globalMergedRoomNameMarkers = resultNameMarkers;
     return [resultRooms, resultContainer];
 }
