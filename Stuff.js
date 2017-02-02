@@ -295,7 +295,7 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
                         coordinates[coordinates.length - 1][1] = temp;
                     }
                     if (coordinateType == ROOM_TYPE.ROOM){
-                        makeRoomNames(coordinates[coordinates.length-1], data.pois[i].title);
+                        makeRoomNames(coordinates[coordinates.length-1], i);
                     }
                 }
             }

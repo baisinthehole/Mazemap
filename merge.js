@@ -174,7 +174,6 @@ function simpleMergeTwo(room1, room2, test=false){
         if (test){
             console.log("result0[2] is undefined");
         }
-        console.log("")
         var mergedPolygon = -1;
     }
     else {
@@ -343,20 +342,13 @@ function mergeAllPolygonsDynamic(allOrderedRooms, roomCoordinates) {
 
 
 function mergeZoomLevel(index, rooms){
-    // console.log("Rooms");
-    // console.log(rooms);
-    // console.log("Index");
-    // console.log(index);
-    // console.log(index[0]);
-    // console.log(index[1]);
-    // console.log(rooms[index[0]]);
-    // console.log(rooms[index[1]]);
     if (index.length < 2){
-        console.log("rooms");
-        console.log(rooms);
         return rooms[index[0]];
     }
     var resultRoom = simpleMergeTwo(rooms[index[0]], rooms[index[1]]);
+    if (resultRoom==-1){
+        resultRoom = simpleMergeTwo(rooms[index[1]], rooms[index[0]]);
+    }
     var tempResultRoom;
     for (var i = 2; i < index.length; i++) {
         tempResultRoom = simpleMergeTwo(resultRoom, rooms[index[i]]);
