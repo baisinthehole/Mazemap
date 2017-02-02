@@ -41,11 +41,11 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2){
                 return mergedPolygon;
             }
             else {
-                console.log("This will not work!:");
-                drawPolygonFromOnlyCoordinates(polygon1, "white", "blue");
-                drawPolygonFromOnlyCoordinates(polygon2, "white", "red");
+                // console.log("This will not work!:");
+                // drawPolygonFromOnlyCoordinates(polygon1, "white", "blue");
+                // drawPolygonFromOnlyCoordinates(polygon2, "white", "red");
                 mergedPolygon = mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1);
-                drawPolygonFromOnlyCoordinates(mergedPolygon, "white", "yellow");
+                //drawPolygonFromOnlyCoordinates(mergedPolygon, "white", "yellow");
                 return mergedPolygon;
             }
         }
@@ -482,15 +482,19 @@ function mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1){
     var leastIndex2 = 0;
     var dist;
 
+
     for (var i = 0; i < polygon2.length-1; i++) {
-        if (crossesPolygon(a,polygon2[i],polygon2) && mergeablePoint(line1, makeLine(a,polygon2[i]))){
+
+        if (!crossesPolygon(a,polygon2[i],polygon2) && mergeablePoint(line1, makeLine(a,polygon2[i]))){
             dist = getDistPoints(a,polygon2[i]);
+
+
             if (dist < leastDistance1){
                 leastDistance1 = dist;
                 leastIndex1 = i;
             }
         }
-        if (crossesPolygon(b,polygon2[i],polygon2) && mergeablePoint(makeLine(b,polygon2[i]), line2)){
+        if (!crossesPolygon(b,polygon2[i],polygon2) && mergeablePoint(makeLine(b,polygon2[i]), line2)){
             dist = getDistPoints(b,polygon2[i]);
             if (dist < leastDistance2){
                 leastDistance2 = dist;
@@ -498,11 +502,12 @@ function mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1){
             }
         }
     }
+
     var indeces2 = [leastIndex1, leastIndex2];
-    Maze.popup().setLatLng(polygon1[indeces1[0]]).setContent("0").addTo(MAP);
-    Maze.popup().setLatLng(polygon1[indeces1[1]]).setContent("1").addTo(MAP);
-    Maze.popup().setLatLng(polygon2[indeces2[0]]).setContent("2").addTo(MAP);
-    Maze.popup().setLatLng(polygon2[indeces2[1]]).setContent("3").addTo(MAP);
+    // Maze.popup().setLatLng(polygon1[indeces1[0]]).setContent("0").addTo(MAP);
+    // Maze.popup().setLatLng(polygon1[indeces1[1]]).setContent("1").addTo(MAP);
+    // Maze.popup().setLatLng(polygon2[indeces2[0]]).setContent("2").addTo(MAP);
+    // Maze.popup().setLatLng(polygon2[indeces2[1]]).setContent("3").addTo(MAP);
 
     indeces1.sort(sorter);
     indeces2.sort(sorter);
