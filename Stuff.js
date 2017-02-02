@@ -81,6 +81,9 @@ var globalOutlinePolygons = [];
 // door polygons
 var globalDoorPolygons = [];
 
+// corridor coordinates
+var globalCorridorCoordinates = [];
+
 // corridor polygons
 var globalCorridorPolygons = [];
 
@@ -102,14 +105,14 @@ function zoom() {
 
     // contains all kinds of polygons displayed on different levels
     var polygonList = [globalOutlinePolygons, globalCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons];
-    
+
     // contains all kinds of room names displayed on different levels
     var nameList = [globalRoomNames, globalUnmergedNames, mergedTextLarge, mergedTextMedium, mergedTextSmall];
-    
+
     // contains all polygons that are currently displayed
     var nowDrawings = [];
 
-    // contains all room names that are currently displayed 
+    // contains all room names that are currently displayed
     var nowNames = [];
 
     // keeps information about which zoom levels different polygons will be displayed or not
@@ -216,7 +219,7 @@ function recievedJSONfromServer() {
     GEO_JSON = geoJSON;
     var color = "gray";
     var fillColor = "red";
-    fillCoordinateTypeServer(geoJSON, [], globalCorridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
+    fillCoordinateTypeServer(geoJSON, globalCorridorCoordinates, globalCorridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
     fillCoordinateTypeServer(geoJSON, globalRoomCoordinates, globalRoomPolygons, ROOM_TYPE.ROOM, color, 'white', 0.2, "line");
     GLOBAL_ROOM_COORDINATES = deepCopy(globalRoomCoordinates);
 
