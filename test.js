@@ -43,16 +43,18 @@ function markClosestCorners(data, simplifiedRoomCoordinates){
     }
 }
 
-function testCrossing(point1, point2, point3, point4, index, index1) {
-    if (crosses(point1, point2, point3, point4)) {
-        Maze.polyline([point1, point2], {color: 'black', weight: 1}).addTo(MAP);
-        Maze.marker(point2).addTo(MAP);
+function testCrossing(point1, point2, polygon) {
+    for (var i = 0; i < polygon.length - 1; i++) {
+        console.log(crosses(point1, point2, polygon[i], polygon[i + 1]));
+        if (crosses(point1, point2, polygon[i], polygon[i + 1])) {
+            Maze.polyline([point1, point2], {color: 'black', weight: 1}).addTo(MAP);
+            Maze.marker(point2).addTo(MAP);
 
-        Maze.polyline([point3, point4], {color: 'black', weight: 1}).addTo(MAP);
-        Maze.marker(point4).addTo(MAP);
+            Maze.polyline([polygon[i], polygon[i + 1]], {color: 'black', weight: 1}).addTo(MAP);
+            Maze.marker(polygon[i + 1]).addTo(MAP);
 
-        console.log(index);
-        console.log(index1);
-
-    }
+            console.log(i);
+            console.log(i + 1);
+        }
+    } 
 }
