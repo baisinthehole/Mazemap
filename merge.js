@@ -478,8 +478,8 @@ function mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1){
     var line2 = makeLine(b, a);
     var leastDistance1 = 1234546;
     var leastDistance2 = 1234546;
-    var leastIndex1 = 0;
-    var leastIndex2 = 0;
+    var leastIndex1;
+    var leastIndex2;
     var dist;
 
     // drawPolygonFromOnlyCoordinates(polygon2, "white", "red");

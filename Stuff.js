@@ -944,11 +944,19 @@ function haversineAngle (a, b) {
 }
 
 function getAngle(AB, AC){
-    angle = Math.atan2(AB[1], AB[0]) - Math.atan2(AC[1], AC[0]);
+    var angle = Math.atan2(AB[1], AB[0]) - Math.atan2(AC[1], AC[0]);
     if (angle < 0){
         angle += 2*Math.PI;
     }
     return angle;
+}
+
+function mergingAngle(AB, AC){
+    var angle = getAngle(AB, AC);
+    if (angle >= Math.PI/2 && angle <= 3*Math.PI/2){
+        return true;
+    }
+    return false;
 }
 
 function getHaversineAngle(a, b, c){
@@ -961,4 +969,40 @@ function getBearing(lat1,lng1,lat2,lng2) {
     var x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
     var brng = toDeg(Math.atan2(y, x));
     return 360 - ((brng + 360) % 360);
+}
+
+function inside(point, vs) {
+    // ray-casting algorithm based on
+    // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+
+    var x = point[0], y = point[1];
+
+    var inside = false;
+    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        var xi = vs[i][0], yi = vs[i][1];
+        var xj = vs[j][0], yj = vs[j][1];
+
+        var intersect = ((yi > y) != (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+
+    return inside;
+}
+
+function moveOutside(point, vs){
+    var origPoint = deepCopy(point);
+    Maze.popup().setLatLng(origPoint).setContent("Orig").addTo(MAP);
+    var delta = VERY_IMPORTANCE_DISTANCE/10;
+    var direction = [1, 1, -1, -1];
+    for (var i = 0; i < 4; i++) {
+        point = deepCopy(origPoint);
+        point[i%2] += direction[i]*delta;
+        if (!inside(point, vs)){
+            Maze.popup().setLatLng(point).setContent("Moved").addTo(MAP);
+            return point;
+        }
+    }
+    console.log("NO!!!");
+    return origPoint;
 }
