@@ -899,3 +899,25 @@ function crossesPolygon(a,b, polygon){
     }
     return false;
 }
+
+function squared (x) { return x * x }
+function toRad (x) { return x * Math.PI / 180.0 }
+
+function haversineDistance (a, b) {
+
+  // radius of the earth
+  var R = 6378137;
+    
+  var aLat = a[0];
+  var bLat = b[0];
+  var aLng = a[1];
+  var bLng = b[1];
+
+  var dLat = toRad(bLat - aLat);
+  var dLon = toRad(bLng - aLng);
+
+  var f = squared(Math.sin(dLat / 2.0)) + Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * squared(Math.sin(dLon / 2.0));
+  var c = 2 * Math.atan2(Math.sqrt(f), Math.sqrt(1 - f));
+
+  return R * c;
+}
