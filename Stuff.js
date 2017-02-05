@@ -902,12 +902,13 @@ function crossesPolygon(a,b, polygon){
 
 function squared (x) { return x * x }
 function toRad (x) { return x * Math.PI / 180.0 }
+function toDeg (x) { return x *180.0 / Math.PI }
 
 function haversineDistance (a, b) {
 
   // radius of the earth
   var R = 6378137;
-    
+
   var aLat = a[0];
   var bLat = b[0];
   var aLng = a[1];
@@ -920,4 +921,44 @@ function haversineDistance (a, b) {
   var c = 2 * Math.atan2(Math.sqrt(f), Math.sqrt(1 - f));
 
   return R * c;
+}
+
+function haversineAngle (a, b) {
+
+    // radius of the earth
+    var R = 6378137;
+
+    var aLat = a[0];
+    var bLat = b[0];
+    var aLng = a[1];
+    var bLng = b[1];
+
+    var dLat = toRad(bLat - aLat);
+    // dLon is difference in longitude
+    var dLon = toRad(bLng - aLng);
+
+    var y = Math.sin(dLon) * Math.cos(bLat);
+    var x = Math.cos(aLat)*Math.sin(bLat) - Math.sin(aLat)*Math.cos(bLat)*Math.cos(dLon);
+    var brng = toDeg(Math.atan2(y, x));
+    return brng;
+}
+
+function getAngle(AB, AC){
+    angle = Math.atan2(AB[1], AB[0]) - Math.atan2(AC[1], AC[0]);
+    if (angle < 0){
+        angle += 2*Math.PI;
+    }
+    return angle;
+}
+
+function getHaversineAngle(a, b, c){
+    return haversineAngle(a, b)-haversineAngle(a, c);
+}
+
+function getBearing(lat1,lng1,lat2,lng2) {
+    var dLon = (lng2-lng1);
+    var y = Math.sin(dLon) * Math.cos(lat2);
+    var x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+    var brng = toDeg(Math.atan2(y, x));
+    return 360 - ((brng + 360) % 360);
 }

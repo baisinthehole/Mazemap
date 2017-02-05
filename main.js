@@ -78,4 +78,5 @@ function createglobalMergedPolygons(data, roomCoordinates){
     //     console.log(mergeablePoint(AB, AC));
     //     console.log(mergeablePoint(BC, BA));
     // }
+    //
 }

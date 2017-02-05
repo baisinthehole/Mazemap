@@ -492,7 +492,7 @@ function mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1){
 
     for (var i = 0; i < polygon2.length-1; i++) {
 
-        if (!crossesPolygon(a,polygon2[i],polygon2)){
+        if (!crossesPolygon(a,polygon2[i],polygon2) && dotProd(line1, makeLine(a, polygon2[i]))<0){
             dist = haversineDistance(a,polygon2[i]);
 
 
@@ -503,13 +503,13 @@ function mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1){
         }
     }
     for (var i = 0; i < polygon2.length-1; i++) {
-        if (!crossesPolygon(b,polygon2[i],polygon2)){
+        if (!crossesPolygon(b,polygon2[i],polygon2) && dotProd(line2, makeLine(b, polygon2[i]))<0){
             dist = haversineDistance(b,polygon2[i]);
-            if (dist < leastDistance2 && i != leastIndex1){
+            if (dist < leastDistance2){
                 leastDistance2 = dist;
                 leastIndex2 = i;
 
-                
+
 
                 //Maze.popup().setLatLng(polygon2[i]).setContent(i.toString()).addTo(MAP);
 
@@ -524,23 +524,24 @@ function mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1){
     var indeces2 = [leastIndex1, leastIndex2];
 
 
-    if (polygon2.length > 100){
-        for (var i = 0; i < polygon2.length; i++) {
-            //Maze.popup().setLatLng(polygon2[i]).setContent(crossesPolygon(b, polygon2[i], polygon2).toString()).addTo(MAP);
-            // Maze.popup().setLatLng(polygon2[i]).setContent(getQuadrant(line1, makeLine(a, polygon2[i]))).addTo(MAP);
-        }
+    // if (polygon2.length > 100){
+    //     for (var i = 0; i < polygon2.length; i++) {
+    //         Maze.popup().setLatLng(polygon2[i]).setContent(toDeg(getAngle(line1,makeLine(a, polygon2[i]))).toString()).addTo(MAP);
+    //         // Maze.popup().setLatLng(polygon2[i]).setContent(getQuadrant(line1, makeLine(a, polygon2[i]))).addTo(MAP);
+    //     }
 
-        // console.log(leastIndex1);
-        // console.log(leastIndex2);
+    //     // console.log(leastIndex1);
+    //     // console.log(leastIndex2);
 
-        // Maze.popup().setLatLng(a).setContent("a").addTo(MAP);
-        // Maze.popup().setLatLng(polygon2[leastIndex1]).setContent("c").addTo(MAP);
-        // Maze.popup().setLatLng(polygon2[leastIndex2]).setContent("d").addTo(MAP);
-        // Maze.popup().setLatLng(polygon2[49]).setContent("49").addTo(MAP);
+    //     // Maze.popup().setLatLng(a).setContent("a").addTo(MAP);
+    //     // Maze.popup().setLatLng(b).setContent("b").addTo(MAP);
+    //     // Maze.popup().setLatLng(polygon2[leastIndex1]).setContent("c").addTo(MAP);
+    //     // Maze.popup().setLatLng(polygon2[leastIndex2]).setContent("d").addTo(MAP);
+    //     // Maze.popup().setLatLng(polygon2[49]).setContent("49").addTo(MAP);
 
-        // console.log(haversineDistance(a, polygon2[49]));
-        // console.log(haversineDistance(a, polygon2[42]));
-    }
+    //     // console.log(haversineDistance(a, polygon2[49]));
+    //     // console.log(haversineDistance(a, polygon2[42]));
+    // }
 
 
     // Maze.popup().setLatLng(polygon1[indeces1[0]]).setContent("0").addTo(MAP);
