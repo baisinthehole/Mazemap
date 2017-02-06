@@ -953,7 +953,7 @@ function getAngle(AB, AC){
 
 function mergingAngle(AB, AC){
     var angle = getAngle(AB, AC);
-    if (angle >= Math.PI/2 && angle <= 3*Math.PI/2){
+    if (angle >= Math.PI/2 && angle <= Math.PI){
         return true;
     }
     return false;
@@ -1004,5 +1004,16 @@ function moveOutside(point, vs){
         }
     }
     console.log("NO!!!");
+    Maze.popup().setLatLng(origPoint).setContent("Whoops!").addTo(MAP);
     return origPoint;
+}
+
+function findOutsideOfPolygon(a, b, polygon){
+    var dx = b[0] - a[0];
+    var dy = b[1] - b[0];
+    var normalizer  = Math.max(dx, dy);
+    var normalVector = [-dy, dx];
+    var middlePoint = [(a[0]+b[0])/2, (a[1]+b[1])/2];
+    var testPoint = [middlePoint[0]+normalVector[0]*VERY_IMPORTANCE_DISTANCE/normalizer, middlePoint[1]+normalVector[1]*VERY_IMPORTANCE_DISTANCE]/normalizer;
+    return inside(testPoint, polygon);
 }

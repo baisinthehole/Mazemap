@@ -481,7 +481,6 @@ function mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1){
     var leastIndex1;
     var leastIndex2;
     var dist;
-
     // drawPolygonFromOnlyCoordinates(polygon2, "white", "red");
     // drawPolygonFromOnlyCoordinates(polygon1, "white", "blue");
 
@@ -489,9 +488,20 @@ function mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1){
 
 
     //checkPointSequence(polygon2);
-
+    if (a, inside(a, polygon2)){
+        a = moveOutside(a, polygon2);
+    }
+    if (b, inside(b, polygon2)){
+        b = moveOutside(b, polygon2);
+    }
+    var insideAngle;
     for (var i = 0; i < polygon2.length-1; i++) {
-
+        if (findOutsideOfPolygon(a, b, polygon2)){
+            console.log("findOutsideOfPolygon");
+            var temp = deepCopy(a);
+            a = deepCopy(b);
+            b = deepCopy(temp);
+        }
         if (!crossesPolygon(a,polygon2[i],polygon2) && dotProd(line1, makeLine(a, polygon2[i]))<0){
             dist = haversineDistance(a,polygon2[i]);
 
