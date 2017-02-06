@@ -186,32 +186,30 @@ function superMergeTwo(room1, room2, test=false){
     var mergingPoints1 = getMergingPoints(pointsCloseEnough1, room1, room2);
     var mergingPoints2 = getMergingPoints(pointsCloseEnough2, room2, room1);
     var mergedPolygon;
-    console.log("Close enough");
-    console.log(pointsCloseEnough1);
-    console.log("mergingPoints");
-    console.log(mergingPoints1);
-    console.log(mergingPoints2);
 
-    // for (var i = 0; i < pointsCloseEnough1.length; i++) {
-    //     Maze.popup().setLatLng(room1[pointsCloseEnough1[i]]).setContent("Close enough!").addTo(MAP);
-    // }
-    for (var i = 0; i < mergingPoints1.length; i++) {
-        Maze.popup().setLatLng(room1[mergingPoints1[i]]).setContent("Merge me1!").addTo(MAP);
-    }
-    for (var i = 0; i < mergingPoints2.length; i++) {
-        if (room2[mergingPoints2[i]]){
-            Maze.popup().setLatLng(room2[mergingPoints2[i]]).setContent("Merge me2!").addTo(MAP);
-        }
-    }
     if (mergingPoints2[0]) {
-        console.log("Merging point 2 is defined");
         mergedPolygon = mergeTwoPolygons(room1, room2, mergingPoints1, mergingPoints2, test);
     }
     else {
-        console.log("Not defined!");
         mergedPolygon = mergeTwoPolygons(room1, room2, mergingPoints1, undefined);
     }
+    mergedPolygon = removeSharpPoint(mergedPolygon);
     return mergedPolygon;
+}
+
+// This should be optimized by only checking merged points
+function removeSharpPoint(polygon){
+    var deltaAngle = Math.PI/12;
+    for (var i = polygon.length-3; i >= 0; i--) {
+        var angle = getAngle(makeLine(polygon[i+1], polygon[i]), makeLine(polygon[i+1], polygon[i+2]));
+        if (angle < deltaAngle || angle > 2*Math.PI - deltaAngle){
+            // console.log("Trying to remove");
+            // console.log(polygon[i+1]);
+            // Maze.popup().setLatLng(polygon[i+1]).setContent("Removed").addTo(MAP);
+            polygon.splice(i+1, 1);
+        }
+    }
+    return polygon;
 }
 
 function getClosePoints(room1, room2) {
@@ -591,55 +589,11 @@ function mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1){
             if (dist < leastDistance2){
                 leastDistance2 = dist;
                 leastIndex2 = i;
-
-
-
-                //Maze.popup().setLatLng(polygon2[i]).setContent(i.toString()).addTo(MAP);
-
             }
         }
-        // console.log(leastIndex1);
-        // console.log(leastDistance1);
-        // console.log(leastIndex2);
-        // console.log(leastDistance2);
     }
 
     var indeces2 = [leastIndex1, leastIndex2];
-
-
-    // if (polygon2.length > 100){
-    //     for (var i = 0; i < polygon2.length; i++) {
-    //         Maze.popup().setLatLng(polygon2[i]).setContent(toDeg(getAngle(line1,makeLine(a, polygon2[i]))).toString()).addTo(MAP);
-    //         // Maze.popup().setLatLng(polygon2[i]).setContent(getQuadrant(line1, makeLine(a, polygon2[i]))).addTo(MAP);
-    //     }
-
-    //     // console.log(leastIndex1);
-    //     // console.log(leastIndex2);
-
-    //     // Maze.popup().setLatLng(a).setContent("a").addTo(MAP);
-    //     // Maze.popup().setLatLng(b).setContent("b").addTo(MAP);
-    //     // Maze.popup().setLatLng(polygon2[leastIndex1]).setContent("c").addTo(MAP);
-    //     // Maze.popup().setLatLng(polygon2[leastIndex2]).setContent("d").addTo(MAP);
-    //     // Maze.popup().setLatLng(polygon2[49]).setContent("49").addTo(MAP);
-
-    //     // console.log(haversineDistance(a, polygon2[49]));
-    //     // console.log(haversineDistance(a, polygon2[42]));
-    // }
-
-
-    // Maze.popup().setLatLng(polygon1[indeces1[0]]).setContent("0").addTo(MAP);
-    // Maze.popup().setLatLng(polygon1[indeces1[1]]).setContent("1").addTo(MAP);
-    // // Maze.popup().setLatLng(polygon2[indeces2[0]]).setContent("2").addTo(MAP);
-    // // Maze.popup().setLatLng(polygon2[indeces2[1]]).setContent("3").addTo(MAP);
-
-    // Maze.popup().setLatLng(polygon2[9]).setContent("9").addTo(MAP);
-    // Maze.popup().setLatLng(polygon2[10]).setContent("10").addTo(MAP);
-
-    // console.log(getDistPoints(a, polygon2[10]));
-    // console.log(getDistPoints(a, polygon2[9]));
-
-    // console.log(crossesPolygon(a, polygon2[10], polygon2));
-    // console.log(crossesPolygon(a, polygon2[9], polygon2));
 
     indeces1.sort(sorter);
     indeces2.sort(sorter);

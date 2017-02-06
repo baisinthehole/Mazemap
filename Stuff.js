@@ -23,7 +23,7 @@ var SERVER_WEIGHT = 0.5;
 var LOCAL_WEIGHT = 0.5;
 
 // distance between rooms, when determining neighbors
-var VERY_IMPORTANCE_DISTANCE = 0.0000011523708237294147*6;
+var VERY_IMPORTANCE_DISTANCE = 0.0000011523708237294147*4;
 
 // radial distance between points when removing duplicate points
 var MINIMUM_DISTANCE = 0.000001;
@@ -764,18 +764,6 @@ function getMinDistToLine(point, line){
     }
 }
 
-function getIndexToClosestPoint(point, polygon) {
-    var minDist = 1234543213;
-    var index;
-    for (var i = 0; i < polygon.length-2; i++) {
-        if (getMinDistToLine(point, makeline(polygon[i], polygon[i+1])) < minDist){
-            if (getDistPoints(point, polygon[i]) < getDistPoints(point, polygon[i+1])){
-                index
-            }
-        }
-    }
-}
-
 function makeLine(point1,point2){
     return [point2[0]-point1[0], point2[1]-point1[1]];
 }
@@ -965,7 +953,7 @@ function getAngle(AB, AC){
 
 function mergingAngle(AB, AC){
     var angle = getAngle(AB, AC);
-    if (angle >= Math.PI/2 && angle <= 10/9*Math.PI){
+    if (angle >= Math.PI/3 && angle <= 10/9*Math.PI){
         return true;
     }
     return false;
