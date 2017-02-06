@@ -14,6 +14,7 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2){
             var partPolygon1 = getLongestPart(shiftedPolygon1, indeces1[1]-indeces1[0]);
             var partPolygon2 = getLongestPart(shiftedPolygon2, indeces2[1]-indeces2[0]);
             var mergedPolygon = partPolygon1.concat(partPolygon2,[partPolygon1[0]]);
+                mergedPolygon = mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1);
             return mergedPolygon;
         }
         else if (indeces1 == null){
@@ -38,6 +39,7 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2){
                 var partPolygon1 = getLongestPartWithoutRemoval(shiftedPolygon1, indeces1[1]-indeces1[0]);
                 var mergedPolygon;
                 mergedPolygon = partPolygon1.concat(shiftedPolygon2,[partPolygon1[0]]);
+                mergedPolygon = mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1);
                 return mergedPolygon;
             }
             else {
@@ -111,6 +113,7 @@ function mergeAllPolygons(neighbors, roomCoordinates){
 
 
                     var mergedPolygon = simpleMergeTwo(roomCoordinates[i], roomCoordinates[j]);
+                    superMergeTwo(roomCoordinates[i], roomCoordinates[j]);
 
 
 
@@ -177,6 +180,64 @@ function simpleMergeTwo(room1, room2, test=false){
         var mergedPolygon = -1;
     }
     return mergedPolygon;
+}
+
+function superMergeTwo(room1, room2, test=false){
+    var pointsCloseEnough1 = getClosePoints(room1, room2);
+    var pointsCloseEnough2 = getClosePoints(room2, room1);
+    var mergingPoints1 = getMergingPoints(pointsCloseEnough1, room1, room2);
+    var mergingPoints2 = getMergingPoints(pointsCloseEnough2, room2, room1);
+    console.log("mergingPoints");
+    console.log(mergingPoints1);
+    console.log(mergingPoints2);
+
+    for (var i = 0; i < mergingPoints1.length; i++) {
+        Maze.popup().setLatLng(room1[mergingPoints1[i]]).setContent("Merge me1!").addTo(MAP);
+    }
+    // for (var i = 0; i < mergingPoints2.length; i++) {
+    //     Maze.popup().setLatLng(room2[mergingPoints2[i]]).setContent("Merge me2!").addTo(MAP);
+    // }
+
+    // return -1;
+}
+
+function getClosePoints(room1, room2) {
+    var closePoints = [];
+    for (var i = 0; i < room1.length; i++) {
+        if (getMinDistToPoly(room1[i], room2) < VERY_IMPORTANCE_DISTANCE){
+            closePoints.push(i);
+        }
+    }
+    return closePoints;
+}
+
+function getMergingPoints(pointsCloseEnough, room1, room2){
+    var longestDist = 0;
+    var dist;
+    var index1;
+    var index2;
+    for (var i = 0; i < pointsCloseEnough.length - 1; i++) {
+        for (var j = i; j < pointsCloseEnough.length; j++) {
+            dist = haversineDistance(room1[pointsCloseEnough[i]], room1[pointsCloseEnough[j]]);
+            if (dist > longestDist){
+                if (!pointTooFarAway([pointsCloseEnough[i], pointsCloseEnough[j]], room1, room2)){
+                    longestDist = dist;
+                    index1 = i;
+                    index2 = j;
+                }
+            }
+        }
+    }
+    return [index1, index2];
+}
+
+function pointTooFarAway(indeces, room1, room2) {
+    for (var i = indeces[0]+1; i < indeces[1]; i++) {
+        if (haversineDistance(room1[i%room1.length], room2) > VERY_IMPORTANCE_DISTANCE*5){
+            return true;
+        }
+    }
+    return false;
 }
 
 function sorter(a, b) {

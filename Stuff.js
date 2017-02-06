@@ -764,6 +764,18 @@ function getMinDistToLine(point, line){
     }
 }
 
+function getIndexToClosestPoint(point, polygon) {
+    var minDist = 1234543213;
+    var index;
+    for (var i = 0; i < polygon.length-2; i++) {
+        if (getMinDistToLine(point, makeline(polygon[i], polygon[i+1])) < minDist){
+            if (getDistPoints(point, polygon[i]) < getDistPoints(point, polygon[i+1])){
+                index
+            }
+        }
+    }
+}
+
 function makeLine(point1,point2){
     return [point2[0]-point1[0], point2[1]-point1[1]];
 }
