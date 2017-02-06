@@ -23,7 +23,7 @@ var SERVER_WEIGHT = 0.5;
 var LOCAL_WEIGHT = 0.5;
 
 // distance between rooms, when determining neighbors
-var VERY_IMPORTANCE_DISTANCE = 0.0000011523708237294147*4;
+var VERY_IMPORTANCE_DISTANCE = 0.0000011523708237294147*6;
 
 // radial distance between points when removing duplicate points
 var MINIMUM_DISTANCE = 0.000001;

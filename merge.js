@@ -11,10 +11,9 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2){
             for (var i = 0; i < indeces2[0]; i++) {
                 shiftedPolygon2.push(shiftedPolygon2.shift());
             }
-            var partPolygon1 = getLongestPart(shiftedPolygon1, indeces1[1]-indeces1[0]);
-            var partPolygon2 = getLongestPart(shiftedPolygon2, indeces2[1]-indeces2[0]);
+            var partPolygon1 = getLongestPartWithoutRemoval(shiftedPolygon1, indeces1[1]-indeces1[0]);
+            var partPolygon2 = getLongestPartWithoutRemoval(shiftedPolygon2, indeces2[1]-indeces2[0]);
             var mergedPolygon = partPolygon1.concat(partPolygon2,[partPolygon1[0]]);
-                mergedPolygon = mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1);
             return mergedPolygon;
         }
         else if (indeces1 == null){
@@ -39,7 +38,6 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2){
                 var partPolygon1 = getLongestPartWithoutRemoval(shiftedPolygon1, indeces1[1]-indeces1[0]);
                 var mergedPolygon;
                 mergedPolygon = partPolygon1.concat(shiftedPolygon2,[partPolygon1[0]]);
-                mergedPolygon = mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1);
                 return mergedPolygon;
             }
             else {
@@ -112,8 +110,8 @@ function mergeAllPolygons(neighbors, roomCoordinates){
                 if (!findOne(container[i], container[j])) {
 
 
-                    var mergedPolygon = simpleMergeTwo(roomCoordinates[i], roomCoordinates[j]);
-                    superMergeTwo(roomCoordinates[i], roomCoordinates[j]);
+                    // var mergedPolygon = simpleMergeTwo(roomCoordinates[i], roomCoordinates[j]);
+                    mergedPolygon = superMergeTwo(roomCoordinates[i], roomCoordinates[j]);
 
 
 
@@ -187,18 +185,33 @@ function superMergeTwo(room1, room2, test=false){
     var pointsCloseEnough2 = getClosePoints(room2, room1);
     var mergingPoints1 = getMergingPoints(pointsCloseEnough1, room1, room2);
     var mergingPoints2 = getMergingPoints(pointsCloseEnough2, room2, room1);
+    var mergedPolygon;
+    console.log("Close enough");
+    console.log(pointsCloseEnough1);
     console.log("mergingPoints");
     console.log(mergingPoints1);
     console.log(mergingPoints2);
 
+    // for (var i = 0; i < pointsCloseEnough1.length; i++) {
+    //     Maze.popup().setLatLng(room1[pointsCloseEnough1[i]]).setContent("Close enough!").addTo(MAP);
+    // }
     for (var i = 0; i < mergingPoints1.length; i++) {
         Maze.popup().setLatLng(room1[mergingPoints1[i]]).setContent("Merge me1!").addTo(MAP);
     }
-    // for (var i = 0; i < mergingPoints2.length; i++) {
-    //     Maze.popup().setLatLng(room2[mergingPoints2[i]]).setContent("Merge me2!").addTo(MAP);
-    // }
-
-    // return -1;
+    for (var i = 0; i < mergingPoints2.length; i++) {
+        if (room2[mergingPoints2[i]]){
+            Maze.popup().setLatLng(room2[mergingPoints2[i]]).setContent("Merge me2!").addTo(MAP);
+        }
+    }
+    if (mergingPoints2[0]) {
+        console.log("Merging point 2 is defined");
+        mergedPolygon = mergeTwoPolygons(room1, room2, mergingPoints1, mergingPoints2, test);
+    }
+    else {
+        console.log("Not defined!");
+        mergedPolygon = mergeTwoPolygons(room1, room2, mergingPoints1, undefined);
+    }
+    return mergedPolygon;
 }
 
 function getClosePoints(room1, room2) {
@@ -222,8 +235,8 @@ function getMergingPoints(pointsCloseEnough, room1, room2){
             if (dist > longestDist){
                 if (!pointTooFarAway([pointsCloseEnough[i], pointsCloseEnough[j]], room1, room2)){
                     longestDist = dist;
-                    index1 = i;
-                    index2 = j;
+                    index1 = pointsCloseEnough[i];
+                    index2 = pointsCloseEnough[j];
                 }
             }
         }
