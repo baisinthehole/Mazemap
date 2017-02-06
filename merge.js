@@ -481,28 +481,27 @@ function mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1){
     var leastIndex1;
     var leastIndex2;
     var dist;
-    // drawPolygonFromOnlyCoordinates(polygon2, "white", "red");
-    // drawPolygonFromOnlyCoordinates(polygon1, "white", "blue");
 
-
-
-
-    //checkPointSequence(polygon2);
+    // Move points if it inside the polygon it should merge with
     if (a, inside(a, polygon2)){
         a = moveOutside(a, polygon2);
     }
     if (b, inside(b, polygon2)){
         b = moveOutside(b, polygon2);
     }
-    var insideAngle;
+
+    // Switch point a and b if the polygon is on the other side than expected
+    // This is not tested and will therefore probably not work correctly!!!!!!!!!!!!!!!!!!
     for (var i = 0; i < polygon2.length-1; i++) {
         if (findOutsideOfPolygon(a, b, polygon2)){
-            console.log("findOutsideOfPolygon");
+            console.log("Switching point a and point b");
             var temp = deepCopy(a);
             a = deepCopy(b);
             b = deepCopy(temp);
+            line1 = makeLine(a, b);
+            line2 = makeLine(b, a);
         }
-        if (!crossesPolygon(a,polygon2[i],polygon2) && dotProd(line1, makeLine(a, polygon2[i]))<0){
+        if (!crossesPolygon(a,polygon2[i],polygon2) && mergingAngle(line1, makeLine(a, polygon2[i]))){
             dist = haversineDistance(a,polygon2[i]);
 
 
@@ -513,7 +512,7 @@ function mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1){
         }
     }
     for (var i = 0; i < polygon2.length-1; i++) {
-        if (!crossesPolygon(b,polygon2[i],polygon2) && dotProd(line2, makeLine(b, polygon2[i]))<0){
+        if (!crossesPolygon(b,polygon2[i],polygon2) && mergingAngle(makeLine(b, polygon2[i]), line2)){
             dist = haversineDistance(b,polygon2[i]);
             if (dist < leastDistance2){
                 leastDistance2 = dist;
