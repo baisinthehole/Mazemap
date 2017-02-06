@@ -953,7 +953,7 @@ function getAngle(AB, AC){
 
 function mergingAngle(AB, AC){
     var angle = getAngle(AB, AC);
-    if (angle >= Math.PI/2 && angle <= Math.PI){
+    if (angle >= Math.PI/2 && angle <= 10/9*Math.PI){
         return true;
     }
     return false;

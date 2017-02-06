@@ -490,9 +490,9 @@ function mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1){
         b = moveOutside(b, polygon2);
     }
 
-    // Switch point a and b if the polygon is on the other side than expected
-    // This is not tested and will therefore probably not work correctly!!!!!!!!!!!!!!!!!!
     for (var i = 0; i < polygon2.length-1; i++) {
+        // Switch point a and b if the polygon is on the other side than expected
+        // This is not tested and will therefore probably not work correctly!!!!!!!!!!!!!!!!!!
         if (findOutsideOfPolygon(a, b, polygon2)){
             console.log("Switching point a and point b");
             var temp = deepCopy(a);
