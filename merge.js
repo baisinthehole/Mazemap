@@ -507,7 +507,15 @@ function makeMergedNameStrings(mergedRooms, nameList) {
 
 function getDiffRoomNames(roomName1, roomName2){
     for (var i = 0; i < roomName1.length; i++) {
-        if (roomName1.charAt(i) !== roomName2.charAt(i) || i == roomName1.length-2) {
+        if (roomName1.charAt(i) !== roomName2.charAt(i) || i == roomName2.length-2) {
+            console.log("roomName2");
+            console.log(roomName2);
+            console.log(i == roomName2.length-2);
+            console.log(roomName2.charAt(roomName2.length-1));
+            console.log(isNaN(roomName2.charAt(roomName2.length-1)));
+            if (i == roomName2.length-2 && isNaN(roomName2.charAt(roomName2.length-1))){
+                return roomName2.slice(-3);
+            }
             return roomName2.slice(i);
         }
     }
