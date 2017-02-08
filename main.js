@@ -1,4 +1,4 @@
-var FLOOR_ID = "155";
+var FLOOR_ID = "56";
 var FILENAME = "floor_4_35.json";
 
 // Create a map
@@ -79,4 +79,20 @@ function createglobalMergedPolygons(data, roomCoordinates){
     //     console.log(mergeablePoint(BC, BA));
     // }
     //
+
+    // var point1 = [63.41826,10.40165];
+    // Maze.popup().setLatLng(point1).setContent("Start point").addTo(MAP);
+    // var polygon1 = globalCorridorCoordinates[0];
+    // drawPolygonFromOnlyCoordinates(polygon1, "white", "blue");
+    // createPointShortestDistance(point1, polygon1);
+var arr = [];
+arr[0] = [0,0];
+arr[1] = [1,1];
+arr[2] = [2,2];
+arr[3] = [4,4];
+arr[4] = [5,5];
+
+console.log(deepCopy(arr));
+arr.splice(0, 0, [3,3]);
+console.log(arr);
 }
