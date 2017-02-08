@@ -488,10 +488,10 @@ function makeMergedNameStrings(mergedRooms, nameList) {
                 if (index >= 0){
                     for (var k = 0; k < dynamicMergedRooms[i][index].length; k++) {
                         if (nameList[dynamicMergedRooms[i][index][k][0]] < nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]]) {
-                            lastText = nameList[dynamicMergedRooms[i][index][k][0]] + " - " + nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]];
+                            lastText = nameList[dynamicMergedRooms[i][index][k][0]] + " - " + getDiffRoomNames(nameList[dynamicMergedRooms[i][index][k][0]], nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]]);
                         }
                         else {
-                            lastText = nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]] + " - " + nameList[dynamicMergedRooms[i][index][k][0]];
+                            lastText = nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]] + " - " + getDiffRoomNames(nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]], nameList[dynamicMergedRooms[i][index][k][0]]);
                         }
                         textZoomLevels[2-j].push(lastText);
                     }
@@ -503,6 +503,14 @@ function makeMergedNameStrings(mergedRooms, nameList) {
         }
     }
     return textZoomLevels;
+}
+
+function getDiffRoomNames(roomName1, roomName2){
+    for (var i = 0; i < roomName1.length; i++) {
+        if (roomName1.charAt(i) !== roomName2.charAt(i) || i == roomName1.length-2) {
+            return roomName2.slice(i);
+        }
+    }
 }
 
 function convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates) {
