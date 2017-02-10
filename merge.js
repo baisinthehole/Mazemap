@@ -336,38 +336,38 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
 function createCirclePolygons(points1, points2, connectedIndexes) {
     var numberOneInUse = true;
 
-    var currentIndex = 0;
+    var currentRoom = 0;
+    var currentIndex = connectedIndexes[0][0];
 
-    var resultingRoom1 = [currentIndex];
-    var resultingRoom2 = [];
+    var resultingIndices = [[[currentIndex, currentRoom]]];
 
-    var currentIndexChanged = false;
 
-    var foundConnectingPoint = false;
+    var increasingIndices = false;
 
-    var counter = 0;
 
-    while (counter < 50) {
+    while (connectedIndexes.size() > 0) {
         foundConnectingPoint = false;
 
-        if ((currentIndex == 0 || currentIndex == points1.length - 1) && numberOneInUse == 1 && currentIndexChanged) {
-            break;
-        }
 
         if (numberOneInUse) {
 
             for (var i = 0; i < connectedIndexes.length; i++) {
                 if (connectedIndexes[i][0] == points1[currentIndex]) {
                     currentIndex = connectedIndexes[i][1];
-                    currentIndexChanged = true;
+  
                     numberOneInUse = false;
-                    foundConnectingPoint = true;
+
+                    if ()
 
                     connectedIndexes.splice(i, 1);
+
                 }
             }
-            if (!foundConnectingPoint) {
+            if (increasingIndices) {
                 currentIndex++;
+            }
+            else {
+            	currentIndex--;
             }
 
             resultingRoom1.push(points1[currentIndex]);
@@ -393,6 +393,23 @@ function createCirclePolygons(points1, points2, connectedIndexes) {
         counter++;
     }
     return resultingRoom1;
+}
+
+function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon, connectedIndexes) {
+	
+	var oppositeIndex = (innerIndex - 1) % 2;
+
+	var connectPoint = connectedIndexes[outerIndex][oppositeIndex];
+
+	var points = [];
+
+	for (var i = 0; i < connectedIndexes.length; i++) {
+		if (connectedIndexes[i][1] == (connectedIndexes[i][1] - 1) % polygon.length)
+	}
+}
+
+function chooseIncreasingOrDecreasingBasedOnDistance(polygon, connectedIndexes) {
+
 }
 
 function getMergingPoints(pointsCloseEnough, room1, room2){
