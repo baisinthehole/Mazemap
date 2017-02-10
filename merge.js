@@ -333,13 +333,14 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
     return indexesConnected;
 }
 
-function createCirclePolygons(points1, points2, connectedIndexes) {
+function createCirclePolygons(points1, points2, polygon1, polygon2, connectedIndexes) {
     var numberOneInUse = true;
 
     var currentRoom = 0;
+
     var currentIndex = connectedIndexes[0][0];
 
-    var resultingIndices = [[[currentIndex, currentRoom]]];
+    var resultingIndices = [[[currentIndex, 0]]];
 
 
     var increasingIndices = false;
@@ -355,6 +356,8 @@ function createCirclePolygons(points1, points2, connectedIndexes) {
                 if (connectedIndexes[i][0] == points1[currentIndex]) {
                     currentIndex = connectedIndexes[i][1];
 
+                    foundConnectingPoint = true;
+
                     numberOneInUse = false;
 
                     // if ()
@@ -363,14 +366,18 @@ function createCirclePolygons(points1, points2, connectedIndexes) {
 
                 }
             }
-            if (increasingIndices) {
-                currentIndex++;
-            }
-            else {
-            	currentIndex--;
-            }
 
-            resultingRoom1.push(points1[currentIndex]);
+            if ()
+
+            if (!foundConnectingPoint) {
+	            if (increasingIndices) {
+	                currentIndex++;
+	            }
+	            else {
+	            	currentIndex--;
+	            }
+	        }
+	        resultingIndices[currentRoom].push([currentIndex, ])
         }
         else {
 
@@ -420,9 +427,61 @@ function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, pol
     return [connectedIndexes[outerIndexLower][innerIndex], connectedIndexes[outerIndexHigher][innerIndex]];
 }
 
-// function chooseIncreasingOrDecreasingBasedOnDistance(polygon, connectedIndexes) {
+function findDistanceBetweenIncreasinAndDecreasingPoints(startIndex, endIndex1, endIndex2, polygon) {
+	var currentIndex = startIndex;
+	var previousIndex = startIndex;
+	var currentDistance = 0;
 
-// }
+	var resultDistances = [[],[]];
+
+	while (currentIndex != endIndex1) {
+		currentIndex = (currentIndex + 1) % polygon.length;
+
+		currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
+	}
+	resultDistances[0].push(currentDistance);
+
+	currentIndex = startIndex;
+	previousIndex = startIndex;
+	currentDistance = 0;
+
+	while (currentIndex != endIndex1) {
+		currentIndex = (currentIndex - 1) % polygon.length;
+
+		currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
+	}
+	resultDistances[0].push(currentDistance);
+
+	currentIndex = startIndex;
+	previousIndex = startIndex;
+	currentDistance = 0;
+
+	while (currentIndex != endIndex2) {
+		currentIndex = (currentIndex + 1) % polygon.length;
+
+		currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
+	}
+	resultDistances[1].push(currentDistance);
+
+	currentIndex = startIndex;
+	previousIndex = startIndex;
+	currentDistance = 0;
+
+	while (currentIndex != endIndex2) {
+		currentIndex = (currentIndex - 1) % polygon.length;
+
+		currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
+	}
+	resultDistances[1].push(currentDistance);
+
+	var min1 = Math.min(resultDistances[0][0], resultDistances[0][1]);
+	var min2 = Math.min(resultDistances[1][0], resultDistances[1][1]);
+
+	if (min1 < min2) {
+		return endIndex2;
+	}
+	return endIndex1;
+}
 
 function getMergingPoints(pointsCloseEnough, room1, room2){
     var longestDist = 0;
