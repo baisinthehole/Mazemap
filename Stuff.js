@@ -360,17 +360,17 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
             }
         }
     }
-    // for (var i = 0; i < coordinates.length; i++) {
-    //     if (coordinates[i].length == 0){
-    //         polygonList.push(Maze.polyline([[0,0]], {color: color, weight: 0}));
-    //     }
-    //     else if (lineOrPolygon == "line") {
-    //         polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: SERVER_WEIGHT}));
-    //     }
-    //     else {
-    //         polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, weight: SERVER_WEIGHT, fillOpacity: fillOpacity}));
-    //     }
-    // }
+    for (var i = 0; i < coordinates.length; i++) {
+        if (coordinates[i].length == 0){
+            polygonList.push(Maze.polyline([[0,0]], {color: color, weight: 0}));
+        }
+        else if (lineOrPolygon == "line") {
+            polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: SERVER_WEIGHT}));
+        }
+        else {
+            polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, weight: SERVER_WEIGHT, fillOpacity: fillOpacity}));
+        }
+    }
 }
 
 function findFarthestRooms(container) {

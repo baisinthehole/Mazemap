@@ -31,48 +31,48 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     var oldRooms = deepCopy(roomCoordinates);
 
-    var testIndex1 = 5;
-    var testIndex2 = 16;
+    // var testIndex1 = 5;
+    // var testIndex2 = 16;
 
-    globalCorridorCoordinates[testIndex1] = removeDuplicatePoints(globalCorridorCoordinates, testIndex1);
-    globalCorridorCoordinates[testIndex2] = removeDuplicatePoints(globalCorridorCoordinates, testIndex2);
+    // globalCorridorCoordinates[testIndex1] = removeDuplicatePoints(globalCorridorCoordinates, testIndex1);
+    // globalCorridorCoordinates[testIndex2] = removeDuplicatePoints(globalCorridorCoordinates, testIndex2);
 
-    testCircleMerge(globalCorridorCoordinates[testIndex1], globalCorridorCoordinates[testIndex2]);
+    // testCircleMerge(globalCorridorCoordinates[testIndex1], globalCorridorCoordinates[testIndex2]);
 
-    //getClosePoints(globalCorridorCoordinates[5], globalCorridorCoordinates[16], true);
+    getClosePoints(globalCorridorCoordinates[5], globalCorridorCoordinates[16], true);
 
-    //console.log(findPairsOfPoints(globalCorridorCoordinates[testIndex1], globalCorridorCoordinates[testIndex2], true, [0, 1, 4,5,8,10,12,18,19,21], 22));
-    //console.log(findPairsOfPoints(globalCorridorCoordinates[testIndex2], globalCorridorCoordinates[testIndex1]));
+    // console.log(findPairsOfPoints(globalCorridorCoordinates[testIndex1], globalCorridorCoordinates[testIndex2], true, [0, 1, 4,5,8,10,12,18,19,21], 22));
+    // console.log(findPairsOfPoints(globalCorridorCoordinates[testIndex2], globalCorridorCoordinates[testIndex1]));
 
     // console.log(haversineDistance(globalCorridorCoordinates[5][0], globalCorridorCoordinates[5][1]));
     // Maze.popup().setLatLng(globalCorridorCoordinates[5][0]).setContent("0").addTo(MAP);
     // Maze.popup().setLatLng(globalCorridorCoordinates[5][1]).setContent("1").addTo(MAP);
 
 
-    //findPairsOfPoints(globalCorridorCoordinates[5], globalCorridorCoordinates[16], true);
+    // findPairsOfPoints(globalCorridorCoordinates[5], globalCorridorCoordinates[16], true);
 
-    // [roomCoordinates, container] = mergeAllPolygons(neighbors, roomCoordinates);
+    [roomCoordinates, container] = mergeAllPolygons(neighbors, roomCoordinates);
 
-    // getUnmergedRooms(container, oldRooms);
+    getUnmergedRooms(container, oldRooms);
 
-    // [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container);
+    [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container);
 
-    // globalMergedCorridorsCoordinates = mergeCorridors();
+    globalMergedCorridorsCoordinates = mergeCorridors();
 
-    // orderedRooms = findOrderOfRooms(oldNeighbors, container);
+    orderedRooms = findOrderOfRooms(oldNeighbors, container);
 
-    // dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms);
+    dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms);
 
-    // var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
-    // fillZoomLevelPolygons(zoomLevelsCoordinates);
+    var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
+    fillZoomLevelPolygons(zoomLevelsCoordinates);
 
-    // roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
+    roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
-    // fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
+    fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
 
-    // var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
+    var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
 
-    // convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
+    convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
 
     // console.log(globalCorridorCoordinates);
     // console.log(getNeighborsCorridors(globalCorridorCoordinates));
@@ -100,5 +100,5 @@ function createglobalMergedPolygons(data, roomCoordinates){
     // }
     //
 
-    testCirclePoints([0,1,2,3,4,5,6,7,8], [0,1,2,3,4,5,6,7,8], [[2,5],[3,4],[6,1],[7,8]]);
+    //testCirclePoints([0,1,2,3,4,5,6,7,8], [0,1,2,3,4,5,6,7,8], [[2,5],[3,4],[6,1],[7,8]]);
 }
