@@ -1076,3 +1076,7 @@ var cookieCut= function(){
     newPoly.redraw();
   }
 };
+
+function mod(n, m){
+    return ((n % m) + m) % m;
+}

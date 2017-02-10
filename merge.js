@@ -297,7 +297,7 @@ function findPairsOfPoints(room1, room2, test=false, testPoints=[], testRoomLeng
     }
 
     console.log(resultingPoints);
-    
+
     // for (var i = 0; i < resultingPoints.length; i++) {
     //     Maze.popup().setLatLng(room1[resultingPoints[i]]).setContent(resultingPoints[i].toString()).addTo(MAP);
     // }
@@ -317,15 +317,15 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
 
     for (var i = 0; i < pointIndexes1.length; i++) {
         for (var j = 0; j < pointIndexes2.length; j++) {
-            
+
             currentDistance = getDistPoints(room1[pointIndexes1[i]], room2[pointIndexes2[j]]);
             if (currentDistance < minDistance) {
                 minDistance = currentDistance;
                 minIndex = j;
 
             }
-            
-            
+
+
         }
         indexesConnected.push([pointIndexes1[i], pointIndexes2[minIndex]]);
         minDistance = 12345678;
@@ -354,10 +354,10 @@ function createCirclePolygons(points1, points2, connectedIndexes) {
             for (var i = 0; i < connectedIndexes.length; i++) {
                 if (connectedIndexes[i][0] == points1[currentIndex]) {
                     currentIndex = connectedIndexes[i][1];
-  
+
                     numberOneInUse = false;
 
-                    if ()
+                    // if ()
 
                     connectedIndexes.splice(i, 1);
 
@@ -395,22 +395,34 @@ function createCirclePolygons(points1, points2, connectedIndexes) {
     return resultingRoom1;
 }
 
-function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon, connectedIndexes) {
-	
-	var oppositeIndex = (innerIndex - 1) % 2;
+function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, polygon2, connectedIndexes) {
+
+	var oppositeIndex = mod(innerIndex - 1, 2);
 
 	var connectPoint = connectedIndexes[outerIndex][oppositeIndex];
 
 	var points = [];
 
+    var lowerIndex = connectPoint + 1;
+    var higherIndex = connectPoint - 1;
+    var outerIndexLower;
+    var outerIndexHigher;
 	for (var i = 0; i < connectedIndexes.length; i++) {
-		if (connectedIndexes[i][1] == (connectedIndexes[i][1] - 1) % polygon.length)
+        if (mod(connectedIndexes[i][oppositeIndex] + polygon2.length - connectPoint, polygon2.length) > mod(lowerIndex + polygon2.length - connectPoint, polygon2.length)){
+            lowerIndex = connectedIndexes[i][oppositeIndex];
+            outerIndexLower = i;
+        }
+        if (mod(connectedIndexes[i][oppositeIndex] - connectPoint -1, polygon2.length) < mod(higherIndex - connectPoint -1, polygon2.length)){
+            higherIndex = connectedIndexes[i][oppositeIndex];
+            outerIndexHigher = i;
+        }
 	}
+    return [connectedIndexes[outerIndexLower][innerIndex], connectedIndexes[outerIndexHigher][innerIndex]];
 }
 
-function chooseIncreasingOrDecreasingBasedOnDistance(polygon, connectedIndexes) {
+// function chooseIncreasingOrDecreasingBasedOnDistance(polygon, connectedIndexes) {
 
-}
+// }
 
 function getMergingPoints(pointsCloseEnough, room1, room2){
     var longestDist = 0;

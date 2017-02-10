@@ -121,4 +121,7 @@ function createglobalMergedPolygons(data, roomCoordinates){
     // var polygon1 = globalCorridorCoordinates[0];
     // drawPolygonFromOnlyCoordinates(polygon1, "white", "blue");
     // createPointShortestDistance(point1, polygon1);
+
+    console.log(findIncreasingAndDecreasingPoints(0, 0, [], [0,1,2,3,4], [[5,0],[0,1],[4,2],[6,3]]));
 }
+
