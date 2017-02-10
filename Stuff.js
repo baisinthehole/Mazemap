@@ -747,6 +747,46 @@ function getMinDistToPoly(point1, polygon1){
     return minDist;
 }
 
+function getMinDistToPolyPoints(point1, polygon1){
+    var minDist = 12345465432;
+    var dist;
+    for (var i = 0; i < polygon1.length-1; i++) {
+        dist = getDistPoints(point1,polygon1[i]);
+        if (dist<minDist){
+            minDist = dist;
+        }
+    }
+    return minDist;
+}
+
+function getClosestLineInPoly(point1, polygon1){
+    var minDist = 12345465432;
+    var dist;
+    var line;
+    for (var i = 0; i < polygon1.length-1; i++) {
+        dist = getMinDistToLine(point1,[polygon1[i],polygon1[i+1]]);
+        if (dist<minDist){
+            minDist = dist;
+            line = [polygon1[i], polygon1[i+1]];
+        }
+    }
+    return line;
+}
+
+function getClosestLineIndex(point1, polygon1){
+    var minDist = 12345465432;
+    var dist;
+    var index;
+    for (var i = 0; i < polygon1.length-1; i++) {
+        dist = getMinDistToLine(point1,[polygon1[i],polygon1[i+1]]);
+        if (dist<minDist){
+            minDist = dist;
+            index = i;
+        }
+    }
+    return index;
+}
+
 function getMinDistToLine(point, line){
     dotResult0 = dotProd(makeLine(line[0],line[1]), makeLine(line[0],point));
     // dotResult0 /= (getDist(point,line[0])*getDist(line[1],line[0]));
@@ -796,6 +836,14 @@ function distPointToLine(point,linepoint1,linepoint2){
     c = linepoint1[1]-a*linepoint1[0];
     return Math.abs(a*point[0]+b*point[1]+c)/Math.sqrt(Math.pow(a,2)+Math.pow(b,2));
 }
+
+function getPointOnLineClosestToPoint(point,linepoint1,linepoint2){
+    var k = ((linepoint2[1]-linepoint1[1]) * (point[0]-linepoint1[0]) - (linepoint2[0]-linepoint1[0]) * (point[1]-linepoint1[1])) / (Math.pow((linepoint2[1]-linepoint1[1]),2) + Math.pow((linepoint2[0]-linepoint1[0]),2));
+    var x4 = point[0] - k * 0.9 * (linepoint2[1]-linepoint1[1]);
+    var y4 = point[1] + k * 0.9 * (linepoint2[0]-linepoint1[0]);
+    return [x4, y4];
+}
+
 
 function contains(a, obj) {
     for (var i = 0; i < a.length; i++) {
@@ -994,19 +1042,15 @@ function inside(point, vs) {
 
 function moveOutside(point, vs){
     var origPoint = deepCopy(point);
-    Maze.popup().setLatLng(origPoint).setContent("Orig").addTo(MAP);
     var delta = VERY_IMPORTANCE_DISTANCE/10;
     var direction = [1, 1, -1, -1];
     for (var i = 0; i < 4; i++) {
         point = deepCopy(origPoint);
         point[i%2] += direction[i]*delta;
         if (!inside(point, vs)){
-            Maze.popup().setLatLng(point).setContent("Moved").addTo(MAP);
             return point;
         }
     }
-    console.log("NO!!!");
-    Maze.popup().setLatLng(origPoint).setContent("Whoops!").addTo(MAP);
     return origPoint;
 }
 

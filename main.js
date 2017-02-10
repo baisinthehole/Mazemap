@@ -100,5 +100,10 @@ function createglobalMergedPolygons(data, roomCoordinates){
     // }
     //
 
-    //testCirclePoints([0,1,2,3,4,5,6,7,8], [0,1,2,3,4,5,6,7,8], [[2,5],[3,4],[6,1],[7,8]]);
+    //testCirclePoints([0,1,2,3,4,5,6,7,8], [0,1,2,3,4,5,6,7,8], [[2,5],[3,4],[6,1],[7,8
+    // var point1 = [63.41826,10.40165];
+    // Maze.popup().setLatLng(point1).setContent("Start point").addTo(MAP);
+    // var polygon1 = globalCorridorCoordinates[0];
+    // drawPolygonFromOnlyCoordinates(polygon1, "white", "blue");
+    // createPointShortestDistance(point1, polygon1);
 }
