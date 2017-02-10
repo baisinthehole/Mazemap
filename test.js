@@ -42,3 +42,28 @@ function markClosestCorners(data, simplifiedRoomCoordinates){
         }
     }
 }
+
+function testCrossing(point1, point2, polygon) {
+    for (var i = 0; i < polygon.length - 1; i++) {
+        console.log(crosses(point1, point2, polygon[i], polygon[i + 1]));
+        if (crosses(point1, point2, polygon[i], polygon[i + 1])) {
+            Maze.polyline([point1, point2], {color: 'black', weight: 1}).addTo(MAP);
+            Maze.marker(point2).addTo(MAP);
+
+            Maze.polyline([polygon[i], polygon[i + 1]], {color: 'black', weight: 1}).addTo(MAP);
+            Maze.marker(polygon[i + 1]).addTo(MAP);
+
+            console.log(i);
+            console.log(i + 1);
+        }
+    } 
+}
+
+function testCircleMerge(room1, room2) {
+    drawPolygonFromOnlyCoordinates(room1, "red", "blue");
+    drawPolygonFromOnlyCoordinates(room2, "red", "blue");
+}
+
+function testCirclePoints(testPoints1, testPoints2, testConnectedIndexes) {
+    console.log(createCirclePolygons(testPoints1, testPoints2, testConnectedIndexes));
+}

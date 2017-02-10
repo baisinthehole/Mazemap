@@ -23,7 +23,9 @@ var SERVER_WEIGHT = 0.5;
 var LOCAL_WEIGHT = 0.5;
 
 // distance between rooms, when determining neighbors
-var VERY_IMPORTANCE_DISTANCE = 0.0000011523708237294147*5;
+var VERY_IMPORTANCE_DISTANCE = 0.0000011523708237294147*4;
+
+var DISTANCE_FOR_FINDING_PAIRS = 2;
 
 // radial distance between points when removing duplicate points
 var MINIMUM_DISTANCE = 0.000001;
@@ -81,6 +83,9 @@ var globalOutlinePolygons = [];
 // door polygons
 var globalDoorPolygons = [];
 
+// corridor coordinates
+var globalCorridorCoordinates = [];
+
 // corridor polygons
 var globalCorridorPolygons = [];
 
@@ -102,14 +107,14 @@ function zoom() {
 
     // contains all kinds of polygons displayed on different levels
     var polygonList = [globalOutlinePolygons, globalCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons];
-    
+
     // contains all kinds of room names displayed on different levels
     var nameList = [globalRoomNames, globalUnmergedNames, mergedTextLarge, mergedTextMedium, mergedTextSmall];
-    
+
     // contains all polygons that are currently displayed
     var nowDrawings = [];
 
-    // contains all room names that are currently displayed 
+    // contains all room names that are currently displayed
     var nowNames = [];
 
     // keeps information about which zoom levels different polygons will be displayed or not
@@ -216,7 +221,7 @@ function recievedJSONfromServer() {
     GEO_JSON = geoJSON;
     var color = "gray";
     var fillColor = "red";
-    fillCoordinateTypeServer(geoJSON, [], globalCorridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
+    fillCoordinateTypeServer(geoJSON, globalCorridorCoordinates, globalCorridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
     fillCoordinateTypeServer(geoJSON, globalRoomCoordinates, globalRoomPolygons, ROOM_TYPE.ROOM, color, 'white', 0.2, "line");
     GLOBAL_ROOM_COORDINATES = deepCopy(globalRoomCoordinates);
 
@@ -598,6 +603,25 @@ function getNeighbors(data, simplified){
     return neighbors;
 }
 
+function getNeighborsCorridors(corridorCoordinates){
+    var neighbors = [];
+    var result;
+    var indeces = [];
+    for (var i = 0; i < corridorCoordinates.length; i++) {
+        var adjacent = [];
+        for (var j = 0; j < corridorCoordinates.length; j++) {
+            if (i!=j){
+                result = getDistPolyToPoly(corridorCoordinates[i], corridorCoordinates[j]);
+                if (result[2] < VERY_IMPORTANCE_DISTANCE) {
+                    adjacent.push(j);
+                }
+            }
+        }
+        neighbors.push(adjacent);
+    }
+    return neighbors;
+}
+
 function samePoiTypeByPriority(infos1, infos2, roomNumber){
     var priority1 = 1000;
     var priority2 = 1000;
@@ -723,6 +747,46 @@ function getMinDistToPoly(point1, polygon1){
     return minDist;
 }
 
+function getMinDistToPolyPoints(point1, polygon1){
+    var minDist = 12345465432;
+    var dist;
+    for (var i = 0; i < polygon1.length-1; i++) {
+        dist = getDistPoints(point1,polygon1[i]);
+        if (dist<minDist){
+            minDist = dist;
+        }
+    }
+    return minDist;
+}
+
+function getClosestLineInPoly(point1, polygon1){
+    var minDist = 12345465432;
+    var dist;
+    var line;
+    for (var i = 0; i < polygon1.length-1; i++) {
+        dist = getMinDistToLine(point1,[polygon1[i],polygon1[i+1]]);
+        if (dist<minDist){
+            minDist = dist;
+            line = [polygon1[i], polygon1[i+1]];
+        }
+    }
+    return line;
+}
+
+function getClosestLineIndex(point1, polygon1){
+    var minDist = 12345465432;
+    var dist;
+    var index;
+    for (var i = 0; i < polygon1.length-1; i++) {
+        dist = getMinDistToLine(point1,[polygon1[i],polygon1[i+1]]);
+        if (dist<minDist){
+            minDist = dist;
+            index = i;
+        }
+    }
+    return index;
+}
+
 function getMinDistToLine(point, line){
     dotResult0 = dotProd(makeLine(line[0],line[1]), makeLine(line[0],point));
     // dotResult0 /= (getDist(point,line[0])*getDist(line[1],line[0]));
@@ -762,12 +826,24 @@ function dotProd(line1,line2){
     return sum;
 }
 
+function crossProd(line1,line2){
+    return line1[0]*line2[1]-line1[1]*line2[0];
+}
+
 function distPointToLine(point,linepoint1,linepoint2){
     a = (linepoint2[1]-linepoint1[1])/(linepoint2[0]-linepoint1[0]);
     b = -1;
     c = linepoint1[1]-a*linepoint1[0];
     return Math.abs(a*point[0]+b*point[1]+c)/Math.sqrt(Math.pow(a,2)+Math.pow(b,2));
 }
+
+function getPointOnLineClosestToPoint(point,linepoint1,linepoint2){
+    var k = ((linepoint2[1]-linepoint1[1]) * (point[0]-linepoint1[0]) - (linepoint2[0]-linepoint1[0]) * (point[1]-linepoint1[1])) / (Math.pow((linepoint2[1]-linepoint1[1]),2) + Math.pow((linepoint2[0]-linepoint1[0]),2));
+    var x4 = point[0] - k * 0.9 * (linepoint2[1]-linepoint1[1]);
+    var y4 = point[1] + k * 0.9 * (linepoint2[0]-linepoint1[0]);
+    return [x4, y4];
+}
+
 
 function contains(a, obj) {
     for (var i = 0; i < a.length; i++) {
@@ -833,3 +909,170 @@ function getArea(polygon){
     sum+=polygon[polygon.length-1][0]*polygon[0][1]-polygon[0][0]*polygon[polygon.length-1][1];
     return Math.abs(sum)/2;
 }
+
+function mergeablePoint(AB, AC){
+    if (dotProd(AB, AC) <= 0 && crossProd(AB, AC) > 0){
+            return true;
+    }
+    return false;
+}
+
+function crosses(a,b,c,d){
+    // Tests if the segment a-b intersects with the segment c-d.
+    // Ex: crosses({x:0,y:0},{x:1,y:1},{x:1,y:0},{x:0,y:1}) === true
+    // Credit: Beta at http://stackoverflow.com/questions/7069420/check-if-two-line-segments-are-colliding-only-check-if-they-are-intersecting-n
+    // Implementation by Viclib (viclib.com).
+    var aSide = (d[1] - c[1]) * (a[0] - c[0]) - (d[0] - c[0]) * (a[1] - c[1]) > 0;
+    var bSide = (d[1] - c[1]) * (b[0] - c[0]) - (d[0] - c[0]) * (b[1] - c[1]) > 0;
+    var cSide = (b[1] - a[1]) * (c[0] - a[0]) - (b[0] - a[0]) * (c[1] - a[1]) > 0;
+    var dSide = (b[1] - a[1]) * (d[0] - a[0]) - (b[0] - a[0]) * (d[1] - a[1]) > 0;
+    return aSide !== bSide && cSide !== dSide;
+}
+
+function crosses2(a,b,c,d){
+    // Tests if the segment a-b intersects with the segment c-d.
+    // Ex: crosses({x:0,y:0},{x:1,y:1},{x:1,y:0},{x:0,y:1}) === true
+    // Credit: Beta at http://stackoverflow.com/questions/7069420/check-if-two-line-segments-are-colliding-only-check-if-they-are-intersecting-n
+    // Implementation by Viclib (viclib.com).
+    var aSide = (d[1] - c[1]) * (a[0] - c[0]) - (d[0] - c[0]) * (a[1] - c[1]) >= 0;
+    var bSide = (d[1] - c[1]) * (b[0] - c[0]) - (d[0] - c[0]) * (b[1] - c[1]) >= 0;
+    var cSide = (b[1] - a[1]) * (c[0] - a[0]) - (b[0] - a[0]) * (c[1] - a[1]) >= 0;
+    var dSide = (b[1] - a[1]) * (d[0] - a[0]) - (b[0] - a[0]) * (d[1] - a[1]) >= 0;
+    return aSide !== bSide && cSide !== dSide;
+}
+
+function crossesPolygon(a,b, polygon){
+    for (var i = 0; i < polygon.length-1; i++) {
+        if (crosses(a,b,polygon[i],polygon[i+1]) && crosses2(a,b,polygon[i],polygon[i+1])){
+            return true;
+        }
+    }
+    return false;
+}
+
+function squared (x) { return x * x }
+function toRad (x) { return x * Math.PI / 180.0 }
+function toDeg (x) { return x *180.0 / Math.PI }
+
+function haversineDistance (a, b) {
+
+  // radius of the earth
+  var R = 6378137;
+
+  var aLat = a[0];
+  var bLat = b[0];
+  var aLng = a[1];
+  var bLng = b[1];
+
+  var dLat = toRad(bLat - aLat);
+  var dLon = toRad(bLng - aLng);
+
+  var f = squared(Math.sin(dLat / 2.0)) + Math.cos(toRad(aLat)) * Math.cos(toRad(bLat)) * squared(Math.sin(dLon / 2.0));
+  var c = 2 * Math.atan2(Math.sqrt(f), Math.sqrt(1 - f));
+
+  return R * c;
+}
+
+function haversineAngle (a, b) {
+
+    // radius of the earth
+    var R = 6378137;
+
+    var aLat = a[0];
+    var bLat = b[0];
+    var aLng = a[1];
+    var bLng = b[1];
+
+    var dLat = toRad(bLat - aLat);
+    // dLon is difference in longitude
+    var dLon = toRad(bLng - aLng);
+
+    var y = Math.sin(dLon) * Math.cos(bLat);
+    var x = Math.cos(aLat)*Math.sin(bLat) - Math.sin(aLat)*Math.cos(bLat)*Math.cos(dLon);
+    var brng = toDeg(Math.atan2(y, x));
+    return brng;
+}
+
+function getAngle(AB, AC){
+    var angle = Math.atan2(AB[1], AB[0]) - Math.atan2(AC[1], AC[0]);
+    if (angle < 0){
+        angle += 2*Math.PI;
+    }
+    return angle;
+}
+
+function mergingAngle(AB, AC){
+    var angle = getAngle(AB, AC);
+    if (angle >= Math.PI/3 && angle <= 10/9*Math.PI){
+        return true;
+    }
+    return false;
+}
+
+function getHaversineAngle(a, b, c){
+    return haversineAngle(a, b)-haversineAngle(a, c);
+}
+
+function getBearing(lat1,lng1,lat2,lng2) {
+    var dLon = (lng2-lng1);
+    var y = Math.sin(dLon) * Math.cos(lat2);
+    var x = Math.cos(lat1)*Math.sin(lat2) - Math.sin(lat1)*Math.cos(lat2)*Math.cos(dLon);
+    var brng = toDeg(Math.atan2(y, x));
+    return 360 - ((brng + 360) % 360);
+}
+
+function inside(point, vs) {
+    // ray-casting algorithm based on
+    // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
+
+    var x = point[0], y = point[1];
+
+    var inside = false;
+    for (var i = 0, j = vs.length - 1; i < vs.length; j = i++) {
+        var xi = vs[i][0], yi = vs[i][1];
+        var xj = vs[j][0], yj = vs[j][1];
+
+        var intersect = ((yi > y) != (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+
+    return inside;
+}
+
+function moveOutside(point, vs){
+    var origPoint = deepCopy(point);
+    var delta = VERY_IMPORTANCE_DISTANCE/10;
+    var direction = [1, 1, -1, -1];
+    for (var i = 0; i < 4; i++) {
+        point = deepCopy(origPoint);
+        point[i%2] += direction[i]*delta;
+        if (!inside(point, vs)){
+            return point;
+        }
+    }
+    return origPoint;
+}
+
+function findOutsideOfPolygon(a, b, polygon){
+    var dx = b[0] - a[0];
+    var dy = b[1] - b[0];
+    var normalizer  = Math.max(dx, dy);
+    var normalVector = [-dy, dx];
+    var middlePoint = [(a[0]+b[0])/2, (a[1]+b[1])/2];
+    var testPoint = [middlePoint[0]+normalVector[0]*VERY_IMPORTANCE_DISTANCE/normalizer, middlePoint[1]+normalVector[1]*VERY_IMPORTANCE_DISTANCE]/normalizer;
+    return inside(testPoint, polygon);
+}
+
+var makeHole = function(poly1, poly2){
+  poly1._holes = poly1._holes || [];
+    poly1._holes.push(poly2.getLatLngs());
+  return poly1;
+};
+var cookieCut= function(){
+  var layers = drawLayer.getLayers();
+  if (layers.length > 1){
+    var newPoly = makeHole(layers[0], layers[1]);
+    newPoly.redraw();
+  }
+};
