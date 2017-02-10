@@ -31,6 +31,26 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     var oldRooms = deepCopy(roomCoordinates);
 
+    // var testIndex1 = 5;
+    // var testIndex2 = 16;
+
+    // globalCorridorCoordinates[testIndex1] = removeDuplicatePoints(globalCorridorCoordinates, testIndex1);
+    // globalCorridorCoordinates[testIndex2] = removeDuplicatePoints(globalCorridorCoordinates, testIndex2);
+
+    // testCircleMerge(globalCorridorCoordinates[testIndex1], globalCorridorCoordinates[testIndex2]);
+
+    getClosePoints(globalCorridorCoordinates[5], globalCorridorCoordinates[16], true);
+
+    // console.log(findPairsOfPoints(globalCorridorCoordinates[testIndex1], globalCorridorCoordinates[testIndex2], true, [0, 1, 4,5,8,10,12,18,19,21], 22));
+    // console.log(findPairsOfPoints(globalCorridorCoordinates[testIndex2], globalCorridorCoordinates[testIndex1]));
+
+    // console.log(haversineDistance(globalCorridorCoordinates[5][0], globalCorridorCoordinates[5][1]));
+    // Maze.popup().setLatLng(globalCorridorCoordinates[5][0]).setContent("0").addTo(MAP);
+    // Maze.popup().setLatLng(globalCorridorCoordinates[5][1]).setContent("1").addTo(MAP);
+
+
+    // findPairsOfPoints(globalCorridorCoordinates[5], globalCorridorCoordinates[16], true);
+
     [roomCoordinates, container] = mergeAllPolygons(neighbors, roomCoordinates);
 
     getUnmergedRooms(container, oldRooms);
@@ -80,19 +100,10 @@ function createglobalMergedPolygons(data, roomCoordinates){
     // }
     //
 
+    //testCirclePoints([0,1,2,3,4,5,6,7,8], [0,1,2,3,4,5,6,7,8], [[2,5],[3,4],[6,1],[7,8
     // var point1 = [63.41826,10.40165];
     // Maze.popup().setLatLng(point1).setContent("Start point").addTo(MAP);
     // var polygon1 = globalCorridorCoordinates[0];
     // drawPolygonFromOnlyCoordinates(polygon1, "white", "blue");
     // createPointShortestDistance(point1, polygon1);
-var arr = [];
-arr[0] = [0,0];
-arr[1] = [1,1];
-arr[2] = [2,2];
-arr[3] = [4,4];
-arr[4] = [5,5];
-
-console.log(deepCopy(arr));
-arr.splice(0, 0, [3,3]);
-console.log(arr);
 }

@@ -25,6 +25,8 @@ var LOCAL_WEIGHT = 0.5;
 // distance between rooms, when determining neighbors
 var VERY_IMPORTANCE_DISTANCE = 0.0000011523708237294147*4;
 
+var DISTANCE_FOR_FINDING_PAIRS = 2;
+
 // radial distance between points when removing duplicate points
 var MINIMUM_DISTANCE = 0.000001;
 
@@ -1061,3 +1063,16 @@ function findOutsideOfPolygon(a, b, polygon){
     var testPoint = [middlePoint[0]+normalVector[0]*VERY_IMPORTANCE_DISTANCE/normalizer, middlePoint[1]+normalVector[1]*VERY_IMPORTANCE_DISTANCE]/normalizer;
     return inside(testPoint, polygon);
 }
+
+var makeHole = function(poly1, poly2){
+  poly1._holes = poly1._holes || [];
+    poly1._holes.push(poly2.getLatLngs());
+  return poly1;
+};
+var cookieCut= function(){
+  var layers = drawLayer.getLayers();
+  if (layers.length > 1){
+    var newPoly = makeHole(layers[0], layers[1]);
+    newPoly.redraw();
+  }
+};

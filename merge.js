@@ -223,14 +223,176 @@ function removeSharpPoint(polygon){
     return polygon;
 }
 
-function getClosePoints(room1, room2) {
+function getClosePoints(room1, room2, test=false) {
     var closePoints = [];
     for (var i = 0; i < room1.length; i++) {
         if (getMinDistToPoly(room1[i], room2) < VERY_IMPORTANCE_DISTANCE){
             closePoints.push(i);
         }
     }
+
+    if (test) {
+        for (var i = 0; i < closePoints.length; i++) {
+            Maze.popup().setLatLng(room1[closePoints[i]]).setContent("close " + i.toString()).addTo(MAP);
+        }
+    }
+
     return closePoints;
+}
+
+function findPairsOfPoints(room1, room2, test=false, testPoints=[], testRoomLength=0) {
+    var points;
+    var length;
+
+    if (test) {
+        points = testPoints;
+        length = testRoomLength;
+    }
+    else {
+        points = getClosePoints(room1, room2);
+        length = room1.length;
+    }
+
+
+    var resultingPoints = [];
+    var timesShifted = 0;
+
+
+    if (points[0] == 0 && points[points.length - 1] == length - 1) {
+
+        var currentValue = 0;
+
+        while (currentValue == points[0]) {
+            points.push(points.shift());
+
+            currentValue++;
+
+            timesShifted++;
+        }
+    }
+
+    console.log(points);
+
+    var originalIndex = 0;
+    var currentIndex = 0;
+    var nextIndex = 1
+
+    console.log(timesShifted);
+
+    for (var i = 0; i < points.length - timesShifted - 1; i++) {
+        if (points[currentIndex] != points[nextIndex] - 1) {
+            if (originalIndex != currentIndex) {
+                resultingPoints.push(points[originalIndex]);
+                resultingPoints.push(points[currentIndex]);
+
+            }
+            originalIndex = nextIndex;
+        }
+        currentIndex++;
+        nextIndex++;
+    }
+    if (points[originalIndex] != points[points.length - 1]) {
+        resultingPoints.push(points[originalIndex]);
+        resultingPoints.push(points[points.length - 1]);
+    }
+
+    console.log(resultingPoints);
+    
+    // for (var i = 0; i < resultingPoints.length; i++) {
+    //     Maze.popup().setLatLng(room1[resultingPoints[i]]).setContent(resultingPoints[i].toString()).addTo(MAP);
+    // }
+
+
+    return resultingPoints;
+}
+
+function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
+    minDistance = 12345678;
+    minIndex = 0;
+    indexesConnected = [];
+
+
+    var currentAngle;
+    var currentDistance;
+
+    for (var i = 0; i < pointIndexes1.length; i++) {
+        for (var j = 0; j < pointIndexes2.length; j++) {
+            
+            currentDistance = getDistPoints(room1[pointIndexes1[i]], room2[pointIndexes2[j]]);
+            if (currentDistance < minDistance) {
+                minDistance = currentDistance;
+                minIndex = j;
+
+            }
+            
+            
+        }
+        indexesConnected.push([pointIndexes1[i], pointIndexes2[minIndex]]);
+        minDistance = 12345678;
+    }
+    return indexesConnected;
+}
+
+function createCirclePolygons(points1, points2, connectedIndexes) {
+    var numberOneInUse = true;
+
+    var currentIndex = 0;
+
+    var resultingRoom1 = [currentIndex];
+    var resultingRoom2 = [];
+
+    var currentIndexChanged = false;
+
+    var foundConnectingPoint = false;
+
+    var counter = 0;
+
+    while (counter < 50) {
+        foundConnectingPoint = false;
+
+        if ((currentIndex == 0 || currentIndex == points1.length - 1) && numberOneInUse == 1 && currentIndexChanged) {
+            break;
+        }
+
+        if (numberOneInUse) {
+
+            for (var i = 0; i < connectedIndexes.length; i++) {
+                if (connectedIndexes[i][0] == points1[currentIndex]) {
+                    currentIndex = connectedIndexes[i][1];
+                    currentIndexChanged = true;
+                    numberOneInUse = false;
+                    foundConnectingPoint = true;
+
+                    connectedIndexes.splice(i, 1);
+                }
+            }
+            if (!foundConnectingPoint) {
+                currentIndex++;
+            }
+
+            resultingRoom1.push(points1[currentIndex]);
+        }
+        else {
+
+            for (var i = 0; i < connectedIndexes.length; i++) {
+                if (connectedIndexes[i][1] == points1[currentIndex]) {
+                    currentIndex = connectedIndexes[i][0];
+                    currentIndexChanged = true;
+                    numberOneInUse = true;
+                    foundConnectingPoint = true;
+
+                    connectedIndexes.splice(i, 1);
+                }
+            }
+            if (!foundConnectingPoint) {
+                currentIndex++;
+            }
+
+            resultingRoom1.push(points2[currentIndex]);
+        }
+        counter++;
+    }
+    return resultingRoom1;
 }
 
 function getMergingPoints(pointsCloseEnough, room1, room2){

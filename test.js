@@ -58,3 +58,12 @@ function testCrossing(point1, point2, polygon) {
         }
     } 
 }
+
+function testCircleMerge(room1, room2) {
+    drawPolygonFromOnlyCoordinates(room1, "red", "blue");
+    drawPolygonFromOnlyCoordinates(room2, "red", "blue");
+}
+
+function testCirclePoints(testPoints1, testPoints2, testConnectedIndexes) {
+    console.log(createCirclePolygons(testPoints1, testPoints2, testConnectedIndexes));
+}
