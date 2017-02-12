@@ -339,24 +339,11 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
     var index = connectedIndexes[0][0];
     var roomNr = 0;
     var increasing = true;
-    var outerIndex = getOuterIndex(index, roomNr, connectedIndexes);
-    var points = findIncreasingAndDecreasingPoints(outerIndex, roomNr, polygon1, polygon2, connectedIndexes);
-    // for (var i = 0; i < mod(index - points[1], polygon1.length); i++) {
-    //     resultRoom.push(polygon1[mod(points[1] + i, polygon1.length)]);
-    //     Maze.popup().setLatLng(polygon1[mod(points[1] + i, polygon1.length)]).setContent((points[1] + i).toString()).addTo(MAP);
-    // }
-    // console.log(deepCopy(resultRoom));
     console.log("Initial");
     console.log(deepCopy(points1));
     console.log(deepCopy(points2));
     console.log(deepCopy(connectedIndexes));
-    while (true) {
-        if (points1.length == 0 && resultRoom.length > 1 && roomNr == 0){
-            if (resultRoom[0] == polygon1[index]){
-                resultRooms.push(resultRoom);
-                break;
-            }
-        }
+    while (points1.length > 0 || resultRoom[0] != polygon1[index]) {
         if (resultRoom.length > 1 && roomNr == 0){
             if (resultRoom[0] == polygon1[index]){
                 resultRooms.push(resultRoom);
@@ -406,11 +393,7 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
             }
         }
     }
-    console.log("resultRoom");
-    console.log(deepCopy(points1));
-    console.log(deepCopy(points2));
-    // resultRooms.push(resultRoom);
-    console.log(resultRooms);
+    resultRooms.push(resultRoom);
     return resultRooms;
 }
 
@@ -513,9 +496,6 @@ function isIncreasing(startIndex, endIndex1, endIndex2, polygon) {
 
     var min1 = Math.min(resultDistances[0][0], resultDistances[0][1]);
     var min2 = Math.min(resultDistances[1][0], resultDistances[1][1]);
-
-    console.log(min1);
-    console.log(min2);
 
     if (min1 < min2) {
         return true;
