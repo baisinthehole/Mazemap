@@ -435,6 +435,9 @@ function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, pol
             outerIndexHigher = i;
         }
 	}
+    console.log("test");
+    console.log(connectedIndexes);
+    console.log(outerIndexHigher);
     return [connectedIndexes[outerIndexLower][innerIndex], connectedIndexes[outerIndexHigher][innerIndex]];
 }
 
