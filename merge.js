@@ -367,8 +367,6 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
                 }
             }
 
-            if ()
-
             if (!foundConnectingPoint) {
 	            if (increasingIndices) {
 	                currentIndex++;
@@ -427,7 +425,7 @@ function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, pol
     return [connectedIndexes[outerIndexLower][innerIndex], connectedIndexes[outerIndexHigher][innerIndex]];
 }
 
-function findDistanceBetweenIncreasinAndDecreasingPoints(startIndex, endIndex1, endIndex2, polygon) {
+function isIncreasing(startIndex, endIndex1, endIndex2, polygon) {
 	var currentIndex = startIndex;
 	var previousIndex = startIndex;
 	var currentDistance = 0;
@@ -478,9 +476,9 @@ function findDistanceBetweenIncreasinAndDecreasingPoints(startIndex, endIndex1, 
 	var min2 = Math.min(resultDistances[1][0], resultDistances[1][1]);
 
 	if (min1 < min2) {
-		return endIndex2;
+		return false;
 	}
-	return endIndex1;
+	return true;
 }
 
 function getMergingPoints(pointsCloseEnough, room1, room2){
