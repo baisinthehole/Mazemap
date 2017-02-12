@@ -334,6 +334,33 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
 }
 
 function createCirclePolygons(points1, points2, polygon1, polygon2, connectedIndexes) {
+    var resultPolygon = [];
+    points1.splice(points1.indexOf(connectedIndexes[0][0]));
+    resultPolygon.push(polygon1[connectedIndexes[0][0]]);
+    points = findIncreasingAndDecreasingPoints(0, 0, polygon1, polygon2, connectedIndexes);
+    var index = connectedIndexes[0][1];
+    if (isIncreasing(connectedIndexes, points[0], points[1], polygon1)){
+        while (!contains(index, points2)){
+            resultPolygon.push(polygon2[index]);
+            index = mod(index + 1, polygon2.length);
+        }
+    }
+    else {
+        while (!contains(index, points2)){
+            resultPolygon.push(polygon2[index]);
+            index = mod(index - 1, polygon2.length);
+        }
+    }
+    var nextIndex;
+    for (var i = 0; i < connectedIndexes.length; i++) {
+        if (connectedIndexes[i][1] == index){
+            nextIndex = index;
+        }
+    }
+
+
+
+
     var numberOneInUse = true;
 
     var currentRoom = 0;
