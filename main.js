@@ -68,7 +68,8 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     var testRoom = createCirclePolygons(pairs1, pairs2, globalCorridorCoordinates[5], globalCorridorCoordinates[16], connectedPoints);
     console.log(testRoom);
-    drawPolygonFromOnlyCoordinates(testRoom, "white", "blue");
+    drawPolygonFromOnlyCoordinates(testRoom[0], "white", "blue");
+    drawPolygonFromOnlyCoordinates(testRoom[1], "white", "green");
     // checkPointSequence(testRoom);
 
     // console.log(haversineDistance(globalCorridorCoordinates[5][0], globalCorridorCoordinates[5][1]));
@@ -136,8 +137,8 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     //console.log(findIncreasingAndDecreasingPoints(0, 0, [], [0,1,2,3,4], [[5,0],[0,1],[4,2],[6,3]]));
 
-    var points = findIncreasingAndDecreasingPoints(1, 0, globalCorridorCoordinates[5], globalCorridorCoordinates[16], connectedPoints);
-    console.log(points);
-    console.log(isIncreasing(connectedPoints[1][0], points[0], points[1], globalCorridorCoordinates[5]));
+    // var points = findIncreasingAndDecreasingPoints(1, 0, globalCorridorCoordinates[5], globalCorridorCoordinates[16], connectedPoints);
+    // console.log(points);
+    // console.log(isIncreasing(connectedPoints[1][0], points[0], points[1], globalCorridorCoordinates[5]));
 }
 

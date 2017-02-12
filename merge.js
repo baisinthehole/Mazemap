@@ -350,24 +350,17 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
     console.log(deepCopy(points1));
     console.log(deepCopy(points2));
     console.log(deepCopy(connectedIndexes));
-    var counter = 0;
-    while (points1.length > 0 && points2.length > 0){
-        // console.log("Start of while");
-        // console.log(index);
-        // console.log(roomNr);
-        if (index == 2 && roomNr == 0 && resultRoom.length > 1){
-            resultRooms.push(resultRoom);
-            resultRoom = [];
-            index = points1[0];
-            roomNr = 0;
-            console.log("Break");
-            // break;
-        }
-        if (resultRoom.length > 1){
-            if (resultRoom[0] == polygon1[points1[index]]){
-                console.log("Yey, this happens");
-                console.log(deepCopy(resultRoom));
+    while (true) {
+        if (points1.length == 0 && resultRoom.length > 1 && roomNr == 0){
+            if (resultRoom[0] == polygon1[index]){
                 resultRooms.push(resultRoom);
+                break;
+            }
+        }
+        if (resultRoom.length > 1 && roomNr == 0){
+            if (resultRoom[0] == polygon1[index]){
+                resultRooms.push(resultRoom);
+                resultRoom = [];
                 index = points1[0];
                 roomNr = 0;
             }
@@ -375,12 +368,9 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
         if (roomNr == 0){
             resultRoom.push(polygon1[index]);
             if (contains(points1, index)){
-                console.log("index");
-                console.log(index);
                 var outerIndex = getOuterIndex(index, roomNr, connectedIndexes);
                 points = findIncreasingAndDecreasingPoints(outerIndex, roomNr, polygon1, polygon2, connectedIndexes);
                 increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon1);
-                console.log(increasing);
                 points1.splice(points1.indexOf(index), 1);
                 index = getOtherConnectedPoint(index, roomNr, connectedIndexes);
                 points2.splice(points2.indexOf(index), 1);
@@ -419,9 +409,9 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
     console.log("resultRoom");
     console.log(deepCopy(points1));
     console.log(deepCopy(points2));
-    resultRooms.push(resultRoom);
+    // resultRooms.push(resultRoom);
     console.log(resultRooms);
-    return resultRooms[1];
+    return resultRooms;
 }
 
 function getOuterIndex(index, roomNr, connectedIndexes){
@@ -466,69 +456,71 @@ function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, pol
 }
 
 function isIncreasing(startIndex, endIndex1, endIndex2, polygon) {
-	var currentIndex = startIndex;
-	var previousIndex = startIndex;
-	var currentDistance = 0;
+    var currentIndex = startIndex;
+    var previousIndex = startIndex;
+    var currentDistance = 0;
 
-	var resultDistances = [[],[]];
+    var resultDistances = [[],[]];
 
-	while (currentIndex != endIndex1) {
-		currentIndex = mod((currentIndex + 1), polygon.length);
+    while (currentIndex != endIndex1) {
+        currentIndex = mod((currentIndex + 1), polygon.length);
 
-		previousIndex = mod((previousIndex + 1), polygon.length);
+        currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
 
-		currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
-	}
+        previousIndex = mod((previousIndex + 1), polygon.length);
+    }
 
-	resultDistances[0].push(currentDistance);
+    resultDistances[0].push(currentDistance);
 
-	currentIndex = startIndex;
-	previousIndex = startIndex;
-	currentDistance = 0;
+    currentIndex = startIndex;
+    previousIndex = startIndex;
+    currentDistance = 0;
 
-	while (currentIndex != endIndex1) {
-		currentIndex = mod((currentIndex - 1), polygon.length);
+    while (currentIndex != endIndex1) {
+        currentIndex = mod((currentIndex - 1), polygon.length);
 
-		previousIndex = mod((previousIndex - 1), polygon.length);
+        currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
 
-		currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
-	}
-	resultDistances[0].push(currentDistance);
+        previousIndex = mod((previousIndex - 1), polygon.length);
+    }
+    resultDistances[0].push(currentDistance);
 
-	currentIndex = startIndex;
-	previousIndex = startIndex;
-	currentDistance = 0;
+    currentIndex = startIndex;
+    previousIndex = startIndex;
+    currentDistance = 0;
 
-	while (currentIndex != endIndex2) {
-		currentIndex = mod((currentIndex + 1), polygon.length);
+    while (currentIndex != endIndex2) {
+        currentIndex = mod((currentIndex + 1), polygon.length);
 
-		previousIndex = mod((previousIndex + 1), polygon.length);
+        currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
 
-		currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
-	}
-	resultDistances[1].push(currentDistance);
+        previousIndex = mod((previousIndex + 1), polygon.length);
+    }
+    resultDistances[1].push(currentDistance);
 
-	currentIndex = startIndex;
-	previousIndex = startIndex;
-	currentDistance = 0;
+    currentIndex = startIndex;
+    previousIndex = startIndex;
+    currentDistance = 0;
 
-	while (currentIndex != endIndex2) {
-		currentIndex = mod((currentIndex - 1), polygon.length);
+    while (currentIndex != endIndex2) {
+        currentIndex = mod((currentIndex - 1), polygon.length);
 
-		previousIndex = mod((previousIndex - 1), polygon.length);
+        currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
 
-		currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
-	}
-	resultDistances[1].push(currentDistance);
+        previousIndex = mod((previousIndex - 1), polygon.length);
+    }
+    resultDistances[1].push(currentDistance);
 
-	var min1 = Math.min(resultDistances[0][0], resultDistances[0][1]);
-	var min2 = Math.min(resultDistances[1][0], resultDistances[1][1]);
+    var min1 = Math.min(resultDistances[0][0], resultDistances[0][1]);
+    var min2 = Math.min(resultDistances[1][0], resultDistances[1][1]);
+
     console.log(min1);
     console.log(min2);
-	if (min1 < min2) {
-		return false;
-	}
-	return true;
+
+    if (min1 < min2) {
+        return true;
+    }
+    return false;
 }
 
 function getMergingPoints(pointsCloseEnough, room1, room2){
