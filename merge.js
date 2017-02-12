@@ -334,97 +334,110 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
 }
 
 function createCirclePolygons(points1, points2, polygon1, polygon2, connectedIndexes) {
-    var resultPolygon = [];
-    points1.splice(points1.indexOf(connectedIndexes[0][0]));
-    resultPolygon.push(polygon1[connectedIndexes[0][0]]);
-    points = findIncreasingAndDecreasingPoints(0, 0, polygon1, polygon2, connectedIndexes);
-    var index = connectedIndexes[0][1];
-    if (isIncreasing(connectedIndexes, points[0], points[1], polygon1)){
-        while (!contains(index, points2)){
-            resultPolygon.push(polygon2[index]);
-            index = mod(index + 1, polygon2.length);
+    var resultRooms = [];
+    var resultRoom = [];
+    var index = connectedIndexes[0][0];
+    var roomNr = 0;
+    var increasing = true;
+    var outerIndex = getOuterIndex(index, roomNr, connectedIndexes);
+    var points = findIncreasingAndDecreasingPoints(outerIndex, roomNr, polygon1, polygon2, connectedIndexes);
+    // for (var i = 0; i < mod(index - points[1], polygon1.length); i++) {
+    //     resultRoom.push(polygon1[mod(points[1] + i, polygon1.length)]);
+    //     Maze.popup().setLatLng(polygon1[mod(points[1] + i, polygon1.length)]).setContent((points[1] + i).toString()).addTo(MAP);
+    // }
+    // console.log(deepCopy(resultRoom));
+    console.log("Initial");
+    console.log(deepCopy(points1));
+    console.log(deepCopy(points2));
+    console.log(deepCopy(connectedIndexes));
+    var counter = 0;
+    while (points1.length > 0 && points2.length > 0){
+        // console.log("Start of while");
+        // console.log(index);
+        // console.log(roomNr);
+        if (index == 2 && roomNr == 0 && resultRoom.length > 1){
+            resultRooms.push(resultRoom);
+            resultRoom = [];
+            index = points1[0];
+            roomNr = 0;
+            console.log("Break");
+            // break;
         }
-    }
-    else {
-        while (!contains(index, points2)){
-            resultPolygon.push(polygon2[index]);
-            index = mod(index - 1, polygon2.length);
+        if (resultRoom.length > 1){
+            if (resultRoom[0] == polygon1[points1[index]]){
+                console.log("Yey, this happens");
+                console.log(deepCopy(resultRoom));
+                resultRooms.push(resultRoom);
+                index = points1[0];
+                roomNr = 0;
+            }
         }
-    }
-    var nextIndex;
-    for (var i = 0; i < connectedIndexes.length; i++) {
-        if (connectedIndexes[i][1] == index){
-            nextIndex = index;
-        }
-    }
-
-
-
-
-    var numberOneInUse = true;
-
-    var currentRoom = 0;
-
-    var currentIndex = connectedIndexes[0][0];
-
-    var resultingIndices = [[[currentIndex, 0]]];
-
-
-    var increasingIndices = false;
-
-
-    while (connectedIndexes.size() > 0) {
-        foundConnectingPoint = false;
-
-
-        if (numberOneInUse) {
-
-            for (var i = 0; i < connectedIndexes.length; i++) {
-                if (connectedIndexes[i][0] == points1[currentIndex]) {
-                    currentIndex = connectedIndexes[i][1];
-
-                    foundConnectingPoint = true;
-
-                    numberOneInUse = false;
-
-                    // if ()
-
-                    connectedIndexes.splice(i, 1);
-
+        if (roomNr == 0){
+            resultRoom.push(polygon1[index]);
+            if (contains(points1, index)){
+                console.log("index");
+                console.log(index);
+                var outerIndex = getOuterIndex(index, roomNr, connectedIndexes);
+                points = findIncreasingAndDecreasingPoints(outerIndex, roomNr, polygon1, polygon2, connectedIndexes);
+                increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon1);
+                console.log(increasing);
+                points1.splice(points1.indexOf(index), 1);
+                index = getOtherConnectedPoint(index, roomNr, connectedIndexes);
+                points2.splice(points2.indexOf(index), 1);
+                roomNr = 1;
+            }
+            else {
+                if (increasing){
+                    index = mod(index+1, polygon1.length);
+                }
+                else {
+                    index = mod(index-1, polygon1.length);
                 }
             }
-
-            if (!foundConnectingPoint) {
-	            if (increasingIndices) {
-	                currentIndex++;
-	            }
-	            else {
-	            	currentIndex--;
-	            }
-	        }
-	        resultingIndices[currentRoom].push([currentIndex, ])
         }
         else {
-
-            for (var i = 0; i < connectedIndexes.length; i++) {
-                if (connectedIndexes[i][1] == points1[currentIndex]) {
-                    currentIndex = connectedIndexes[i][0];
-                    currentIndexChanged = true;
-                    numberOneInUse = true;
-                    foundConnectingPoint = true;
-
-                    connectedIndexes.splice(i, 1);
+            resultRoom.push(polygon2[index]);
+            if (contains(points2, index)){
+                var outerIndex = getOuterIndex(index, roomNr, connectedIndexes);
+                points = findIncreasingAndDecreasingPoints(outerIndex, roomNr, polygon1, polygon2, connectedIndexes);
+                increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon2);
+                points2.splice(points2.indexOf(index), 1);
+                index = getOtherConnectedPoint(index, roomNr, connectedIndexes);
+                points1.splice(points1.indexOf(index), 1);
+                roomNr = 0;
+            }
+            else {
+                if (increasing){
+                    index = mod(index+1, polygon2.length);
+                }
+                else {
+                    index = mod(index-1, polygon2.length);
                 }
             }
-            if (!foundConnectingPoint) {
-                currentIndex++;
-            }
-
-            resultingRoom1.push(points2[currentIndex]);
         }
-        counter++;
     }
-    return resultingRoom1;
+    console.log("resultRoom");
+    console.log(deepCopy(points1));
+    console.log(deepCopy(points2));
+    resultRooms.push(resultRoom);
+    console.log(resultRooms);
+    return resultRooms[1];
+}
+
+function getOuterIndex(index, roomNr, connectedIndexes){
+    for (var i = 0; i < connectedIndexes.length; i++) {
+        if (connectedIndexes[i][roomNr] == index){
+            return i;
+        }
+    }
+}
+
+function getOtherConnectedPoint(index, roomNr, connectedIndexes){
+    for (var i = 0; i < connectedIndexes.length; i++) {
+        if (connectedIndexes[i][roomNr] == index){
+            return connectedIndexes[i][mod(roomNr+1, 2)];
+        }
+    }
 }
 
 function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, polygon2, connectedIndexes) {
@@ -510,7 +523,8 @@ function isIncreasing(startIndex, endIndex1, endIndex2, polygon) {
 
 	var min1 = Math.min(resultDistances[0][0], resultDistances[0][1]);
 	var min2 = Math.min(resultDistances[1][0], resultDistances[1][1]);
-
+    console.log(min1);
+    console.log(min2);
 	if (min1 < min2) {
 		return false;
 	}

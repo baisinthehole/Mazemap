@@ -45,24 +45,31 @@ function createglobalMergedPolygons(data, roomCoordinates){
     // console.log(findPairsOfPoints(globalCorridorCoordinates[testIndex1], globalCorridorCoordinates[testIndex2]));
     // console.log(findPairsOfPoints(globalCorridorCoordinates[testIndex2], globalCorridorCoordinates[testIndex1]));
 
-    checkPointSequence(globalCorridorCoordinates[testIndex1]);
+    // checkPointSequence(globalCorridorCoordinates[testIndex1]);
     //checkPointSequence(globalCorridorCoordinates[testIndex2]);
 
     newPolygon = addPointOnLine(globalCorridorCoordinates[5][0], globalCorridorCoordinates[16]);
 
     drawPolygonFromOnlyCoordinates(globalCorridorCoordinates[5], "blue", "red");
     drawPolygonFromOnlyCoordinates(newPolygon, "blue", "red");
-    checkPointSequence(newPolygon);
+    // checkPointSequence(newPolygon);
 
     pairs1 = findPairsOfPoints(globalCorridorCoordinates[testIndex1], newPolygon);
     pairs2 = findPairsOfPoints(newPolygon, globalCorridorCoordinates[testIndex1]);
-
+    console.log("pairs1");
+    console.log(pairs1);
+    console.log(pairs2);
 
     var connectedPoints = connectCirclePoints(globalCorridorCoordinates[5], globalCorridorCoordinates[16], pairs1, pairs2);
 
     var points = findIncreasingAndDecreasingPoints(1, 0, globalCorridorCoordinates[5], globalCorridorCoordinates[16], connectedPoints);
 
-    console.log(points);
+    console.log(connectedPoints);
+
+    var testRoom = createCirclePolygons(pairs1, pairs2, globalCorridorCoordinates[5], globalCorridorCoordinates[16], connectedPoints);
+    console.log(testRoom);
+    drawPolygonFromOnlyCoordinates(testRoom, "white", "blue");
+    // checkPointSequence(testRoom);
 
     // console.log(haversineDistance(globalCorridorCoordinates[5][0], globalCorridorCoordinates[5][1]));
     // Maze.popup().setLatLng(globalCorridorCoordinates[5][0]).setContent("0").addTo(MAP);
@@ -129,6 +136,8 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     //console.log(findIncreasingAndDecreasingPoints(0, 0, [], [0,1,2,3,4], [[5,0],[0,1],[4,2],[6,3]]));
 
+    var points = findIncreasingAndDecreasingPoints(1, 0, globalCorridorCoordinates[5], globalCorridorCoordinates[16], connectedPoints);
+    console.log(points);
     console.log(isIncreasing(connectedPoints[1][0], points[0], points[1], globalCorridorCoordinates[5]));
 }
 
