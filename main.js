@@ -60,7 +60,9 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     var connectedPoints = connectCirclePoints(globalCorridorCoordinates[5], globalCorridorCoordinates[16], pairs1, pairs2);
 
-    var points = findIncreasingAndDecreasingPoints(0, 0, globalCorridorCoordinates[5], globalCorridorCoordinates[16], connectedPoints);
+    var points = findIncreasingAndDecreasingPoints(1, 0, globalCorridorCoordinates[5], globalCorridorCoordinates[16], connectedPoints);
+
+    console.log(points);
 
     // console.log(haversineDistance(globalCorridorCoordinates[5][0], globalCorridorCoordinates[5][1]));
     // Maze.popup().setLatLng(globalCorridorCoordinates[5][0]).setContent("0").addTo(MAP);
@@ -127,6 +129,6 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     //console.log(findIncreasingAndDecreasingPoints(0, 0, [], [0,1,2,3,4], [[5,0],[0,1],[4,2],[6,3]]));
 
-    console.log(isIncreasing(connectedPoints[0][0], points[0], points[1], globalCorridorCoordinates[5]));
+    console.log(isIncreasing(connectedPoints[1][0], points[0], points[1], globalCorridorCoordinates[5]));
 }
 

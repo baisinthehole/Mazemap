@@ -433,10 +433,13 @@ function isIncreasing(startIndex, endIndex1, endIndex2, polygon) {
 	var resultDistances = [[],[]];
 
 	while (currentIndex != endIndex1) {
-		currentIndex = (currentIndex + 1) % polygon.length;
+		currentIndex = mod((currentIndex + 1), polygon.length);
+
+		previousIndex = mod((previousIndex + 1), polygon.length);
 
 		currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
 	}
+
 	resultDistances[0].push(currentDistance);
 
 	currentIndex = startIndex;
@@ -444,7 +447,9 @@ function isIncreasing(startIndex, endIndex1, endIndex2, polygon) {
 	currentDistance = 0;
 
 	while (currentIndex != endIndex1) {
-		currentIndex = (currentIndex - 1) % polygon.length;
+		currentIndex = mod((currentIndex - 1), polygon.length);
+
+		previousIndex = mod((previousIndex - 1), polygon.length);
 
 		currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
 	}
@@ -455,7 +460,9 @@ function isIncreasing(startIndex, endIndex1, endIndex2, polygon) {
 	currentDistance = 0;
 
 	while (currentIndex != endIndex2) {
-		currentIndex = (currentIndex + 1) % polygon.length;
+		currentIndex = mod((currentIndex + 1), polygon.length);
+
+		previousIndex = mod((previousIndex + 1), polygon.length);
 
 		currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
 	}
@@ -466,7 +473,9 @@ function isIncreasing(startIndex, endIndex1, endIndex2, polygon) {
 	currentDistance = 0;
 
 	while (currentIndex != endIndex2) {
-		currentIndex = (currentIndex - 1) % polygon.length;
+		currentIndex = mod((currentIndex - 1), polygon.length);
+
+		previousIndex = mod((previousIndex - 1), polygon.length);
 
 		currentDistance += getDistPoints(polygon[previousIndex], polygon[currentIndex]);
 	}
