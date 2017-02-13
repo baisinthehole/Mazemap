@@ -67,3 +67,16 @@ function testCircleMerge(room1, room2) {
 function testCirclePoints(testPoints1, testPoints2, testConnectedIndexes) {
     console.log(createCirclePolygons(testPoints1, testPoints2, testConnectedIndexes));
 }
+
+function markCorridorIndices() {
+    for (var i = 0; i < globalCorridorCoordinates.length; i++) {
+        if (globalCorridorCoordinates[i][0][0].constructor === Array) {
+            Maze.popup().setLatLng(getPoint(globalCorridorCoordinates[i][0])).setContent(i.toString()).addTo(MAP);
+        }
+        else {
+            if (globalCorridorCoordinates[i].length > 2) {
+                Maze.popup().setLatLng(getPoint(globalCorridorCoordinates[i])).setContent(i.toString()).addTo(MAP);
+            }
+        }
+    }
+}

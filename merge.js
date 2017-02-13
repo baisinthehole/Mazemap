@@ -317,7 +317,6 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
             if (currentDistance < minDistance) {
                 minDistance = currentDistance;
                 minIndex = j;
-
             }
 
 
@@ -413,6 +412,9 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
     var index = connectedIndexes[0][0];
     var roomNr = 0;
     var increasing = true;
+
+
+
     while (points1.length > 0 || resultRoom[0] != polygon1[index]) {
         // If a result room is complete
         if (resultRoom.length > 1 && roomNr == 0){
@@ -496,6 +498,7 @@ function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, pol
     var higherIndex = connectPoint - 1;
     var outerIndexLower;
     var outerIndexHigher;
+
 	for (var i = 0; i < connectedIndexes.length; i++) {
         if (mod(connectedIndexes[i][oppositeIndex] + polygon2.length - connectPoint, polygon2.length) > mod(lowerIndex + polygon2.length - connectPoint, polygon2.length)){
             lowerIndex = connectedIndexes[i][oppositeIndex];
@@ -1000,7 +1003,7 @@ function addPointOnLine(point, polygon){
         var closestPoint = createPointShortestDistance(point, polygon);
         var index = getClosestLineIndex(point, polygon);
         polygon.splice(index+1, 0, closestPoint);
-        Maze.popup().setLatLng(closestPoint).setContent("Added").addTo(MAP);
+        //Maze.popup().setLatLng(closestPoint).setContent("Added").addTo(MAP);
     }
     return polygon;
 }
