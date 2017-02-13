@@ -1,4 +1,4 @@
-var FLOOR_ID = "76";
+var FLOOR_ID = "56";
 var FILENAME = "floor_4_35.json";
 
 // Create a map
@@ -31,56 +31,28 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     var oldRooms = deepCopy(roomCoordinates);
 
-    // for (var i = 0; i < globalCorridorCoordinates.length; i++) {
-    //     var point = getPoint(globalCorridorCoordinates[i]);
-    //     console.log(point);
-    //     console.log(point[0]);
-    //     if (point[0]){
-    //         Maze.popup().setLatLng(point).setContent(i.toString()).addTo(MAP);
-    //     }
-    // }
+    [roomCoordinates, container] = mergeAllPolygons(neighbors, roomCoordinates);
 
-    var testIndex1 = 5;
-    var testIndex2 = 1;
-    var testIndex6 = 13;
-    var testIndex3 = 16;
-    var testIndex4 = 6;
-    var testIndex5 = 20;
+    getUnmergedRooms(container, oldRooms);
 
-    globalCorridorCoordinates[testIndex1] = removeDuplicatePoints(globalCorridorCoordinates, testIndex1);
-    globalCorridorCoordinates[testIndex2] = removeDuplicatePoints(globalCorridorCoordinates, testIndex2);
-    globalCorridorCoordinates[testIndex3] = removeDuplicatePoints(globalCorridorCoordinates, testIndex3);
-    globalCorridorCoordinates[testIndex4] = removeDuplicatePoints(globalCorridorCoordinates, testIndex4);
-    globalCorridorCoordinates[testIndex5] = removeDuplicatePoints(globalCorridorCoordinates, testIndex5);
-    globalCorridorCoordinates[testIndex6] = removeDuplicatePoints(globalCorridorCoordinates, testIndex6);
+    [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container);
 
-    var modified5 = addPointOnLine(globalCorridorCoordinates[16][1], globalCorridorCoordinates[5]);
-    var modified6 = addPointOnLine(globalCorridorCoordinates[20][5], globalCorridorCoordinates[6]);
-    var modified20 = addPointOnLine(globalCorridorCoordinates[13][15], globalCorridorCoordinates[20]);
-    modified20 = addPointOnLine(globalCorridorCoordinates[13][16], modified20);
+    globalMergedCorridorsCoordinates = mergeCorridors();
 
-    var room1 = superMergeTwo(globalCorridorCoordinates[5], globalCorridorCoordinates[1]);
-    room1 = superMergeTwo(globalCorridorCoordinates[13], room1);
-    var room2 = superMergeTwo(globalCorridorCoordinates[16], globalCorridorCoordinates[6]);
-    room2 = superMergeTwo(room2, globalCorridorCoordinates[20]);
+    orderedRooms = findOrderOfRooms(oldNeighbors, container);
 
+    dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms);
 
-    // drawPolygonFromOnlyCoordinates(room1, "white", "red");
-    // drawPolygonFromOnlyCoordinates(room2, "white", "blue");
-    // checkPointSequence(globalCorridorCoordinates[13]);
-    // checkPointSequence(room2);
+    var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
+    fillZoomLevelPolygons(zoomLevelsCoordinates);
 
-    pairs1 = findPairsOfPoints(room1, room2);
-    pairs2 = findPairsOfPoints(room2, room1);
+    roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
-    var connectedPoints = connectCirclePoints(room1, room2, pairs1, pairs2);
+    fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
 
-    console.log(connectedPoints);
+    var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
 
-    var testRoom = createCirclePolygons(pairs1, pairs2, room1, room2, connectedPoints);
-    console.log(testRoom);
-    drawPolygonFromOnlyCoordinates(testRoom[0], "white", "blue");
-    drawPolygonFromOnlyCoordinates(testRoom[1], "white", "green");
-    drawPolygonFromOnlyCoordinates(testRoom[2], "white", "red");
+    convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
+
 }
 

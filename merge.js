@@ -327,6 +327,23 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
     return indexesConnected;
 }
 
+function superDuperMerge(room1, room2) {
+    var addedPoints = addPointsForTwoPolygon(room1, room2);
+    room1 = addedPoints[0];
+    room2 = addedPoints[1];
+    var pairs1 = findPairsOfPoints(room1, room2);
+    var pairs2 = findPairsOfPoints(room2, room1);
+    var connectedPoints = connectCirclePoints(room1, room2, pairs1, pairs2);
+    if (connectedPoints.length > 2) {
+        console.log("More than two connected points");
+        console.log(connectedPoints);
+        return createCirclePolygons(pairs1, pairs2, room1, room2, connectedPoints);
+    }
+    else {
+        return superMergeTwo(room1, room2);
+    }
+}
+
 function createCirclePolygons(points1, points2, polygon1, polygon2, connectedIndexes) {
     var resultRooms = [];
     var resultRoom = [];
