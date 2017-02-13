@@ -31,26 +31,6 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     var oldRooms = deepCopy(roomCoordinates);
 
-    // var testIndex1 = 5;
-    // var testIndex2 = 16;
-
-    // globalCorridorCoordinates[testIndex1] = removeDuplicatePoints(globalCorridorCoordinates, testIndex1);
-    // globalCorridorCoordinates[testIndex2] = removeDuplicatePoints(globalCorridorCoordinates, testIndex2);
-
-    // testCircleMerge(globalCorridorCoordinates[testIndex1], globalCorridorCoordinates[testIndex2]);
-
-    getClosePoints(globalCorridorCoordinates[5], globalCorridorCoordinates[16], true);
-
-    // console.log(findPairsOfPoints(globalCorridorCoordinates[testIndex1], globalCorridorCoordinates[testIndex2], true, [0, 1, 4,5,8,10,12,18,19,21], 22));
-    // console.log(findPairsOfPoints(globalCorridorCoordinates[testIndex2], globalCorridorCoordinates[testIndex1]));
-
-    // console.log(haversineDistance(globalCorridorCoordinates[5][0], globalCorridorCoordinates[5][1]));
-    // Maze.popup().setLatLng(globalCorridorCoordinates[5][0]).setContent("0").addTo(MAP);
-    // Maze.popup().setLatLng(globalCorridorCoordinates[5][1]).setContent("1").addTo(MAP);
-
-
-    // findPairsOfPoints(globalCorridorCoordinates[5], globalCorridorCoordinates[16], true);
-
     [roomCoordinates, container] = mergeAllPolygons(neighbors, roomCoordinates);
 
     getUnmergedRooms(container, oldRooms);
@@ -74,36 +54,5 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
 
-    // console.log(globalCorridorCoordinates);
-    // console.log(getNeighborsCorridors(globalCorridorCoordinates));
-    // var colors = ["red", "blue", "yellow", "green", "black", "orange"];
-    // for (var i = 0; i < globalCorridorCoordinates.length; i++) {
-    //     if (globalCorridorCoordinates[i].length != 2){
-    //         Maze.popup().setLatLng(getPoint(globalCorridorCoordinates[i])).setContent(i.toString()).addTo(MAP);
-    //         // Maze.marker(getPoint(globalCorridorCoordinates[i]), {html: i}).addTo(MAP);
-    //     }
-    // }
-
-    // var a = [0, 0];
-    // var b = [5, 0];
-    // var c = [-2, 2];
-    // cs = [[-2, 2],[2,2],[7,2],[7,-2],[2,-2],[-2,-2]];
-    // for (var i = 0; i < cs.length; i++) {
-    //     c = cs[i];
-    //     var AB = makeLine(a,b);
-    //     var BA = makeLine(b,a);
-    //     var AC = makeLine(a,c);
-    //     var BC = makeLine(b,c);
-    //     console.log(i);
-    //     console.log(mergeablePoint(AB, AC));
-    //     console.log(mergeablePoint(BC, BA));
-    // }
-    //
-
-    //testCirclePoints([0,1,2,3,4,5,6,7,8], [0,1,2,3,4,5,6,7,8], [[2,5],[3,4],[6,1],[7,8
-    // var point1 = [63.41826,10.40165];
-    // Maze.popup().setLatLng(point1).setContent("Start point").addTo(MAP);
-    // var polygon1 = globalCorridorCoordinates[0];
-    // drawPolygonFromOnlyCoordinates(polygon1, "white", "blue");
-    // createPointShortestDistance(point1, polygon1);
 }
+
