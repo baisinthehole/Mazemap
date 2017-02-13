@@ -179,15 +179,20 @@ function simpleMergeTwo(room1, room2, test=false){
 function superMergeTwo(room1, room2, test=false){
     var pointsCloseEnough1 = getClosePoints(room1, room2);
     var pointsCloseEnough2 = getClosePoints(room2, room1);
+    // var roomsWithAddedPoints = addPointsForTwoPolygon(room1, room2, pointsCloseEnough1, pointsCloseEnough2);
+    // if (roomsWithAddedPoints[2]) {
+    //     console.log("Added points");
+    //     room1 = roomsWithAddedPoints[0];
+    //     room2 = roomsWithAddedPoints[1];
+    //     pointsCloseEnough1 = getClosePoints(room1, room2);
+    //     pointsCloseEnough2 = getClosePoints(room2, room1);
+    // }
+    // else {
+    //     console.log("Did not add points");
+    // }
     var mergingPoints1 = getMergingPoints(pointsCloseEnough1, room1, room2);
     var mergingPoints2 = getMergingPoints(pointsCloseEnough2, room2, room1);
 
-    // room2 = addPointOnLine(room1[mergingPoints1[0]], room2);
-    // room2 = addPointOnLine(room1[mergingPoints1[1]], room2);
-    // pointsCloseEnough1 = getClosePoints(room1, room2);
-    // pointsCloseEnough2 = getClosePoints(room2, room1);
-    // mergingPoints1 = getMergingPoints(pointsCloseEnough1, room1, room2);
-    // mergingPoints2 = getMergingPoints(pointsCloseEnough2, room2, room1);
     var mergedPolygon;
 
     if (mergingPoints2[0]) {
@@ -271,13 +276,9 @@ function findPairsOfPoints(room1, room2, test=false, testPoints=[], testRoomLeng
         }
     }
 
-    console.log(points);
-
     var originalIndex = 0;
     var currentIndex = 0;
     var nextIndex = 1
-
-    console.log(timesShifted);
 
     for (var i = 0; i < points.length - timesShifted - 1; i++) {
         if (points[currentIndex] != points[nextIndex] - 1) {
@@ -295,13 +296,6 @@ function findPairsOfPoints(room1, room2, test=false, testPoints=[], testRoomLeng
         resultingPoints.push(points[originalIndex]);
         resultingPoints.push(points[points.length - 1]);
     }
-
-    console.log(resultingPoints);
-
-    // for (var i = 0; i < resultingPoints.length; i++) {
-    //     Maze.popup().setLatLng(room1[resultingPoints[i]]).setContent(resultingPoints[i].toString()).addTo(MAP);
-    // }
-
 
     return resultingPoints;
 }
@@ -344,6 +338,7 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
     console.log(deepCopy(points2));
     console.log(deepCopy(connectedIndexes));
     while (points1.length > 0 || resultRoom[0] != polygon1[index]) {
+        // If a result room is complete
         if (resultRoom.length > 1 && roomNr == 0){
             if (resultRoom[0] == polygon1[index]){
                 resultRooms.push(resultRoom);
@@ -435,9 +430,6 @@ function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, pol
             outerIndexHigher = i;
         }
 	}
-    console.log("test");
-    console.log(connectedIndexes);
-    console.log(outerIndexHigher);
     return [connectedIndexes[outerIndexLower][innerIndex], connectedIndexes[outerIndexHigher][innerIndex]];
 }
 
@@ -937,3 +929,21 @@ function addPointOnLine(point, polygon){
     }
     return polygon;
 }
+
+// function addPointsForTwoPolygon(room1, room2) {
+//     var closestPoints1 = getClosePoints(room1, room2);
+//     var closestPoints2 = getClosePoints(room2, room1);
+//     var initialLength1 = room1.length;
+//     var initialLength2 = room2.length;
+//     var added = false;
+//     for (var i = 0; i < closestPoints1.length; i++) {
+//         room2 = addPointOnLine(room1[closestPoints1[i]], room2);
+//     }
+//     for (i = 0; i < closestPoints2.length; i++) {
+//         room1 = addPointOnLine(room2[closestPoints2[i]], room1);
+//     }
+//     if (room1.length > initialLength1 || room2.length > initialLength2) {
+//         added = true;
+//     }
+//     return [room1, room2, added];
+// }

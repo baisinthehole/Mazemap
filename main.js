@@ -59,10 +59,10 @@ function createglobalMergedPolygons(data, roomCoordinates){
     var modified20 = addPointOnLine(globalCorridorCoordinates[13][15], globalCorridorCoordinates[20]);
     modified20 = addPointOnLine(globalCorridorCoordinates[13][16], modified20);
 
-    var room1 = superMergeTwo(modified5, globalCorridorCoordinates[1]);
+    var room1 = superMergeTwo(globalCorridorCoordinates[5], globalCorridorCoordinates[1]);
     room1 = superMergeTwo(globalCorridorCoordinates[13], room1);
-    var room2 = superMergeTwo(globalCorridorCoordinates[16], modified6);
-    room2 = superMergeTwo(room2, modified20);
+    var room2 = superMergeTwo(globalCorridorCoordinates[16], globalCorridorCoordinates[6]);
+    room2 = superMergeTwo(room2, globalCorridorCoordinates[20]);
 
 
     // drawPolygonFromOnlyCoordinates(room1, "white", "red");
@@ -72,9 +72,6 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     pairs1 = findPairsOfPoints(room1, room2);
     pairs2 = findPairsOfPoints(room2, room1);
-    console.log("pairs1");
-    console.log(pairs1);
-    console.log(pairs2);
 
     var connectedPoints = connectCirclePoints(room1, room2, pairs1, pairs2);
 
