@@ -44,6 +44,9 @@ function createglobalMergedPolygons(data, roomCoordinates){
     dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms);
 
     var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
+
+    console.log(zoomLevelsCoordinates);
+
     fillZoomLevelPolygons(zoomLevelsCoordinates);
 
     roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
