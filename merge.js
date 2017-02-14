@@ -437,7 +437,7 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
                 }
             }
             usedIndexes2.push(index);
-            indexesConnected.push([pointIndexes1[i], index]);
+            indexesConnected.push([pointIndexes1[i], pointIndexes2[index]]);
         }
     }
     console.log("End of connectCirclePoints");
