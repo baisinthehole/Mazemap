@@ -366,7 +366,18 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
     console.log("Start connectCirclePoints");
     console.log(deepCopy(pointIndexes1));
     console.log(deepCopy(pointIndexes2));
-    if (pointIndexes1.length >= pointIndexes2.length) {
+    if (pointIndexes1.length > pointIndexes2.length) {
+        for (var i = 0; i < pointIndexes2.length; i++) {
+            var minDist = 12345654;
+            for (var j = 0; j < room1.length; j++) {
+                var dist = getDistPoints(room2[pointIndexes2[i]], room1[j]);
+                if (dist < minDist){
+                    minDist = dist;
+                    index = j;
+                }
+            }
+            indexesConnected.push([index, pointIndexes2[i]]);
+        }
         console.log("1 longest");
         var notUsedIndexes1 = removeClosestPoint(deepCopy(pointIndexes1), pointIndexes2, room1, room2);
         var usedIndexes1 = removeOtherPoint(deepCopy(pointIndexes1), pointIndexes2, room1, room2);
@@ -386,20 +397,19 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
             pointIndexes2.push(index);
             indexesConnected.push([pointIndexes1[i], index]);
         }
-        for (var i = 0; i < usedIndexes1.length; i++) {
+    }
+    else if (pointIndexes1.length < pointIndexes2.length) {
+        for (var i = 0; i < pointIndexes1.length; i++) {
             var minDist = 12345654;
             for (var j = 0; j < room2.length; j++) {
-                var dist = getDistPoints(room1[usedIndexes1[i]], room2[j]);
-                if (dist < minDist && !contains(pointIndexes2, j)){
+                var dist = getDistPoints(room1[pointIndexes1[i]], room2[j]);
+                if (dist < minDist){
                     minDist = dist;
                     index = j;
                 }
             }
-            // pointIndexes2.push(index);
             indexesConnected.push([pointIndexes1[i], index]);
         }
-    }
-    else if (pointIndexes1.length < pointIndexes2.length) {
         console.log("2 longest");
         var notUsedIndexes2 = removeClosestPoint(deepCopy(pointIndexes2), pointIndexes1, room2, room1);
         console.log("notUsedIndexes2");
@@ -416,17 +426,19 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
             pointIndexes1.push(index);
             indexesConnected.push([index, pointIndexes2[i]]);
         }
-        for (var i = 0; i < usedIndexes2.length; i++) {
+    }
+    else {
+        console.log("same length");
+        for (var i = 0; i < pointIndexes1.length; i++) {
             var minDist = 12345654;
-            for (var j = 0; j < room1.length; j++) {
-                var dist = getDistPoints(room2[usedIndexes2[i]], room1[j]);
-                if (dist < minDist && !contains(pointIndexes1, j)){
+            for (var j = 0; j < pointIndexes2.length; j++) {
+                var dist = getDistPoints(room1[pointIndexes1[i]], room2[pointIndexes2[j]]);
+                if (dist < minDist){
                     minDist = dist;
                     index = j;
                 }
             }
-            // pointIndexes1.push(index);
-            indexesConnected.push([index, pointIndexes2[i]]);
+            indexesConnected.push([pointIndexes1[i], index]);
         }
     }
     console.log("End of connectCirclePoints");
