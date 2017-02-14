@@ -380,11 +380,8 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
         }
         console.log("1 longest");
         var notUsedIndexes1 = removeClosestPoint(deepCopy(pointIndexes1), pointIndexes2, room1, room2);
-        var usedIndexes1 = removeOtherPoint(deepCopy(pointIndexes1), pointIndexes2, room1, room2);
         console.log("notUsedIndexes1");
         console.log(notUsedIndexes1);
-        console.log("usedIndexes1");
-        console.log(usedIndexes1);
         for (var i = 0; i < notUsedIndexes1.length; i++) {
             var minDist = 12345654;
             for (var j = 0; j < room2.length; j++) {
@@ -395,7 +392,7 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
                 }
             }
             pointIndexes2.push(index);
-            indexesConnected.push([pointIndexes1[i], index]);
+            indexesConnected.push([notUsedIndexes1[i], index]);
         }
     }
     else if (pointIndexes1.length < pointIndexes2.length) {
@@ -424,20 +421,22 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
                 }
             }
             pointIndexes1.push(index);
-            indexesConnected.push([index, pointIndexes2[i]]);
+            indexesConnected.push([index, notUsedIndexes2[i]]);
         }
     }
     else {
         console.log("same length");
+        var usedIndexes2 = [];
         for (var i = 0; i < pointIndexes1.length; i++) {
             var minDist = 12345654;
             for (var j = 0; j < pointIndexes2.length; j++) {
                 var dist = getDistPoints(room1[pointIndexes1[i]], room2[pointIndexes2[j]]);
-                if (dist < minDist){
+                if (dist < minDist && !contains(usedIndexes2, j)){
                     minDist = dist;
                     index = j;
                 }
             }
+            usedIndexes2.push(index);
             indexesConnected.push([pointIndexes1[i], index]);
         }
     }
@@ -611,6 +610,8 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
         if (roomNr == 0){
             resultRoom.push(polygon1[index]);
             if (contains(points1, index)){
+                console.log("points1");
+                console.log(deepCopy(points1));
                 var outerIndex = getOuterIndex(index, roomNr, connectedIndexes);
                 points = findIncreasingAndDecreasingPoints(outerIndex, roomNr, polygon1, polygon2, connectedIndexes);
                 increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon1);
@@ -631,6 +632,8 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
         else {
             resultRoom.push(polygon2[index]);
             if (contains(points2, index)){
+                console.log("points2");
+                console.log(deepCopy(points2));
                 var outerIndex = getOuterIndex(index, roomNr, connectedIndexes);
                 points = findIncreasingAndDecreasingPoints(outerIndex, roomNr, polygon1, polygon2, connectedIndexes);
                 increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon2);
@@ -666,6 +669,10 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
 }
 
 function getOuterIndex(index, roomNr, connectedIndexes){
+    console.log("Inside getOuterIndex");
+    console.log(index);
+    console.log(roomNr);
+    console.log(connectedIndexes);
     for (var i = 0; i < connectedIndexes.length; i++) {
         if (connectedIndexes[i][roomNr] == index){
             return i;
@@ -684,7 +691,9 @@ function getOtherConnectedPoint(index, roomNr, connectedIndexes){
 function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, polygon2, connectedIndexes) {
 
 	var oppositeIndex = mod(innerIndex - 1, 2);
-
+    console.log("Debug");
+    console.log(connectedIndexes);
+    console.log(outerIndex);
 	var connectPoint = connectedIndexes[outerIndex][oppositeIndex];
 
 	var points = [];
