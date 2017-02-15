@@ -285,7 +285,12 @@ function getClosePoints(room1, room2, test=false) {
     return closePoints;
 }
 
-function findPairsOfPoints(room1, room2, test=false, testPoints=[], testRoomLength=0) {
+function findPairsOfPoints(polygon1, polygon2, test=false, testPoints=[], testRoomLength=0) {
+    var room1 = deepCopy(polygon1);
+    var room2 = deepCopy(polygon2);
+
+    room1.splice(-1,1);
+    room2.splice(-1,1);
     var points;
     var length;
 
@@ -582,6 +587,21 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
     var increasing = true;
     var counter = 0;
     var broken = false;
+    console.log("Points");
+    console.log(deepCopy(points1));
+    console.log(deepCopy(points2));
+    console.log(deepCopy(connectedIndexes));
+    if (points1[0] == 0 && polygon1[1] == 1){
+        console.log("Do stuff!");
+        drawPolygonFromOnlyCoordinates(polygon1, "white", "red");
+        drawPolygonFromOnlyCoordinates(polygon2, "white", "blue");
+        for (var i = 0; i < points1.length; i++) {
+            Maze.popup().setLatLng(polygon1[points1[i]]).setContent(points1[i].toString()).addTo(MAP);
+        }
+        for (i = 0; i < points2.length; i++) {
+            Maze.popup().setLatLng(polygon2[points2[i]]).setContent(points2[i].toString()).addTo(MAP);
+        }
+    }
     while (points1.length > 0 || resultRoom[0] != polygon1[index]) {
         counter++;
         if (counter > 9990) {
@@ -659,6 +679,10 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
 }
 
 function getOuterIndex(index, roomNr, connectedIndexes){
+    console.log("Test");
+    console.log(index);
+    console.log(roomNr);
+    console.log(connectedIndexes);
     for (var i = 0; i < connectedIndexes.length; i++) {
         if (connectedIndexes[i][roomNr] == index){
             return i;
@@ -677,9 +701,11 @@ function getOtherConnectedPoint(index, roomNr, connectedIndexes){
 function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, polygon2, connectedIndexes) {
 
 	var oppositeIndex = mod(innerIndex - 1, 2);
-    // console.log("Debug");
-    // console.log(connectedIndexes);
-    // console.log(outerIndex);
+    console.log("Debug");
+    console.log(connectedIndexes);
+    console.log(outerIndex);
+    console.log(polygon1.length);
+    console.log(polygon2.length);
 	var connectPoint = connectedIndexes[outerIndex][oppositeIndex];
 
 	var points = [];
