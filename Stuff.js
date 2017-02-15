@@ -839,8 +839,8 @@ function distPointToLine(point,linepoint1,linepoint2){
 
 function getPointOnLineClosestToPoint(point,linepoint1,linepoint2){
     var k = ((linepoint2[1]-linepoint1[1]) * (point[0]-linepoint1[0]) - (linepoint2[0]-linepoint1[0]) * (point[1]-linepoint1[1])) / (Math.pow((linepoint2[1]-linepoint1[1]),2) + Math.pow((linepoint2[0]-linepoint1[0]),2));
-    var x4 = point[0] - k * 0.9 * (linepoint2[1]-linepoint1[1]);
-    var y4 = point[1] + k * 0.9 * (linepoint2[0]-linepoint1[0]);
+    var x4 = point[0] - k * 1 * (linepoint2[1]-linepoint1[1]);
+    var y4 = point[1] + k * 1 * (linepoint2[0]-linepoint1[0]);
     return [x4, y4];
 }
 
