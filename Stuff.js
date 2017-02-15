@@ -42,6 +42,9 @@ var GEO_JSON;
 // all room coordinates
 var GLOBAL_ROOM_COORDINATES;
 
+// all corridor coordinates
+var GLOBAL_CORRIDOR_COORDINATES;
+
 // three levels of merged room polygons
 var mergedLarge = [];
 var mergedMedium = [];
@@ -224,6 +227,8 @@ function recievedJSONfromServer() {
     fillCoordinateTypeServer(geoJSON, globalCorridorCoordinates, globalCorridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
     fillCoordinateTypeServer(geoJSON, globalRoomCoordinates, globalRoomPolygons, ROOM_TYPE.ROOM, color, 'white', 0.2, "line");
     GLOBAL_ROOM_COORDINATES = deepCopy(globalRoomCoordinates);
+    GLOBAL_CORRIDOR_COORDINATES = deepCopy(globalCorridorCoordinates);
+
 
     removedDuplicatePoints = removeDuplicatesFromAllRooms(globalRoomCoordinates);
     var simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);

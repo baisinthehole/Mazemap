@@ -1,4 +1,4 @@
-var FLOOR_ID = "8";
+var FLOOR_ID = "15";
 var FILENAME = "floor_4_35.json";
 
 // Create a map
@@ -37,7 +37,7 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container);
 
-    //getCorridorIndices();
+    // getCorridorIndices();
 
     globalMergedCorridorsCoordinates = mergeCorridors();
 
@@ -55,6 +55,29 @@ function createglobalMergedPolygons(data, roomCoordinates){
     var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
 
     convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
+
+    // var room1 = GLOBAL_CORRIDOR_COORDINATES[18];
+    // var room2 = GLOBAL_CORRIDOR_COORDINATES[1];
+    // addedPoints = addPointsForTwoPolygon(room1, room2);
+    // room1 = addedPoints[0];
+    // room2 = addedPoints[1];
+    // pairs1 = findPairsOfPoints(room1, room2);
+    // pairs2 = findPairsOfPoints(room2, room1);
+    // connectedPoints = connectCirclePoints(room1, room2, pairs1, pairs2);
+    // console.log("Output");
+    // console.log(deepCopy(pairs1));
+    // console.log(deepCopy(pairs2));
+    // console.log(deepCopy(connectedPoints));
+    // // checkPointSequence(room2);
+    // if (connectedPoints.length > 2) {
+    //     result = createCirclePolygons(pairs1, pairs2, room1, room2, connectedPoints);
+    //     console.log(result);
+    //     drawPolygonFromOnlyCoordinates(result, "white", "red");
+    // }
+    // else {
+    //     result = superMergeTwo(room1, room2);
+    //     drawPolygonFromOnlyCoordinates(result, "white", "red");
+    // }
 
 }
 
