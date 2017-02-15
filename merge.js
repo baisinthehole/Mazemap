@@ -1321,3 +1321,85 @@ function addPointsForTwoPolygon(room1, room2) {
     }
     return [room1, room2, added];
 }
+
+function experimentWithIncreasing(startIndex, endIndex1, endIndex2, connectedIndexes, polygon1, polygon2) {
+
+	var currentIndex = startIndex;
+
+	var endIndex1IsValid = false;
+
+	var endIndex2IsValid = false;
+
+	var isIncreasing = isIncreasingOriginal(startIndex, endIndex1, endIndex2, polygon1);
+
+	while (currentIndex != endIndex1) {
+		if (currentIndex != startIndex) {
+
+			if (getMinDistToPolyPoints(polygon1[currentIndex], polygon2) > VERY_IMPORTANCE_DISTANCE) {
+				endIndex1IsValid = true;
+				break;
+			}
+		}
+		currentIndex += mod(currentIndex + 1, polygon1.length);
+	}
+	if (!endIndex1IsValid) {
+
+		for (var i = 0; i < connectedIndexes.length; i++) {
+			if (connectedIndexes[i][0] == startIndex) {
+				startIndex = connectedIndexes[i][1];
+			}
+			if (connectedIndexes[i][0] == endIndex1) {
+				endIndex1 = connectedIndexes[i][1];
+			}
+		}
+
+		currentIndex = startIndex;
+
+		while (currentIndex != endIndex1) {
+			if (currentIndex != startIndex) {
+				if (getMinDistToPolyPoints(polygon2[currentIndex], polygon1) > VERY_IMPORTANCE_DISTANCE) {
+					endIndex1IsValid = true;
+					break;
+				}
+			}
+			currentIndex += mod(currentIndex + 1, polygon2.length);
+		}
+	}
+
+	while (currentIndex != endIndex1) {
+		if (currentIndex != startIndex) {
+			if (getMinDistToPolyPoints(polygon1[currentIndex], polygon2) > VERY_IMPORTANCE_DISTANCE) {
+				endIndex2IsValid = true;
+				break;
+			}
+		}
+		currentIndex += mod(currentIndex - 1, polygon1.length);
+	}
+	if (!endIndex2IsValid) {
+
+		for (var i = 0; i < connectedIndexes.length; i++) {
+			if (connectedIndexes[i][0] == startIndex) {
+				startIndex = connectedIndexes[i][1];
+			}
+			if (connectedIndexes[i][0] == endIndex1) {
+				endIndex1 = connectedIndexes[i][1];
+			}
+		}
+
+		currentIndex = startIndex;
+
+		while (currentIndex != endIndex1) {
+			if (currentIndex != startIndex) {
+				if (getMinDistToPolyPoints(polygon2[currentIndex], polygon1) > VERY_IMPORTANCE_DISTANCE) {
+					endIndex2IsValid = true;
+					break;
+				}
+			}
+			currentIndex += mod(currentIndex - 1, polygon2.length);
+		}
+	}
+	if (isIncreasing && endIndex1IsValid) {
+		return true;
+	}
+	return false;
+}
