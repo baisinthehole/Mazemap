@@ -1,4 +1,4 @@
-var FLOOR_ID = "15";
+var FLOOR_ID = "8";
 var FILENAME = "floor_4_35.json";
 
 // Create a map
@@ -36,6 +36,8 @@ function createglobalMergedPolygons(data, roomCoordinates){
     getUnmergedRooms(container, oldRooms);
 
     [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container);
+
+    //getCorridorIndices();
 
     globalMergedCorridorsCoordinates = mergeCorridors();
 
