@@ -521,7 +521,12 @@ function superDuperMerge(room1, room2) {
             result = createCirclePolygons(pairs1, pairs2, room1[biggestRoomIndex], room2, connectedPoints);
         }
         else {
-            result = [superMergeTwo(room1[biggestRoomIndex].reverse(), room2)];
+            if (!isClockwise(room1[biggestRoomIndex])) {
+                result = [superMergeTwo(room1[biggestRoomIndex], room2)];
+            }
+            else {
+                result = [superMergeTwo(room1[biggestRoomIndex].reverse(), room2)];
+            }
         }
         for (var i = 0; i < room1.length; i++) {
             if (i != biggestRoomIndex) {
@@ -542,7 +547,12 @@ function superDuperMerge(room1, room2) {
             result = createCirclePolygons(pairs1, pairs2, room1, room2[biggestRoomIndex], connectedPoints);
         }
         else {
-            result = [superMergeTwo(room1, room2[biggestRoomIndex].reverse())];
+            if (!isClockwise(room2[biggestRoomIndex])){
+                result = [superMergeTwo(room1, room2[biggestRoomIndex])];
+            }
+            else {
+                result = [superMergeTwo(room1, room2[biggestRoomIndex].reverse())];
+            }
         }
         for (var i = 0; i < room2.length; i++) {
             if (i != biggestRoomIndex) {
@@ -565,6 +575,17 @@ function superDuperMerge(room1, room2) {
         result = superMergeTwo(room1, room2);
         return result;
     }
+}
+
+function isClockwise(poly) {
+    var sum = 0
+    for (var i=0; i<poly.length-1; i++) {
+        var cur = poly[i],
+            next = poly[i+1]
+        sum += (next[0] - cur[0]) * (next[1] + cur[1])
+    }
+    sum += (poly[0][0] - next[0]) * (poly[0][1] + next[1]);
+    return sum > 0
 }
 
 function getBiggestRoom(room1) {
