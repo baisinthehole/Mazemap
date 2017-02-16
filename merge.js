@@ -153,14 +153,21 @@ function mergeAllCorridors(neighbors, roomCoordinates){
         container.push([i]);
     }
 
+    console.log(deepCopy(neighbors));
+
     for (var i = 0; i < roomCoordinates.length; i++) {
         for (var j = 0; j < roomCoordinates.length; j++) {
-            if (contains(neighbors[i], j)) {
+            if (contains(neighbors[i], j) && roomCoordinates[i].length > 2 && roomCoordinates[j].length > 2) {
                 if (!findOne(container[i], container[j])) {
 
 
                     // var mergedPolygon = simpleMergeTwo(roomCoordinates[i], roomCoordinates[j]);
                     // mergedPolygon = superMergeTwo(roomCoordinates[i], roomCoordinates[j]);
+                    
+                    // console.log("indices!");
+                    // console.log(i);
+                    // console.log(j);
+
                     mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j]);
 
 
@@ -561,6 +568,7 @@ function superDuperMerge(room1, room2) {
         }
         return result;
     }
+    console.log("hey");
     addedPoints = addPointsForTwoPolygon(room1, room2);
     room1 = addedPoints[0];
     room2 = addedPoints[1];
@@ -1188,6 +1196,7 @@ function convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates) {
 }
 
 function mergeCorridors(){
+
     for (var i = globalCorridorCoordinates.length-1; i >= 0; i--) {
         if (globalCorridorCoordinates[i].length == 2){
             globalCorridorCoordinates.splice(i, 1);
@@ -1195,6 +1204,8 @@ function mergeCorridors(){
     }
     globalCorridorCoordinates = removeDuplicatesFromAllRooms(globalCorridorCoordinates);
     var neighborCorridors = getNeighborsCorridors(globalCorridorCoordinates);
+    console.log(neighborCorridors);
+    getCorridorIndices();
     [mergedCorridors, corridorContainer] = mergeAllCorridors(neighborCorridors, globalCorridorCoordinates);
     for (var i = 0; i < mergedCorridors.length; i++) {
         drawPolygonFromOnlyCoordinates(mergedCorridors[i], "white", "blue");
@@ -1297,14 +1308,14 @@ function addPointOnLine(point, polygon){
         var closestPoint = createPointShortestDistance(point, polygon);
         var index = getClosestLineIndex(point, polygon);
         polygon.splice(index+1, 0, closestPoint);
-        Maze.popup().setLatLng(closestPoint).setContent("Added").addTo(MAP);
+        //Maze.popup().setLatLng(closestPoint).setContent("Added").addTo(MAP);
     }
     return polygon;
 }
 
 function addPointsForTwoPolygon(room1, room2) {
-    room1 = removeDuplicatePoints([room1], 0);
-    room2 = removeDuplicatePoints([room2], 0);
+    // room1 = removeDuplicatePoints([room1], 0);
+    // room2 = removeDuplicatePoints([room2], 0);
     var initialLength1 = room1.length;
     var initialLength2 = room2.length;
     var added = false;
@@ -1402,4 +1413,19 @@ function experimentWithIncreasing(startIndex, endIndex1, endIndex2, connectedInd
 		return true;
 	}
 	return false;
+}
+
+function addPointsOnAllCorridors(corridorNeighbors) {
+	for (var i = 0; i < globalCorridorCoordinates.length; i++) {
+		if (corridorNeighbors[i].length > 0) {
+			for (var j = 0; j < corridorNeighbors[i].length; j++) {
+				result = addPointsForTwoPolygon(globalCorridorCoordinates[i], globalCorridorCoordinates[corridorNeighbors[i][j]]);
+
+				globalCorridorCoordinates[i] = deepCopy(result[0]);
+				globalCorridorCoordinates[corridorNeighbors[i][j]] = deepCopy(result[1]);
+
+			}
+		}
+	}
+	return globalCorridorCoordinates;
 }

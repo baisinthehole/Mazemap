@@ -64,14 +64,49 @@ function testCircleMerge(room1, room2) {
     drawPolygonFromOnlyCoordinates(room2, "red", "blue");
 }
 
+function drawAllCorridors() {
+    for (var i = 0; i < GLOBAL_CORRIDOR_COORDINATES.length; i++) {
+        drawPolygonFromOnlyCoordinates(GLOBAL_CORRIDOR_COORDINATES[i], "red", "blue");
+    }
+}
+
 function testCirclePoints(testPoints1, testPoints2, testConnectedIndexes) {
     console.log(createCirclePolygons(testPoints1, testPoints2, testConnectedIndexes));
 }
 
 function getCorridorIndices() {
-    for (var i = 0; i < GLOBAL_CORRIDOR_COORDINATES.length; i++) {
-        if (GLOBAL_CORRIDOR_COORDINATES[i].length > 2) {
-            Maze.popup().setLatLng(getPoint(GLOBAL_CORRIDOR_COORDINATES[i])).setContent(i.toString()).addTo(MAP);
+    for (var i = 0; i < globalCorridorCoordinates.length; i++) {
+        if (globalCorridorCoordinates[i].length > 2) {
+            Maze.popup().setLatLng(getPoint(deepCopy(globalCorridorCoordinates[i]))).setContent(i.toString()).addTo(MAP);
         }
     }
+}
+
+function test77() {
+
+    for (var i = globalCorridorCoordinates.length-1; i >= 0; i--) {
+        if (globalCorridorCoordinates[i].length == 2){
+            globalCorridorCoordinates.splice(i, 1);
+        }
+    }
+    globalCorridorCoordinates = removeDuplicatesFromAllRooms(globalCorridorCoordinates);
+    var neighborCorridors = getNeighborsCorridors(globalCorridorCoordinates);
+    console.log(neighborCorridors);
+    getCorridorIndices();
+
+    globalCorridorCoordinates = addPointsOnAllCorridors(neighborCorridors);
+
+    var mergedPolygon = superDuperMerge(globalCorridorCoordinates[0], globalCorridorCoordinates[2]);
+
+    var mergedPolygon2 = superDuperMerge(mergedPolygon, globalCorridorCoordinates[5]);
+
+    var mergedPolygon3 = superDuperMerge(globalCorridorCoordinates[1], mergedPolygon2);
+
+    var mergedPolygon4 = superDuperMerge(mergedPolygon3, globalCorridorCoordinates[3]);
+
+    var mergedPolygon5 = superDuperMerge(mergedPolygon4, globalCorridorCoordinates[4]);
+
+    var mergedPolygon6 = superDuperMerge(mergedPolygon5, globalCorridorCoordinates[7]);
+
+    drawPolygonFromOnlyCoordinates(mergedPolygon6, "red", "blue");
 }
