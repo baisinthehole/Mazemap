@@ -1,4 +1,4 @@
-var FLOOR_ID = "76";
+var FLOOR_ID = "84";
 var FILENAME = "floor_4_35.json";
 
 // Create a map
@@ -39,7 +39,7 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
 
     //test77();
-
+    // getCorridorIndices();
     globalMergedCorridorsCoordinates = mergeCorridors();
 
 
@@ -80,6 +80,13 @@ function createglobalMergedPolygons(data, roomCoordinates){
     //     result = superMergeTwo(room1, room2);
     //     drawPolygonFromOnlyCoordinates(result, "white", "red");
     // }
+
+    // var room1 = globalCorridorCoordinates[0];
+    // var room2 = globalCorridorCoordinates[8];
+    // // drawPolygonFromOnlyCoordinates(room1, "white", "red");
+    // // drawPolygonFromOnlyCoordinates(room2, "white", "blue");
+    // var mergedPolygon = superDuperMerge(room1, room2);
+    // drawPolygonFromOnlyCoordinates(mergedPolygon, "white", "green");
 
 }
 
