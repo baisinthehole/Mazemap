@@ -111,13 +111,27 @@ function test77() {
     drawPolygonFromOnlyCoordinates(mergedPolygon6, "red", "blue");
 }
 
+function test18() {
+
+    for (var i = globalCorridorCoordinates.length-1; i >= 0; i--) {
+        if (globalCorridorCoordinates[i].length == 2){
+            globalCorridorCoordinates.splice(i, 1);
+        }
+    }
+    drawPolygonFromOnlyCoordinates(globalCorridorCoordinates[17], "white", "green");
+    drawPolygonFromOnlyCoordinates(globalCorridorCoordinates[18], "white", "red");
+    var mergedPolygon = superDuperMerge(globalCorridorCoordinates[17], globalCorridorCoordinates[18]);
+
+    drawPolygonFromOnlyCoordinates(mergedPolygon, "red", "blue");
+}
+
 function displayConnectedIndexes(connectedIndexes, room1, room2){
     for (var i = 0; i < connectedIndexes.length; i++) {
-        console.log(connectedIndexes);
-        console.log(connectedIndexes[i][0]);
-        console.log(room1[connectedIndexes[i][0]]);
-        console.log(room2[connectedIndexes[i][1]]);
-        console.log(room1);
+        // console.log(connectedIndexes);
+        // console.log(connectedIndexes[i][0]);
+        // console.log(room1[connectedIndexes[i][0]]);
+        // console.log(room2[connectedIndexes[i][1]]);
+        // console.log(room1);
         Maze.popup().setLatLng(room1[connectedIndexes[i][0]]).setContent(connectedIndexes[i][0].toString()).addTo(MAP);
         Maze.popup().setLatLng(room2[connectedIndexes[i][1]]).setContent(connectedIndexes[i][1].toString()).addTo(MAP);
     }

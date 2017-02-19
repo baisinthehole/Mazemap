@@ -196,15 +196,16 @@ function mergeAllCorridors(neighbors, roomCoordinates){
                     // console.log("indices!");
                     // console.log(i);
                     // console.log(j);
-                    // console.log("To be merged");
-                    // console.log(i);
-                    // console.log(j);
-                    // if (i == 1 && j == 6){
-                    if (false){
+                    console.log("To be merged");
+                    console.log(i);
+                    console.log(j);
+                    if (i == 1 && j == 15){
+                    // if (false){
                         drawPolygonFromOnlyCoordinates(roomCoordinates[i], "white", "red");
                         drawPolygonFromOnlyCoordinates(roomCoordinates[j], "white", "blue");
                         // checkPointSequence(deepCopy(roomCoordinates[j]));
                         mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j], true);
+                        drawPolygonFromOnlyCoordinates(mergedPolygon, "white", "green");
                     }
                     else {
                         mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j]);
@@ -284,7 +285,7 @@ function superMergeTwo(room1, room2, connectedIndexes = false, test=false){
         }
         if (test){
             console.log("Make better mergingPoints");
-            displayConnectedIndexes(connectedIndexes, room1, room2);
+            // displayConnectedIndexes(connectedIndexes, room1, room2);
         }
         var mergingPoints1 = [connectedIndexes[0][0], connectedIndexes[1][0]];
         var mergingPoints2 = [connectedIndexes[0][1], connectedIndexes[1][1]];
@@ -590,8 +591,8 @@ function superDuperMerge(room1, room2, test = false) {
             console.log(deepCopy(pairs2));
             console.log(isClockwise(room1[biggestRoomIndex]));
             console.log(deepCopy(connectedPoints));
-            drawPolygonFromOnlyCoordinates(deepCopy(room2), "white", "green");
-            displayConnectedIndexes(connectedPoints, room1[biggestRoomIndex], room2);
+            // drawPolygonFromOnlyCoordinates(deepCopy(room2), "white", "green");
+            // displayConnectedIndexes(connectedPoints, room1[biggestRoomIndex], room2);
         }
         if (connectedPoints.length > 2){
             result = createCirclePolygons(pairs1, pairs2, room1[biggestRoomIndex], room2, connectedPoints);
@@ -621,7 +622,7 @@ function superDuperMerge(room1, room2, test = false) {
             console.log(deepCopy(pairs1));
             console.log(deepCopy(pairs2));
             console.log(deepCopy(connectedPoints));
-            displayConnectedIndexes(connectedPoints, room1, room2[biggestRoomIndex]);
+            // displayConnectedIndexes(connectedPoints, room1, room2[biggestRoomIndex]);
         }
         if (connectedPoints.length > 2){
             result = createCirclePolygons(pairs1, pairs2, room1, room2[biggestRoomIndex], connectedPoints);
@@ -744,7 +745,7 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
                 // console.log(deepCopy(points1));
                 // console.log(deepCopy(points2));
                 // console.log(deepCopy(connectedIndexes));
-                // return resultRooms;
+                // return resultRoom;
                 resultRoom = [];
                 index = points1[0];
                 roomNr = 0;
@@ -756,7 +757,7 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
                 var outerIndex = getOuterIndex(index, roomNr, connectedIndexes);
                 points = findIncreasingAndDecreasingPoints(outerIndex, roomNr, polygon1, polygon2, connectedIndexes);
                 var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 1, polygon1, polygon2, connectedIndexes);
-                increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon1);
+                // increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon1);
                 increasing = checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], deepCopy(points), testpoints2, polygon1, polygon2);
                 points1.splice(points1.indexOf(index), 1);
                 index = getOtherConnectedPoint(index, roomNr, connectedIndexes);
@@ -778,7 +779,7 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
                 var outerIndex = getOuterIndex(index, roomNr, connectedIndexes);
                 points = findIncreasingAndDecreasingPoints(outerIndex, roomNr, polygon1, polygon2, connectedIndexes);
                 var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 0, polygon1, polygon2, connectedIndexes);
-                increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon2);
+                // increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon2);
                 increasing = !checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], testpoints2, deepCopy(points), polygon1, polygon2);
                 points2.splice(points2.indexOf(index), 1);
                 index = getOtherConnectedPoint(index, roomNr, connectedIndexes);
@@ -917,9 +918,6 @@ function isIncreasing(startIndex, endIndex1, endIndex2, polygon) {
 }
 
 function checkIncreasingIsSmallEnough(roomNr, startIndexes, points1, points2, polygon1, polygon2) {
-    // room0 increasing
-    // room 1 decreasing
-
     return (checkIfDistancesIsSmallEnough(startIndexes[0], points1[0], polygon1, polygon2) && checkIfDistancesIsSmallEnough2(startIndexes[1], points2[1], polygon2, polygon1));
 }
 
@@ -1270,9 +1268,9 @@ function mergeCorridors(){
     // console.log(neighborCorridors);
     // getCorridorIndices();
     [mergedCorridors, corridorContainer] = mergeAllCorridors(neighborCorridors, globalCorridorCoordinates);
-    for (var i = 0; i < mergedCorridors.length; i++) {
-        drawPolygonFromOnlyCoordinates(mergedCorridors[i], "white", "blue");
-    }
+    // for (var i = 0; i < mergedCorridors.length; i++) {
+    //     drawPolygonFromOnlyCoordinates(mergedCorridors[i], "white", "blue");
+    // }
     return mergedCorridors;
 }
 
