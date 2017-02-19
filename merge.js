@@ -11,8 +11,8 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2, point1 = undef
             for (var i = 0; i < indeces2[0]; i++) {
                 shiftedPolygon2.push(shiftedPolygon2.shift());
             }
-            var partPolygon1 = getLongestPartWithoutRemoval(shiftedPolygon1, indeces1[1]-indeces1[0]);
-            var partPolygon2 = getLongestPartWithoutRemoval(shiftedPolygon2, indeces2[1]-indeces2[0]);
+            var partPolygon1 = getPartFarthestAway(shiftedPolygon1, indeces1[1]-indeces1[0]);
+            var partPolygon2 = getPartFarthestAway(shiftedPolygon2, indeces2[1]-indeces2[0]);
             var mergedPolygon = partPolygon1.concat(partPolygon2,[partPolygon1[0]]);
             return mergedPolygon;
         }
@@ -35,7 +35,7 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2, point1 = undef
                 for (var i = 0; i < indeces1[0]; i++) {
                     shiftedPolygon1.push(shiftedPolygon1.shift());
                 }
-                var partPolygon1 = getLongestPartWithoutRemoval(shiftedPolygon1, indeces1[1]-indeces1[0]);
+                var partPolygon1 = getPartFarthestAway(shiftedPolygon1, indeces1[1]-indeces1[0]);
                 var mergedPolygon;
                 mergedPolygon = partPolygon1.concat(shiftedPolygon2,[partPolygon1[0]]);
                 return mergedPolygon;
@@ -91,6 +91,36 @@ function getLongestPartWithoutRemoval(polygon, index){
     else {
         return part2;
     }
+}
+
+
+function getPartFarthestAway(polygon, index){
+    if (index > 1){
+        var part1 = polygon.slice(0,index+1);
+    }
+    else {
+        return polygon.slice(index,polygon.length).concat([polygon[0]]);
+    }
+    if (index >= polygon.length){
+        return part1;
+    }
+    var part2 = polygon.slice(index,polygon.length).concat([polygon[0]]);
+    if (getLongestDistToPart(part1, polygon) > getLongestDistToPart(part2, polygon)){
+        return part1;
+    }
+    else {
+        return part2;
+    }
+}
+
+function getLongestDistToPart(part, polygon) {
+    var longest = 0;
+    for (var i = 0; i < part.length; i++) {
+        if (longest < getMinDistToPoly(part[i], polygon)){
+            longest = getMinDistToPoly(part[i], polygon);
+        }
+    }
+    return longest;
 }
 
 function mergeAllPolygons(neighbors, roomCoordinates){
@@ -166,10 +196,11 @@ function mergeAllCorridors(neighbors, roomCoordinates){
                     // console.log("indices!");
                     // console.log(i);
                     // console.log(j);
-                    console.log("To be merged");
-                    console.log(i);
-                    console.log(j);
-                    if (i == 1 && j == 2){
+                    // console.log("To be merged");
+                    // console.log(i);
+                    // console.log(j);
+                    // if (i == 1 && j == 6){
+                    if (false){
                         drawPolygonFromOnlyCoordinates(roomCoordinates[i], "white", "red");
                         drawPolygonFromOnlyCoordinates(roomCoordinates[j], "white", "blue");
                         // checkPointSequence(deepCopy(roomCoordinates[j]));
@@ -246,11 +277,24 @@ function simpleMergeTwo(room1, room2, test=false){
     return mergedPolygon;
 }
 
-function superMergeTwo(room1, room2, test=false){
-    var pointsCloseEnough1 = getClosePoints(room1, room2);
-    var pointsCloseEnough2 = getClosePoints(room2, room1);
-    var mergingPoints1 = getMergingPoints(pointsCloseEnough1, room1, room2);
-    var mergingPoints2 = getMergingPoints(pointsCloseEnough2, room2, room1);
+function superMergeTwo(room1, room2, connectedIndexes = false, test=false){
+    if (connectedIndexes) {
+        if (connectedIndexes.length > 2) {
+            console.log("This should be fixed");
+        }
+        if (test){
+            console.log("Make better mergingPoints");
+            displayConnectedIndexes(connectedIndexes, room1, room2);
+        }
+        var mergingPoints1 = [connectedIndexes[0][0], connectedIndexes[1][0]];
+        var mergingPoints2 = [connectedIndexes[0][1], connectedIndexes[1][1]];
+    }
+    else {
+        var pointsCloseEnough1 = getClosePoints(room1, room2);
+        var pointsCloseEnough2 = getClosePoints(room2, room1);
+        var mergingPoints1 = getMergingPoints(pointsCloseEnough1, room1, room2);
+        var mergingPoints2 = getMergingPoints(pointsCloseEnough2, room2, room1);
+    }
 
     var mergedPolygon;
 
@@ -553,7 +597,7 @@ function superDuperMerge(room1, room2, test = false) {
             result = createCirclePolygons(pairs1, pairs2, room1[biggestRoomIndex], room2, connectedPoints);
         }
         else {
-            result = [superMergeTwo(room1[biggestRoomIndex], room2, true)];
+            result = [superMergeTwo(room1[biggestRoomIndex], room2, connectedPoints, true)];
         }
         for (var i = 0; i < room1.length; i++) {
             if (i != biggestRoomIndex) {
@@ -583,7 +627,7 @@ function superDuperMerge(room1, room2, test = false) {
             result = createCirclePolygons(pairs1, pairs2, room1, room2[biggestRoomIndex], connectedPoints);
         }
         else {
-            result = [superMergeTwo(room1, room2[biggestRoomIndex])];
+            result = [superMergeTwo(room1, room2[biggestRoomIndex], connectedPoints, true)];
         }
         for (var i = 0; i < room2.length; i++) {
             if (i != biggestRoomIndex) {
@@ -1226,9 +1270,9 @@ function mergeCorridors(){
     // console.log(neighborCorridors);
     // getCorridorIndices();
     [mergedCorridors, corridorContainer] = mergeAllCorridors(neighborCorridors, globalCorridorCoordinates);
-    // for (var i = 0; i < mergedCorridors.length; i++) {
-    //     drawPolygonFromOnlyCoordinates(mergedCorridors[i], "white", "blue");
-    // }
+    for (var i = 0; i < mergedCorridors.length; i++) {
+        drawPolygonFromOnlyCoordinates(mergedCorridors[i], "white", "blue");
+    }
     return mergedCorridors;
 }
 
