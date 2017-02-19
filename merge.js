@@ -11,8 +11,8 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2, point1 = undef
             for (var i = 0; i < indeces2[0]; i++) {
                 shiftedPolygon2.push(shiftedPolygon2.shift());
             }
-            var partPolygon1 = getPartFarthestAway(shiftedPolygon1, indeces1[1]-indeces1[0]);
-            var partPolygon2 = getPartFarthestAway(shiftedPolygon2, indeces2[1]-indeces2[0]);
+            var partPolygon1 = getPartFarthestAway(shiftedPolygon1, indeces1[1]-indeces1[0], polygon2);
+            var partPolygon2 = getPartFarthestAway(shiftedPolygon2, indeces2[1]-indeces2[0], polygon1);
             var mergedPolygon = partPolygon1.concat(partPolygon2,[partPolygon1[0]]);
             return mergedPolygon;
         }
@@ -35,7 +35,7 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2, point1 = undef
                 for (var i = 0; i < indeces1[0]; i++) {
                     shiftedPolygon1.push(shiftedPolygon1.shift());
                 }
-                var partPolygon1 = getPartFarthestAway(shiftedPolygon1, indeces1[1]-indeces1[0]);
+                var partPolygon1 = getPartFarthestAway(shiftedPolygon1, indeces1[1]-indeces1[0], polygon2);
                 var mergedPolygon;
                 mergedPolygon = partPolygon1.concat(shiftedPolygon2,[partPolygon1[0]]);
                 return mergedPolygon;
@@ -94,7 +94,7 @@ function getLongestPartWithoutRemoval(polygon, index){
 }
 
 
-function getPartFarthestAway(polygon, index){
+function getPartFarthestAway(polygon, index, polygon2){
     if (index > 1){
         var part1 = polygon.slice(0,index+1);
     }
@@ -105,7 +105,7 @@ function getPartFarthestAway(polygon, index){
         return part1;
     }
     var part2 = polygon.slice(index,polygon.length).concat([polygon[0]]);
-    if (getLongestDistToPart(part1, polygon) > getLongestDistToPart(part2, polygon)){
+    if (getLongestDistToPart(part1, polygon2) > getLongestDistToPart(part2, polygon2)){
         return part1;
     }
     else {
