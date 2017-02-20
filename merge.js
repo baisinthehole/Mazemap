@@ -189,27 +189,20 @@ function mergeAllCorridors(neighbors, roomCoordinates){
             if (contains(neighbors[i], j)) {
                 if (!findOne(container[i], container[j])) {
 
-
-                    // var mergedPolygon = simpleMergeTwo(roomCoordinates[i], roomCoordinates[j]);
-                    // mergedPolygon = superMergeTwo(roomCoordinates[i], roomCoordinates[j]);
-
-                    // console.log("indices!");
+                    // console.log("To be merged");
                     // console.log(i);
                     // console.log(j);
-                    console.log("To be merged");
-                    console.log(i);
-                    console.log(j);
-                    if (i == 1 && j == 15){
-                    // if (false){
-                        drawPolygonFromOnlyCoordinates(roomCoordinates[i], "white", "red");
-                        drawPolygonFromOnlyCoordinates(roomCoordinates[j], "white", "blue");
-                        // checkPointSequence(deepCopy(roomCoordinates[j]));
-                        mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j], true);
-                        drawPolygonFromOnlyCoordinates(mergedPolygon, "white", "green");
-                    }
-                    else {
+                    // if (i == 1 && j == 15){
+                    // // if (false){
+                    //     drawPolygonFromOnlyCoordinates(roomCoordinates[i], "white", "red");
+                    //     drawPolygonFromOnlyCoordinates(roomCoordinates[j], "white", "blue");
+                    //     // checkPointSequence(deepCopy(roomCoordinates[j]));
+                    //     mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j], true);
+                    //     drawPolygonFromOnlyCoordinates(mergedPolygon, "white", "green");
+                    // }
+                    // else {
                         mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j]);
-                    }
+                    // }
 
 
 
@@ -279,7 +272,7 @@ function simpleMergeTwo(room1, room2, test=false){
 }
 
 function superMergeTwo(room1, room2, connectedIndexes = false, test=false){
-    if (connectedIndexes) {
+    if (connectedIndexes.length) {
         if (connectedIndexes.length > 2) {
             console.log("This should be fixed");
         }
@@ -287,8 +280,16 @@ function superMergeTwo(room1, room2, connectedIndexes = false, test=false){
             console.log("Make better mergingPoints");
             // displayConnectedIndexes(connectedIndexes, room1, room2);
         }
-        var mergingPoints1 = [connectedIndexes[0][0], connectedIndexes[1][0]];
-        var mergingPoints2 = [connectedIndexes[0][1], connectedIndexes[1][1]];
+        if (connectedIndexes[0] != undefined) {
+            var mergingPoints1 = [connectedIndexes[0][0], connectedIndexes[1][0]];
+            var mergingPoints2 = [connectedIndexes[0][1], connectedIndexes[1][1]];
+        }
+        else {
+            var pointsCloseEnough1 = getClosePoints(room1, room2);
+            var pointsCloseEnough2 = getClosePoints(room2, room1);
+            var mergingPoints1 = getMergingPoints(pointsCloseEnough1, room1, room2);
+            var mergingPoints2 = getMergingPoints(pointsCloseEnough2, room2, room1);
+        }
     }
     else {
         var pointsCloseEnough1 = getClosePoints(room1, room2);
@@ -598,7 +599,7 @@ function superDuperMerge(room1, room2, test = false) {
             result = createCirclePolygons(pairs1, pairs2, room1[biggestRoomIndex], room2, connectedPoints);
         }
         else {
-            result = [superMergeTwo(room1[biggestRoomIndex], room2, connectedPoints, true)];
+            result = [superMergeTwo(room1[biggestRoomIndex], room2, connectedPoints)];
         }
         for (var i = 0; i < room1.length; i++) {
             if (i != biggestRoomIndex) {
@@ -628,7 +629,7 @@ function superDuperMerge(room1, room2, test = false) {
             result = createCirclePolygons(pairs1, pairs2, room1, room2[biggestRoomIndex], connectedPoints);
         }
         else {
-            result = [superMergeTwo(room1, room2[biggestRoomIndex], connectedPoints, true)];
+            result = [superMergeTwo(room1, room2[biggestRoomIndex], connectedPoints)];
         }
         for (var i = 0; i < room2.length; i++) {
             if (i != biggestRoomIndex) {
@@ -759,11 +760,6 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
                 var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 1, polygon1, polygon2, connectedIndexes);
                 // increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon1);
                 increasing = checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], deepCopy(points), deepCopy(testpoints2), polygon1, polygon2);
-                console.log("Increasing in room 1");
-                console.log(connectedIndexes[outerIndex]);
-                console.log(deepCopy(points));
-                console.log(deepCopy(testpoints2));
-                console.log(increasing);
                 points1.splice(points1.indexOf(index), 1);
                 index = getOtherConnectedPoint(index, roomNr, connectedIndexes);
                 points2.splice(points2.indexOf(index), 1);
@@ -786,11 +782,6 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
                 var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 0, polygon1, polygon2, connectedIndexes);
                 // increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon2);
                 increasing = !checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], testpoints2, deepCopy(points), polygon1, polygon2);
-                console.log("Increasing in room 2");
-                console.log(connectedIndexes[outerIndex]);
-                console.log(deepCopy(points));
-                console.log(deepCopy(testpoints2));
-                console.log(increasing);
                 points2.splice(points2.indexOf(index), 1);
                 index = getOtherConnectedPoint(index, roomNr, connectedIndexes);
                 points1.splice(points1.indexOf(index), 1);
