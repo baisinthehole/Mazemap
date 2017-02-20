@@ -757,7 +757,6 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
                 var outerIndex = getOuterIndex(index, roomNr, connectedIndexes);
                 points = findIncreasingAndDecreasingPoints(outerIndex, roomNr, polygon1, polygon2, connectedIndexes);
                 var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 1, polygon1, polygon2, connectedIndexes);
-                console.log(deepCopy(testpoints2));
                 // increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon1);
                 increasing = checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], deepCopy(points), deepCopy(testpoints2), polygon1, polygon2);
                 console.log("Increasing in room 1");
@@ -839,28 +838,51 @@ function getOtherConnectedPoint(index, roomNr, connectedIndexes){
     }
 }
 
+// function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, polygon2, connectedIndexes) {
+
+//     var oppositeIndex = mod(innerIndex - 1, 2);
+//     var connectPoint = connectedIndexes[outerIndex][oppositeIndex];
+
+//     var points = [];
+
+//     var lowerIndex = connectPoint + 1;
+//     var higherIndex = connectPoint - 1;
+//     var outerIndexLower;
+//     var outerIndexHigher;
+//     for (var i = 0; i < connectedIndexes.length; i++) {
+//         if (mod(connectedIndexes[i][oppositeIndex] + polygon2.length - connectPoint, polygon2.length) > mod(lowerIndex + polygon2.length - connectPoint, polygon2.length)){
+//             lowerIndex = connectedIndexes[i][oppositeIndex];
+//             outerIndexLower = i;
+//         }
+//         if (mod(connectedIndexes[i][oppositeIndex] - connectPoint -1, polygon2.length) < mod(higherIndex - connectPoint -1, polygon2.length)){
+//             higherIndex = connectedIndexes[i][oppositeIndex];
+//             outerIndexHigher = i;
+//         }
+//     }
+//     return [connectedIndexes[outerIndexLower][innerIndex], connectedIndexes[outerIndexHigher][innerIndex]];
+// }
+
 function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, polygon2, connectedIndexes) {
 
-	var oppositeIndex = mod(innerIndex - 1, 2);
-	var connectPoint = connectedIndexes[outerIndex][oppositeIndex];
+    var connectPoint = connectedIndexes[outerIndex][innerIndex];
 
-	var points = [];
+    var points = [];
 
     var lowerIndex = connectPoint + 1;
     var higherIndex = connectPoint - 1;
     var outerIndexLower;
     var outerIndexHigher;
-	for (var i = 0; i < connectedIndexes.length; i++) {
-        if (mod(connectedIndexes[i][oppositeIndex] + polygon2.length - connectPoint, polygon2.length) > mod(lowerIndex + polygon2.length - connectPoint, polygon2.length)){
-            lowerIndex = connectedIndexes[i][oppositeIndex];
+    for (var i = 0; i < connectedIndexes.length; i++) {
+        if (mod(connectedIndexes[i][innerIndex] + polygon1.length - connectPoint, polygon1.length) > mod(lowerIndex + polygon1.length - connectPoint, polygon1.length)){
+            lowerIndex = connectedIndexes[i][innerIndex];
             outerIndexLower = i;
         }
-        if (mod(connectedIndexes[i][oppositeIndex] - connectPoint -1, polygon2.length) < mod(higherIndex - connectPoint -1, polygon2.length)){
-            higherIndex = connectedIndexes[i][oppositeIndex];
+        if (mod(connectedIndexes[i][innerIndex] - connectPoint -1, polygon1.length) < mod(higherIndex - connectPoint -1, polygon1.length)){
+            higherIndex = connectedIndexes[i][innerIndex];
             outerIndexHigher = i;
         }
-	}
-    return [connectedIndexes[outerIndexLower][innerIndex], connectedIndexes[outerIndexHigher][innerIndex]];
+    }
+    return [connectedIndexes[outerIndexHigher][innerIndex], connectedIndexes[outerIndexLower][innerIndex]];
 }
 
 function isIncreasing(startIndex, endIndex1, endIndex2, polygon) {
@@ -1279,9 +1301,9 @@ function mergeCorridors(){
     // console.log(neighborCorridors);
     // getCorridorIndices();
     [mergedCorridors, corridorContainer] = mergeAllCorridors(neighborCorridors, globalCorridorCoordinates);
-    // for (var i = 0; i < mergedCorridors.length; i++) {
-    //     drawPolygonFromOnlyCoordinates(mergedCorridors[i], "white", "blue");
-    // }
+    for (var i = 0; i < mergedCorridors.length; i++) {
+        drawPolygonFromOnlyCoordinates(mergedCorridors[i], "white", "blue");
+    }
     return mergedCorridors;
 }
 
