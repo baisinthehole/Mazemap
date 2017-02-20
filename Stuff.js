@@ -42,6 +42,9 @@ var GEO_JSON;
 // all room coordinates
 var GLOBAL_ROOM_COORDINATES;
 
+// all corridor coordinates
+var GLOBAL_CORRIDOR_COORDINATES;
+
 // three levels of merged room polygons
 var mergedLarge = [];
 var mergedMedium = [];
@@ -224,6 +227,9 @@ function recievedJSONfromServer() {
     fillCoordinateTypeServer(geoJSON, globalCorridorCoordinates, globalCorridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
     fillCoordinateTypeServer(geoJSON, globalRoomCoordinates, globalRoomPolygons, ROOM_TYPE.ROOM, color, 'white', 0.2, "line");
     GLOBAL_ROOM_COORDINATES = deepCopy(globalRoomCoordinates);
+    console.log(GLOBAL_ROOM_COORDINATES);
+    GLOBAL_CORRIDOR_COORDINATES = deepCopy(globalCorridorCoordinates);
+
 
     removedDuplicatePoints = removeDuplicatesFromAllRooms(globalRoomCoordinates);
     var simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);
@@ -838,10 +844,23 @@ function distPointToLine(point,linepoint1,linepoint2){
 }
 
 function getPointOnLineClosestToPoint(point,linepoint1,linepoint2){
-    var k = ((linepoint2[1]-linepoint1[1]) * (point[0]-linepoint1[0]) - (linepoint2[0]-linepoint1[0]) * (point[1]-linepoint1[1])) / (Math.pow((linepoint2[1]-linepoint1[1]),2) + Math.pow((linepoint2[0]-linepoint1[0]),2));
-    var x4 = point[0] - k * 0.9 * (linepoint2[1]-linepoint1[1]);
-    var y4 = point[1] + k * 0.9 * (linepoint2[0]-linepoint1[0]);
-    return [x4, y4];
+    var dotResult0 = dotProd(makeLine(linepoint1,linepoint2), makeLine(linepoint1,point));
+    var dotResult1 = dotProd(makeLine(linepoint2,linepoint1), makeLine(linepoint2,point));
+    if (dotResult0 < 0 && dotResult1 >= 0) {
+        return linepoint1;
+    }
+    else if (dotResult0 >= 0 && dotResult1 < 0) {
+        return linepoint2;
+    }
+    else if (dotResult0 >= 0 && dotResult1 >= 0) {
+        var k = ((linepoint2[1]-linepoint1[1]) * (point[0]-linepoint1[0]) - (linepoint2[0]-linepoint1[0]) * (point[1]-linepoint1[1])) / (Math.pow((linepoint2[1]-linepoint1[1]),2) + Math.pow((linepoint2[0]-linepoint1[0]),2));
+        var x4 = point[0] - k * 1 * (linepoint2[1]-linepoint1[1]);
+        var y4 = point[1] + k * 1 * (linepoint2[0]-linepoint1[0]);
+        return [x4, y4];
+    }
+    else {
+        console.log("This should not happen");
+    }
 }
 
 

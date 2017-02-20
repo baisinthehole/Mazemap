@@ -56,7 +56,7 @@ function testCrossing(point1, point2, polygon) {
             console.log(i);
             console.log(i + 1);
         }
-    } 
+    }
 }
 
 function testCircleMerge(room1, room2) {
@@ -64,19 +64,27 @@ function testCircleMerge(room1, room2) {
     drawPolygonFromOnlyCoordinates(room2, "red", "blue");
 }
 
+function drawAllCorridors() {
+    for (var i = 0; i < GLOBAL_CORRIDOR_COORDINATES.length; i++) {
+        drawPolygonFromOnlyCoordinates(GLOBAL_CORRIDOR_COORDINATES[i], "red", "blue");
+    }
+}
+
 function testCirclePoints(testPoints1, testPoints2, testConnectedIndexes) {
     console.log(createCirclePolygons(testPoints1, testPoints2, testConnectedIndexes));
 }
 
-function markCorridorIndices() {
-    for (var i = 0; i < globalCorridorCoordinates.length; i++) {
-        if (globalCorridorCoordinates[i][0][0].constructor === Array) {
-            Maze.popup().setLatLng(getPoint(globalCorridorCoordinates[i][0])).setContent(i.toString()).addTo(MAP);
+function getCorridorIndices() {
+    for (var i = 0; i < GLOBAL_CORRIDOR_COORDINATES.length; i++) {
+        if (GLOBAL_CORRIDOR_COORDINATES[i].length > 2) {
+            Maze.popup().setLatLng(getPoint(deepCopy(GLOBAL_CORRIDOR_COORDINATES[i]))).setContent(i.toString()).addTo(MAP);
         }
-        else {
-            if (globalCorridorCoordinates[i].length > 2) {
-                Maze.popup().setLatLng(getPoint(globalCorridorCoordinates[i])).setContent(i.toString()).addTo(MAP);
-            }
-        }
+    }
+}
+
+function displayConnectedIndexes(connectedIndexes, room1, room2){
+    for (var i = 0; i < connectedIndexes.length; i++) {
+        Maze.popup().setLatLng(room1[connectedIndexes[i][0]]).setContent(connectedIndexes[i][0].toString()).addTo(MAP);
+        Maze.popup().setLatLng(room2[connectedIndexes[i][1]]).setContent(connectedIndexes[i][1].toString()).addTo(MAP);
     }
 }

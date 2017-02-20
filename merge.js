@@ -12,8 +12,8 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2, point1 = undef
             for (var i = 0; i < indeces2[0]; i++) {
                 shiftedPolygon2.push(shiftedPolygon2.shift());
             }
-            var partPolygon1 = getLongestPartWithoutRemoval(shiftedPolygon1, indeces1[1]-indeces1[0]);
-            var partPolygon2 = getLongestPartWithoutRemoval(shiftedPolygon2, indeces2[1]-indeces2[0]);
+            var partPolygon1 = getPartFarthestAway(shiftedPolygon1, indeces1[1]-indeces1[0], polygon2);
+            var partPolygon2 = getPartFarthestAway(shiftedPolygon2, indeces2[1]-indeces2[0], polygon1);
             var mergedPolygon = partPolygon1.concat(partPolygon2,[partPolygon1[0]]);
             return mergedPolygon;
         }
@@ -36,7 +36,7 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2, point1 = undef
                 for (var i = 0; i < indeces1[0]; i++) {
                     shiftedPolygon1.push(shiftedPolygon1.shift());
                 }
-                var partPolygon1 = getLongestPartWithoutRemoval(shiftedPolygon1, indeces1[1]-indeces1[0]);
+                var partPolygon1 = getPartFarthestAway(shiftedPolygon1, indeces1[1]-indeces1[0], polygon2);
                 var mergedPolygon;
                 mergedPolygon = partPolygon1.concat(shiftedPolygon2,[partPolygon1[0]]);
                 return mergedPolygon;
@@ -96,6 +96,35 @@ function getLongestPartWithoutRemoval(polygon, index){
     }
 }
 
+function getPartFarthestAway(polygon, index, polygon2){
+    if (index > 1){
+        var part1 = polygon.slice(0,index+1);
+    }
+    else {
+        return polygon.slice(index,polygon.length).concat([polygon[0]]);
+    }
+    if (index >= polygon.length){
+        return part1;
+    }
+    var part2 = polygon.slice(index,polygon.length).concat([polygon[0]]);
+    if (getLongestDistToPart(part1, polygon2) > getLongestDistToPart(part2, polygon2)){
+        return part1;
+    }
+    else {
+        return part2;
+    }
+}
+
+function getLongestDistToPart(part, polygon) {
+    var longest = 0;
+    for (var i = 0; i < part.length; i++) {
+        if (longest < getMinDistToPoly(part[i], polygon)){
+            longest = getMinDistToPoly(part[i], polygon);
+        }
+    }
+    return longest;
+}
+
 // the main function that merges all polygons together on a floor
 function mergeAllPolygons(neighbors, roomCoordinates){
     var container = [];
@@ -111,8 +140,72 @@ function mergeAllPolygons(neighbors, roomCoordinates){
 
 
                     // var mergedPolygon = simpleMergeTwo(roomCoordinates[i], roomCoordinates[j]);
-                    // mergedPolygon = superMergeTwo(roomCoordinates[i], roomCoordinates[j]);
-                    mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j]);
+                    mergedPolygon = superMergeTwo(roomCoordinates[i], roomCoordinates[j]);
+                    // mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j]);
+
+
+
+
+                    if (mergedPolygon != -1) {
+                        if (neighbors[i].indexOf(j) != -1) {
+                            neighbors[i].splice(neighbors[i].indexOf(j), 1);
+                        }
+                        if (neighbors[j].indexOf(i) != -1) {
+                            neighbors[j].splice(neighbors[j].indexOf(i), 1);
+                        }
+
+                        for (var k = 0; k < container[j].length; k++) {
+                            if (!contains(container[i], container[j][k])) {
+                                container[i].push(container[j][k]);
+                            }
+                        }
+
+                        for (var k = 0; k < neighbors[j].length; k++) {
+                            if (!contains(neighbors[i], neighbors[j][k]) && !contains(container[i], neighbors[j][k]) && neighbors[j][k] != i) {
+                                neighbors[i].push(neighbors[j][k]);
+                            }
+                        }
+
+                        for (var k = 0; k < container[i].length; k++) {
+                            neighbors[container[i][k]] = neighbors[i];
+                            container[container[i][k]] = container[i];
+                            roomCoordinates[container[i][k]] = mergedPolygon;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return [roomCoordinates, container];
+}
+
+function mergeAllCorridors(neighbors, roomCoordinates){
+    var container = [];
+
+    for (var i = 0; i < roomCoordinates.length; i++) {
+        container.push([i]);
+    }
+
+    var colors = ["blue", "red"];
+    for (var i = 0; i < roomCoordinates.length; i++) {
+        for (var j = 0; j < roomCoordinates.length; j++) {
+            if (contains(neighbors[i], j)) {
+                if (!findOne(container[i], container[j])) {
+
+                    // console.log("To be merged");
+                    // console.log(i);
+                    // console.log(j);
+                    // if (i == 1 && j == 15){
+                    // // if (false){
+                    //     drawPolygonFromOnlyCoordinates(roomCoordinates[i], "white", "red");
+                    //     drawPolygonFromOnlyCoordinates(roomCoordinates[j], "white", "blue");
+                    //     // checkPointSequence(deepCopy(roomCoordinates[j]));
+                    //     mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j], true);
+                    //     drawPolygonFromOnlyCoordinates(mergedPolygon, "white", "green");
+                    // }
+                    // else {
+                        mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j]);
+                    // }
 
 
 
@@ -182,26 +275,40 @@ function simpleMergeTwo(room1, room2, test=false){
     return mergedPolygon;
 }
 
-// handles merging cases where room1 has close points to room2, but not vice versa, creating points on room2, so that they can merged
-function superMergeTwo(room1, room2, test=false){
-    var pointsCloseEnough1 = getClosePoints(room1, room2);
-    var pointsCloseEnough2 = getClosePoints(room2, room1);
-    // var roomsWithAddedPoints = addPointsForTwoPolygon(room1, room2, pointsCloseEnough1, pointsCloseEnough2);
-    // if (roomsWithAddedPoints[2]) {
-    //     console.log("Added points");
-    //     room1 = roomsWithAddedPoints[0];
-    //     room2 = roomsWithAddedPoints[1];
-    //     pointsCloseEnough1 = getClosePoints(room1, room2);
-    //     pointsCloseEnough2 = getClosePoints(room2, room1);
-    // }
-    // else {
-    //     console.log("Did not add points");
-    // }
-    var mergingPoints1 = getMergingPoints(pointsCloseEnough1, room1, room2);
-    var mergingPoints2 = getMergingPoints(pointsCloseEnough2, room2, room1);
+function superMergeTwo(room1, room2, connectedIndexes = false, test=false){
+    if (connectedIndexes.length) {
+        if (connectedIndexes.length > 2) {
+            console.log("This should be fixed");
+        }
+        if (test){
+            console.log("Make better mergingPoints");
+            // displayConnectedIndexes(connectedIndexes, room1, room2);
+        }
+        if (connectedIndexes[0] != undefined) {
+            var mergingPoints1 = [connectedIndexes[0][0], connectedIndexes[1][0]];
+            var mergingPoints2 = [connectedIndexes[0][1], connectedIndexes[1][1]];
+        }
+        else {
+            var pointsCloseEnough1 = getClosePoints(room1, room2);
+            var pointsCloseEnough2 = getClosePoints(room2, room1);
+            var mergingPoints1 = getMergingPoints(pointsCloseEnough1, room1, room2);
+            var mergingPoints2 = getMergingPoints(pointsCloseEnough2, room2, room1);
+        }
+    }
+    else {
+        var pointsCloseEnough1 = getClosePoints(room1, room2);
+        var pointsCloseEnough2 = getClosePoints(room2, room1);
+        var mergingPoints1 = getMergingPoints(pointsCloseEnough1, room1, room2);
+        var mergingPoints2 = getMergingPoints(pointsCloseEnough2, room2, room1);
+    }
 
     var mergedPolygon;
 
+    if (test){
+        console.log("Merging points");
+        console.log(deepCopy(mergingPoints1));
+        console.log(deepCopy(mergingPoints2));
+    }
     if (mergingPoints2[0]) {
         mergedPolygon = mergeTwoPolygons(room1, room2, mergingPoints1, mergingPoints2);
     }
@@ -227,9 +334,6 @@ function removeSharpPoint(polygon){
     for (var i = polygon.length-3; i >= 0; i--) {
         var angle = getAngle(makeLine(polygon[i+1], polygon[i]), makeLine(polygon[i+1], polygon[i+2]));
         if (angle < deltaAngle || angle > 2*Math.PI - deltaAngle){
-            // console.log("Trying to remove");
-            // console.log(polygon[i+1]);
-            // Maze.popup().setLatLng(polygon[i+1]).setContent("Removed").addTo(MAP);
             polygon.splice(i+1, 1);
         }
     }
@@ -255,7 +359,12 @@ function getClosePoints(room1, room2, test=false) {
 }
 
 // find points in room1 that are close to room2 and remove redundant points, so that we get nice pairs of points
-function findPairsOfPoints(room1, room2, test=false, testPoints=[], testRoomLength=0) {
+function findPairsOfPoints(polygon1, polygon2, test=false, testPoints=[], testRoomLength=0) {
+    var room1 = deepCopy(polygon1);
+    var room2 = deepCopy(polygon2);
+
+    room1.splice(-1,1);
+    room2.splice(-1,1);
     var points;
     var length;
 
@@ -310,6 +419,44 @@ function findPairsOfPoints(room1, room2, test=false, testPoints=[], testRoomLeng
     return resultingPoints;
 }
 
+function getFurthest(pointIndexes, room){
+    var maxDist = 0;
+    var dist;
+    var index1;
+    var index2;
+    for (var i = 0; i < pointIndexes.length-1; i++) {
+        for (var j = i+1; j < pointIndexes.length; j++) {
+            dist = getDistPoints(pointIndexes[i], pointIndexes[j]);
+            if (dist > maxDist){
+                index1 = i;
+                index2 = j;
+            }
+        }
+    }
+    return [i, j];
+}
+
+function removeMiddlePoints(pointIndexes) {
+    return [pointIndexes[0], pointIndexes[pointIndexes.length-1]];
+}
+
+function connectWithClosest(pointIndexes1, pointIndexes2, room1, room2){
+    var indexesConnected = [];
+    var minDist;
+    for (var i = 0; i < pointIndexes1.length; i++) {
+        minDist = 12345234;
+        for (var j = 0; j < room2.length; j++) {
+            var dist = getDistPoints(room1[pointIndexes1[i]], room2[j]);
+                if (dist < minDist){
+                    minDist = dist;
+                    index = j;
+                }
+            }
+            indexesConnected.push([pointIndexes1[i], index]);
+    }
+    return indexesConnected;
+}
+
 // based on pair points, connect them together in a double list, so we know which point in room1 is connected to which point in room2
 function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
     minDistance = 12345678;
@@ -319,26 +466,114 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
 
     var currentAngle;
     var currentDistance;
-
-    for (var i = 0; i < pointIndexes1.length; i++) {
-        for (var j = 0; j < pointIndexes2.length; j++) {
-
-            currentDistance = getDistPoints(room1[pointIndexes1[i]], room2[pointIndexes2[j]]);
-            if (currentDistance < minDistance) {
-                minDistance = currentDistance;
-                minIndex = j;
+    var index;
+    if (pointIndexes1.length > pointIndexes2.length) {
+        // indexesConnected = connectWithClosest(pointIndexes1, pointIndexes2, room1, room2);
+        for (var i = 0; i < pointIndexes2.length; i++) {
+            var minDist = 12345654;
+            for (var j = 0; j < pointIndexes1.length; j++) {
+                var dist = getDistPoints(room2[pointIndexes2[i]], room1[pointIndexes1[j]]);
+                if (dist < minDist){
+                    minDist = dist;
+                    index = j;
+                }
             }
-
-
+            indexesConnected.push([pointIndexes1[index], pointIndexes2[i]]);
         }
-        indexesConnected.push([pointIndexes1[i], pointIndexes2[minIndex]]);
-        minDistance = 12345678;
+        var notUsedIndexes1 = removeClosestPoint(deepCopy(pointIndexes1), pointIndexes2, room1, room2);
+        for (var i = 0; i < notUsedIndexes1.length; i++) {
+            var minDist = 12345654;
+            for (var j = 0; j < room2.length; j++) {
+                var dist = getDistPoints(room1[notUsedIndexes1[i]], room2[j]);
+                if (dist < minDist && !contains(pointIndexes2, j)){
+                    minDist = dist;
+                    index = j;
+                }
+            }
+            pointIndexes2.push(index);
+            indexesConnected.push([notUsedIndexes1[i], index]);
+        }
+    }
+    else if (pointIndexes1.length < pointIndexes2.length) {
+        for (var i = 0; i < pointIndexes1.length; i++) {
+            var minDist = 12345654;
+            for (var j = 0; j < pointIndexes2.length; j++) {
+                var dist = getDistPoints(room1[pointIndexes1[i]], room2[pointIndexes2[j]]);
+                if (dist < minDist){
+                    minDist = dist;
+                    index = j;
+                }
+            }
+            indexesConnected.push([pointIndexes1[i], pointIndexes2[index]]);
+        }
+        var notUsedIndexes2 = removeClosestPoint(deepCopy(pointIndexes2), pointIndexes1, room2, room1);
+        for (var i = 0; i < notUsedIndexes2.length; i++) {
+            var minDist = 12345654;
+            for (var j = 0; j < room1.length; j++) {
+                var dist = getDistPoints(room2[notUsedIndexes2[i]], room1[j]);
+                if (dist < minDist && !contains(pointIndexes1, j)){
+                    minDist = dist;
+                    index = j;
+                }
+            }
+            pointIndexes1.push(index);
+            indexesConnected.push([index, notUsedIndexes2[i]]);
+        }
+    }
+    else {
+        var usedIndexes2 = [];
+        for (var i = 0; i < pointIndexes1.length; i++) {
+            var minDist = 12345654;
+            for (var j = 0; j < pointIndexes2.length; j++) {
+                var dist = getDistPoints(room1[pointIndexes1[i]], room2[pointIndexes2[j]]);
+                if (dist < minDist && !contains(usedIndexes2, j)){
+                    minDist = dist;
+                    index = j;
+                }
+            }
+            usedIndexes2.push(index);
+            indexesConnected.push([pointIndexes1[i], pointIndexes2[index]]);
+        }
     }
     return indexesConnected;
 }
 
+function removeClosestPoint(indeces1, indeces2, room1, room2){
+    var minIndex;
+    for (var i = 0; i < indeces2.length; i++) {
+        var minDist = 12345453423;
+        for (var j = 0; j < indeces1.length; j++) {
+            dist = getDistPoints(room2[indeces2[i]], room1[indeces1[j]]);
+            if (dist < minDist){
+                minDist = dist;
+                minIndex = j;
+            }
+        }
+        indeces1.splice(minIndex,1);
+    }
+    return indeces1;
+}
+
+function removeOtherPoint(indeces1, indeces2, room1, room2){
+    var minIndex;
+    var result = [];
+    for (var i = 0; i < indeces2.length; i++) {
+        var minDist = 12345453423;
+        for (var j = 0; j < indeces1.length; j++) {
+            dist = getDistPoints(room2[indeces2[i]], room1[indeces1[j]]);
+            if (dist < minDist){
+                minDist = dist;
+                minIndex = j;
+            }
+        }
+        result.push(indeces1[minIndex]);
+        indeces1.splice(minIndex,1);
+    }
+    return result;
+}
+
 // handles merge where rooms that consist of several polygons are handled (rooms with holes in them)
-function superDuperMerge(room1, room2) {
+function superDuperMerge(room1, room2, test = false) {
     var result;
     var addedPoints;
     var pairs1;
@@ -346,20 +581,73 @@ function superDuperMerge(room1, room2) {
     var connectedPoints;
     if (room1[0][0].constructor === Array && room2[0][0].constructor === Array){
         console.log("To be fixed");
+        var biggestRoomIndex1 = getBiggestRoom(room1);
+        var biggestRoomIndex2 = getBiggestRoom(room2);
+        room1[biggestRoomIndex1] = makeClockWise(room1[biggestRoomIndex1]);
+        room2[biggestRoomIndex2] = makeClockWise(room2[biggestRoomIndex2]);
+        // if (!isClockwiseTest(room1[biggestRoomIndex])){
+        //     checkPointSequence(room1[biggestRoomIndex]);
+        // }
+        addedPoints = addPointsForTwoPolygon(room1[biggestRoomIndex1], room2[biggestRoomIndex2]);
+        room1[biggestRoomIndex1] = addedPoints[0];
+        room2[biggestRoomIndex2] = addedPoints[1];
+        pairs1 = findPairsOfPoints(room1[biggestRoomIndex1], room2[biggestRoomIndex2]);
+        pairs2 = findPairsOfPoints(room2[biggestRoomIndex2], room1[biggestRoomIndex1]);
+        connectedPoints = connectCirclePoints(room1[biggestRoomIndex1], room2[biggestRoomIndex2], pairs1, pairs2);
+        if (test) {
+            console.log("Room1 contains holes");
+            console.log(deepCopy(pairs1));
+            console.log(deepCopy(pairs2));
+            console.log(isClockwise(room1[biggestRoomIndex]));
+            console.log(deepCopy(connectedPoints));
+            // drawPolygonFromOnlyCoordinates(deepCopy(room2), "white", "green");
+            // displayConnectedIndexes(connectedPoints, room1[biggestRoomIndex], room2);
+        }
+        if (connectedPoints.length > 2){
+            result = createCirclePolygons(pairs1, pairs2, room1[biggestRoomIndex1], room2[biggestRoomIndex2], connectedPoints);
+        }
+        else {
+            result = [superMergeTwo(room1[biggestRoomIndex1], room2[biggestRoomIndex2], connectedPoints)];
+        }
+        for (var i = 0; i < room1.length; i++) {
+            if (i != biggestRoomIndex1) {
+                result.push(room1[i]);
+            }
+        }
+        for (var i = 0; i < room2.length; i++) {
+            if (i != biggestRoomIndex2) {
+                result.push(room2[i]);
+            }
+        }
+        return result;
     }
     else if (room1[0][0].constructor === Array){
         var biggestRoomIndex = getBiggestRoom(room1);
+        room1[biggestRoomIndex] = makeClockWise(room1[biggestRoomIndex]);
+        room2 = makeClockWise(room2);
+        // if (!isClockwiseTest(room1[biggestRoomIndex])){
+        //     checkPointSequence(room1[biggestRoomIndex]);
+        // }
         addedPoints = addPointsForTwoPolygon(room1[biggestRoomIndex], room2);
         room1[biggestRoomIndex] = addedPoints[0];
         room2 = addedPoints[1];
         pairs1 = findPairsOfPoints(room1[biggestRoomIndex], room2);
         pairs2 = findPairsOfPoints(room2, room1[biggestRoomIndex]);
         connectedPoints = connectCirclePoints(room1[biggestRoomIndex], room2, pairs1, pairs2);
+        if (test) {
+            console.log("Room1 contains holes");
+            console.log(deepCopy(pairs1));
+            console.log(deepCopy(pairs2));
+            console.log(isClockwise(room1[biggestRoomIndex]));
+            console.log(deepCopy(connectedPoints));
+            // drawPolygonFromOnlyCoordinates(deepCopy(room2), "white", "green");
+            // displayConnectedIndexes(connectedPoints, room1[biggestRoomIndex], room2);
+        }
         if (connectedPoints.length > 2){
             result = createCirclePolygons(pairs1, pairs2, room1[biggestRoomIndex], room2, connectedPoints);
         }
         else {
-            result = [superMergeTwo(room1[biggestRoomIndex], room2)];
+            result = [superMergeTwo(room1[biggestRoomIndex], room2, connectedPoints)];
         }
         for (var i = 0; i < room1.length; i++) {
             if (i != biggestRoomIndex) {
@@ -370,17 +658,26 @@ function superDuperMerge(room1, room2) {
     }
     else if (room2[0][0].constructor === Array){
         var biggestRoomIndex = getBiggestRoom(room2);
+        room1 = makeClockWise(room1);
+        room2[biggestRoomIndex] = makeClockWise(room2[biggestRoomIndex]);
         addedPoints = addPointsForTwoPolygon(room1, room2[biggestRoomIndex]);
         room1 = addedPoints[0];
         room2[biggestRoomIndex] = addedPoints[1];
         pairs1 = findPairsOfPoints(room1, room2[biggestRoomIndex]);
         pairs2 = findPairsOfPoints(room2[biggestRoomIndex], room1);
         connectedPoints = connectCirclePoints(room1, room2[biggestRoomIndex], pairs1, pairs2);
+        if (test) {
+            console.log("Room2 contains holes");
+            console.log(deepCopy(pairs1));
+            console.log(deepCopy(pairs2));
+            console.log(deepCopy(connectedPoints));
+            // displayConnectedIndexes(connectedPoints, room1, room2[biggestRoomIndex]);
+        }
         if (connectedPoints.length > 2){
             result = createCirclePolygons(pairs1, pairs2, room1, room2[biggestRoomIndex], connectedPoints);
         }
         else {
-            result = [superMergeTwo(room1, room2[biggestRoomIndex])];
+            result = [superMergeTwo(room1, room2[biggestRoomIndex], connectedPoints)];
         }
         for (var i = 0; i < room2.length; i++) {
             if (i != biggestRoomIndex) {
@@ -389,12 +686,21 @@ function superDuperMerge(room1, room2) {
         }
         return result;
     }
+    room1 = makeClockWise(room1);
+    room2 = makeClockWise(room2);
     addedPoints = addPointsForTwoPolygon(room1, room2);
     room1 = addedPoints[0];
     room2 = addedPoints[1];
     pairs1 = findPairsOfPoints(room1, room2);
     pairs2 = findPairsOfPoints(room2, room1);
     connectedPoints = connectCirclePoints(room1, room2, pairs1, pairs2);
+    if (test) {
+        console.log("No room contains holes");
+        console.log(deepCopy(pairs1));
+        console.log(deepCopy(pairs2));
+        console.log(deepCopy(connectedPoints));
+        displayConnectedIndexes(connectedPoints, room1, room2);
+    }
     if (connectedPoints.length > 2) {
         result = createCirclePolygons(pairs1, pairs2, room1, room2, connectedPoints);
         return result;
@@ -403,6 +709,30 @@ function superDuperMerge(room1, room2) {
         result = superMergeTwo(room1, room2);
         return result;
     }
+}
+
+function makeClockWise(poly) {
+    if (isClockwise(poly)){
+        return poly;
+    }
+    else {
+        return poly.reverse();
+    }
+}
+  
+function isClockwise(poly) {
+    var sum = 0
+    var cur;
+    var next;
+    for (var i=0; i<poly.length-1; i++) {
+        cur = poly[i];
+        next = poly[i+1];
+        sum += (cur[1] * next[0]) - (cur[0] * next[1]);
+    }
+    cur = poly[poly.length-1];
+    next = poly[0];
+    sum += (cur[1] * next[0]) - (cur[0] * next[1]);
+    return sum < 0;
 }
 
 // is meant for rooms that consist of several polygons (rooms with holes in them), and finds the largest room (the outer part)
@@ -425,14 +755,27 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
     var index = connectedIndexes[0][0];
     var roomNr = 0;
     var increasing = true;
-
-
-
+    var counter = 0;
+    var broken = false;
     while (points1.length > 0 || resultRoom[0] != polygon1[index]) {
+        counter++;
+        if (counter > 9990) {
+            console.log(index);
+        }
+        if (counter == 10000) {
+            Maze.popup().setLatLng(resultRoom[0]).setContent("Start point!").addTo(MAP);
+            broken = true;
+            break;
+        }
         // If a result room is complete
         if (resultRoom.length > 1 && roomNr == 0){
             if (resultRoom[0] == polygon1[index]){
                 resultRooms.push(resultRoom);
+                // console.log("End");
+                // console.log(deepCopy(points1));
+                // console.log(deepCopy(points2));
+                // console.log(deepCopy(connectedIndexes));
+                // return resultRoom;
                 resultRoom = [];
                 index = points1[0];
                 roomNr = 0;
@@ -443,7 +786,9 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
             if (contains(points1, index)){
                 var outerIndex = getOuterIndex(index, roomNr, connectedIndexes);
                 points = findIncreasingAndDecreasingPoints(outerIndex, roomNr, polygon1, polygon2, connectedIndexes);
-                increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon1);
+                var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 1, polygon1, polygon2, connectedIndexes);
+                // increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon1);
+                increasing = checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], deepCopy(points), deepCopy(testpoints2), polygon1, polygon2);
                 points1.splice(points1.indexOf(index), 1);
                 index = getOtherConnectedPoint(index, roomNr, connectedIndexes);
                 points2.splice(points2.indexOf(index), 1);
@@ -463,7 +808,9 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
             if (contains(points2, index)){
                 var outerIndex = getOuterIndex(index, roomNr, connectedIndexes);
                 points = findIncreasingAndDecreasingPoints(outerIndex, roomNr, polygon1, polygon2, connectedIndexes);
-                increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon2);
+                var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 0, polygon1, polygon2, connectedIndexes);
+                // increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon2);
+                increasing = !checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], testpoints2, deepCopy(points), polygon1, polygon2);
                 points2.splice(points2.indexOf(index), 1);
                 index = getOtherConnectedPoint(index, roomNr, connectedIndexes);
                 points1.splice(points1.indexOf(index), 1);
@@ -478,6 +825,18 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
                 }
             }
         }
+    }
+    if (broken){
+        drawPolygonFromOnlyCoordinates(polygon1, "white", "blue");
+        drawPolygonFromOnlyCoordinates(polygon2, "white", "red");
+        checkPointSequence(polygon2);
+        console.log("broken");
+        console.log(points1);
+        console.log(points2);
+        console.log(connectedIndexes);
+        console.log(polygon1);
+        console.log(polygon2);
+        console.log(resultRoom);
     }
     resultRooms.push(resultRoom);
     return resultRooms;
@@ -504,28 +863,25 @@ function getOtherConnectedPoint(index, roomNr, connectedIndexes){
 // finds two other connect pairs that are closest to the indexes given
 function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, polygon2, connectedIndexes) {
 
-	var oppositeIndex = mod(innerIndex - 1, 2);
+    var connectPoint = connectedIndexes[outerIndex][innerIndex];
 
-	var connectPoint = connectedIndexes[outerIndex][oppositeIndex];
-
-	var points = [];
+    var points = [];
 
     var lowerIndex = connectPoint + 1;
     var higherIndex = connectPoint - 1;
     var outerIndexLower;
     var outerIndexHigher;
-
-	for (var i = 0; i < connectedIndexes.length; i++) {
-        if (mod(connectedIndexes[i][oppositeIndex] + polygon2.length - connectPoint, polygon2.length) > mod(lowerIndex + polygon2.length - connectPoint, polygon2.length)){
-            lowerIndex = connectedIndexes[i][oppositeIndex];
+    for (var i = 0; i < connectedIndexes.length; i++) {
+        if (mod(connectedIndexes[i][innerIndex] + polygon1.length - connectPoint, polygon1.length) > mod(lowerIndex + polygon1.length - connectPoint, polygon1.length)){
+            lowerIndex = connectedIndexes[i][innerIndex];
             outerIndexLower = i;
         }
-        if (mod(connectedIndexes[i][oppositeIndex] - connectPoint -1, polygon2.length) < mod(higherIndex - connectPoint -1, polygon2.length)){
-            higherIndex = connectedIndexes[i][oppositeIndex];
+        if (mod(connectedIndexes[i][innerIndex] - connectPoint -1, polygon1.length) < mod(higherIndex - connectPoint -1, polygon1.length)){
+            higherIndex = connectedIndexes[i][innerIndex];
             outerIndexHigher = i;
         }
-	}
-    return [connectedIndexes[outerIndexLower][innerIndex], connectedIndexes[outerIndexHigher][innerIndex]];
+    }
+    return [connectedIndexes[outerIndexHigher][innerIndex], connectedIndexes[outerIndexLower][innerIndex]];
 }
 
 // determines if the currentIndex in createCirclePoints should increase or decrease
@@ -592,6 +948,28 @@ function isIncreasing(startIndex, endIndex1, endIndex2, polygon) {
         return true;
     }
     return false;
+}
+
+function checkIncreasingIsSmallEnough(roomNr, startIndexes, points1, points2, polygon1, polygon2) {
+    return (checkIfDistancesIsSmallEnough(startIndexes[0], points1[0], polygon1, polygon2) && checkIfDistancesIsSmallEnough2(startIndexes[1], points2[1], polygon2, polygon1));
+}
+
+function checkIfDistancesIsSmallEnough(startIndex, endIndex, polygon1, polygon2) {
+    for (var i = 0; i < mod(endIndex-startIndex,polygon1.length); i++) {
+        if (getMinDistToPoly(polygon1[mod(startIndex+i,polygon1.length)], polygon2) > VERY_IMPORTANCE_DISTANCE) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function checkIfDistancesIsSmallEnough2(startIndex, endIndex, polygon1, polygon2) {
+    for (var i = 0; i < mod(startIndex-endIndex,polygon1.length); i++) {
+        if (getMinDistToPoly(polygon1[mod(startIndex-i,polygon1.length)], polygon2) > VERY_IMPORTANCE_DISTANCE) {
+            return false;
+        }
+    }
+    return true;
 }
 
 // find two points in room1 close to room2, such that the distance between those two points is as long as possible, 
@@ -904,14 +1282,17 @@ function convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates) {
 }
 
 function mergeCorridors(){
+
     for (var i = globalCorridorCoordinates.length-1; i >= 0; i--) {
         if (globalCorridorCoordinates[i].length == 2){
             globalCorridorCoordinates.splice(i, 1);
         }
     }
-    globalCorridorCoordinates = removeDuplicatesFromAllRooms(globalCorridorCoordinates);
+    // globalCorridorCoordinates = removeDuplicatesFromAllRooms(globalCorridorCoordinates);
     var neighborCorridors = getNeighborsCorridors(globalCorridorCoordinates);
-    [mergedCorridors, corridorContainer] = mergeAllPolygons(neighborCorridors, globalCorridorCoordinates);
+    // console.log(neighborCorridors);
+    // getCorridorIndices();
+    [mergedCorridors, corridorContainer] = mergeAllCorridors(neighborCorridors, globalCorridorCoordinates);
     for (var i = 0; i < mergedCorridors.length; i++) {
         drawPolygonFromOnlyCoordinates(mergedCorridors[i], "white", "blue");
     }
@@ -1009,22 +1390,22 @@ function createPointShortestDistance(point, polygon){
 }
 
 function addPointOnLine(point, polygon){
-    if (getMinDistToPolyPoints(point, polygon) > VERY_IMPORTANCE_DISTANCE*2){
+    // if (getMinDistToPolyPoints(point, polygon) > VERY_IMPORTANCE_DISTANCE){
         var closestPoint = createPointShortestDistance(point, polygon);
         var index = getClosestLineIndex(point, polygon);
         polygon.splice(index+1, 0, closestPoint);
         //Maze.popup().setLatLng(closestPoint).setContent("Added").addTo(MAP);
-    }
+    // }
     return polygon;
 }
 
 function addPointsForTwoPolygon(room1, room2) {
-    room1 = removeDuplicatePoints([room1], 0);
-    room2 = removeDuplicatePoints([room2], 0);
-    var closestPoints1 = getClosePoints(room1, room2);
+    // room1 = removeDuplicatePoints([room1], 0);
+    // room2 = removeDuplicatePoints([room2], 0);
     var initialLength1 = room1.length;
     var initialLength2 = room2.length;
     var added = false;
+    var closestPoints1 = getClosePoints(room1, room2);
     for (var i = 0; i < closestPoints1.length; i++) {
         room2 = addPointOnLine(room1[closestPoints1[i]], room2);
     }
@@ -1036,4 +1417,101 @@ function addPointsForTwoPolygon(room1, room2) {
         added = true;
     }
     return [room1, room2, added];
+}
+
+function experimentWithIncreasing(startIndex, endIndex1, endIndex2, connectedIndexes, polygon1, polygon2) {
+
+	var currentIndex = startIndex;
+
+	var endIndex1IsValid = false;
+
+	var endIndex2IsValid = false;
+
+	var isIncreasing = isIncreasingOriginal(startIndex, endIndex1, endIndex2, polygon1);
+
+	while (currentIndex != endIndex1) {
+		if (currentIndex != startIndex) {
+
+			if (getMinDistToPolyPoints(polygon1[currentIndex], polygon2) > VERY_IMPORTANCE_DISTANCE) {
+				endIndex1IsValid = true;
+				break;
+			}
+		}
+		currentIndex += mod(currentIndex + 1, polygon1.length);
+	}
+	if (!endIndex1IsValid) {
+
+		for (var i = 0; i < connectedIndexes.length; i++) {
+			if (connectedIndexes[i][0] == startIndex) {
+				startIndex = connectedIndexes[i][1];
+			}
+			if (connectedIndexes[i][0] == endIndex1) {
+				endIndex1 = connectedIndexes[i][1];
+			}
+		}
+
+		currentIndex = startIndex;
+
+		while (currentIndex != endIndex1) {
+			if (currentIndex != startIndex) {
+				if (getMinDistToPolyPoints(polygon2[currentIndex], polygon1) > VERY_IMPORTANCE_DISTANCE) {
+					endIndex1IsValid = true;
+					break;
+				}
+			}
+			currentIndex += mod(currentIndex + 1, polygon2.length);
+		}
+	}
+
+	while (currentIndex != endIndex1) {
+		if (currentIndex != startIndex) {
+			if (getMinDistToPolyPoints(polygon1[currentIndex], polygon2) > VERY_IMPORTANCE_DISTANCE) {
+				endIndex2IsValid = true;
+				break;
+			}
+		}
+		currentIndex += mod(currentIndex - 1, polygon1.length);
+	}
+	if (!endIndex2IsValid) {
+
+		for (var i = 0; i < connectedIndexes.length; i++) {
+			if (connectedIndexes[i][0] == startIndex) {
+				startIndex = connectedIndexes[i][1];
+			}
+			if (connectedIndexes[i][0] == endIndex1) {
+				endIndex1 = connectedIndexes[i][1];
+			}
+		}
+
+		currentIndex = startIndex;
+
+		while (currentIndex != endIndex1) {
+			if (currentIndex != startIndex) {
+				if (getMinDistToPolyPoints(polygon2[currentIndex], polygon1) > VERY_IMPORTANCE_DISTANCE) {
+					endIndex2IsValid = true;
+					break;
+				}
+			}
+			currentIndex += mod(currentIndex - 1, polygon2.length);
+		}
+	}
+	if (isIncreasing && endIndex1IsValid) {
+		return true;
+	}
+	return false;
+}
+
+function addPointsOnAllCorridors(corridorNeighbors) {
+	for (var i = 0; i < globalCorridorCoordinates.length; i++) {
+		if (corridorNeighbors[i].length > 0) {
+			for (var j = 0; j < corridorNeighbors[i].length; j++) {
+				result = addPointsForTwoPolygon(globalCorridorCoordinates[i], globalCorridorCoordinates[corridorNeighbors[i][j]]);
+
+				globalCorridorCoordinates[i] = deepCopy(result[0]);
+				globalCorridorCoordinates[corridorNeighbors[i][j]] = deepCopy(result[1]);
+
+			}
+		}
+	}
+	return globalCorridorCoordinates;
 }
