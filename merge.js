@@ -1,3 +1,4 @@
+// merge two polygons together, when they only have two points close to each other
 function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2, point1 = undefined, point2 = undefined){
     if (polygon1 != polygon2){
         if (indeces1 != null && indeces2 != null){
@@ -55,6 +56,7 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2, point1 = undef
     }
 }
 
+// get the longest sequence of edges in a polygon
 function getLongestPart(polygon, index){
     if (index > 1){
         var part1 = polygon.slice(1,index);
@@ -74,6 +76,7 @@ function getLongestPart(polygon, index){
     }
 }
 
+// get the longest sequence of edges in a polygon, without removing any points
 function getLongestPartWithoutRemoval(polygon, index){
     if (index > 1){
         var part1 = polygon.slice(0,index+1);
@@ -92,7 +95,6 @@ function getLongestPartWithoutRemoval(polygon, index){
         return part2;
     }
 }
-
 
 function getPartFarthestAway(polygon, index, polygon2){
     if (index > 1){
@@ -123,6 +125,7 @@ function getLongestDistToPart(part, polygon) {
     return longest;
 }
 
+// the main function that merges all polygons together on a floor
 function mergeAllPolygons(neighbors, roomCoordinates){
     var container = [];
 
@@ -240,6 +243,7 @@ function mergeAllCorridors(neighbors, roomCoordinates){
     return [roomCoordinates, container];
 }
 
+// finds indices close o the rooms, so they can be merged using mergeTwoPolygons
 function simpleMergeTwo(room1, room2, test=false){
     result0 = getDistPolyToPoly(room1, room2);
     result1 = getDistPolyToPoly(room2, room1);
@@ -324,6 +328,7 @@ function superMergeTwo(room1, room2, connectedIndexes = false, test=false){
 }
 
 // This should be optimized by only checking merged points
+// removes point that results in sharp angles between edges
 function removeSharpPoint(polygon){
     var deltaAngle = Math.PI/12;
     for (var i = polygon.length-3; i >= 0; i--) {
@@ -335,6 +340,7 @@ function removeSharpPoint(polygon){
     return polygon;
 }
 
+// get all points in room1 that are close to room2
 function getClosePoints(room1, room2, test=false) {
     var closePoints = [];
     for (var i = 0; i < room1.length; i++) {
@@ -352,6 +358,7 @@ function getClosePoints(room1, room2, test=false) {
     return closePoints;
 }
 
+// find points in room1 that are close to room2 and remove redundant points, so that we get nice pairs of points
 function findPairsOfPoints(polygon1, polygon2, test=false, testPoints=[], testRoomLength=0) {
     var room1 = deepCopy(polygon1);
     var room2 = deepCopy(polygon2);
@@ -450,6 +457,7 @@ function connectWithClosest(pointIndexes1, pointIndexes2, room1, room2){
     return indexesConnected;
 }
 
+// based on pair points, connect them together in a double list, so we know which point in room1 is connected to which point in room2
 function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
     minDistance = 12345678;
     minIndex = 0;
@@ -564,6 +572,7 @@ function removeOtherPoint(indeces1, indeces2, room1, room2){
     return result;
 }
 
+// handles merge where rooms that consist of several polygons are handled (rooms with holes in them)
 function superDuperMerge(room1, room2, test = false) {
     var result;
     var addedPoints;
@@ -710,17 +719,7 @@ function makeClockWise(poly) {
         return poly.reverse();
     }
 }
-
-// function isClockwise(poly) {
-//     var sum = 0
-//     for (var i=0; i<poly.length-1; i++) {
-//         var cur = poly[i],
-//             next = poly[i+1]
-//         sum += (next[1] - cur[1]) * (next[0] + cur[0])
-//     }
-//     return sum > 0
-// }
-
+  
 function isClockwise(poly) {
     var sum = 0
     var cur;
@@ -736,6 +735,7 @@ function isClockwise(poly) {
     return sum < 0;
 }
 
+// is meant for rooms that consist of several polygons (rooms with holes in them), and finds the largest room (the outer part)
 function getBiggestRoom(room1) {
     var biggestCircumference = 0;
     var index;
@@ -748,6 +748,7 @@ function getBiggestRoom(room1) {
     return index;
 }
 
+// merges two polygons, when they result in a polygon with one or several holes in it
 function createCirclePolygons(points1, points2, polygon1, polygon2, connectedIndexes) {
     var resultRooms = [];
     var resultRoom = [];
@@ -756,17 +757,6 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
     var increasing = true;
     var counter = 0;
     var broken = false;
-    // if (points1[0] == 0 && polygon1[1] == 1){
-    //     console.log("Do stuff!");
-    //     drawPolygonFromOnlyCoordinates(polygon1, "white", "red");
-    //     drawPolygonFromOnlyCoordinates(polygon2, "white", "blue");
-    //     for (var i = 0; i < points1.length; i++) {
-    //         Maze.popup().setLatLng(polygon1[points1[i]]).setContent(points1[i].toString()).addTo(MAP);
-    //     }
-    //     for (i = 0; i < points2.length; i++) {
-    //         Maze.popup().setLatLng(polygon2[points2[i]]).setContent(points2[i].toString()).addTo(MAP);
-    //     }
-    // }
     while (points1.length > 0 || resultRoom[0] != polygon1[index]) {
         counter++;
         if (counter > 9990) {
@@ -852,6 +842,7 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
     return resultRooms;
 }
 
+// returns index of element that has "index" as its first element
 function getOuterIndex(index, roomNr, connectedIndexes){
     for (var i = 0; i < connectedIndexes.length; i++) {
         if (connectedIndexes[i][roomNr] == index){
@@ -860,6 +851,7 @@ function getOuterIndex(index, roomNr, connectedIndexes){
     }
 }
 
+// returns index of point in the other room, based on the index of the connecting point in the first room
 function getOtherConnectedPoint(index, roomNr, connectedIndexes){
     for (var i = 0; i < connectedIndexes.length; i++) {
         if (connectedIndexes[i][roomNr] == index){
@@ -868,30 +860,7 @@ function getOtherConnectedPoint(index, roomNr, connectedIndexes){
     }
 }
 
-// function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, polygon2, connectedIndexes) {
-
-//     var oppositeIndex = mod(innerIndex - 1, 2);
-//     var connectPoint = connectedIndexes[outerIndex][oppositeIndex];
-
-//     var points = [];
-
-//     var lowerIndex = connectPoint + 1;
-//     var higherIndex = connectPoint - 1;
-//     var outerIndexLower;
-//     var outerIndexHigher;
-//     for (var i = 0; i < connectedIndexes.length; i++) {
-//         if (mod(connectedIndexes[i][oppositeIndex] + polygon2.length - connectPoint, polygon2.length) > mod(lowerIndex + polygon2.length - connectPoint, polygon2.length)){
-//             lowerIndex = connectedIndexes[i][oppositeIndex];
-//             outerIndexLower = i;
-//         }
-//         if (mod(connectedIndexes[i][oppositeIndex] - connectPoint -1, polygon2.length) < mod(higherIndex - connectPoint -1, polygon2.length)){
-//             higherIndex = connectedIndexes[i][oppositeIndex];
-//             outerIndexHigher = i;
-//         }
-//     }
-//     return [connectedIndexes[outerIndexLower][innerIndex], connectedIndexes[outerIndexHigher][innerIndex]];
-// }
-
+// finds two other connect pairs that are closest to the indexes given
 function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, polygon2, connectedIndexes) {
 
     var connectPoint = connectedIndexes[outerIndex][innerIndex];
@@ -915,6 +884,7 @@ function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, pol
     return [connectedIndexes[outerIndexHigher][innerIndex], connectedIndexes[outerIndexLower][innerIndex]];
 }
 
+// determines if the currentIndex in createCirclePoints should increase or decrease
 function isIncreasing(startIndex, endIndex1, endIndex2, polygon) {
     var currentIndex = startIndex;
     var previousIndex = startIndex;
@@ -1002,7 +972,8 @@ function checkIfDistancesIsSmallEnough2(startIndex, endIndex, polygon1, polygon2
     return true;
 }
 
-
+// find two points in room1 close to room2, such that the distance between those two points is as long as possible, 
+// and all points in between are also close to room2
 function getMergingPoints(pointsCloseEnough, room1, room2){
     var longestDist = 0;
     var dist;
@@ -1023,21 +994,24 @@ function getMergingPoints(pointsCloseEnough, room1, room2){
     return [index1, index2];
 }
 
+// determine if a point in room1 is close or not to a point in room2
 function pointTooFarAway(indeces, room1, room2) {
     for (var i = indeces[0]+1; i < indeces[1]; i++) {
-        if (haversineDistance(room1[i%room1.length], room2) > VERY_IMPORTANCE_DISTANCE*5){
+        if (haversineDistance(room1[mod(i, room1.length)], room2) > VERY_IMPORTANCE_DISTANCE*5){
             return true;
         }
     }
     return false;
 }
 
+// sorting function that handles proper sorting, and not based on digits
 function sorter(a, b) {
     if (a < b) return -1;  // any negative number works
     if (a > b) return 1;   // any positive number works
     return 0; // equal values MUST yield zero
 }
 
+// order rooms that belong together in a group, such that their indices are ordered according to their position in the group
 function findOrderOfRooms(oldNeighbors, container) {
 	var orderedRooms = [];
 
@@ -1088,6 +1062,7 @@ function findOrderOfRooms(oldNeighbors, container) {
 	return orderedRooms;
 }
 
+// create different merging levels, so that merged rooms can be split into smaller merged rooms
 function createDifferentMergingLevels(orderedRooms) {
 	var mergingLevels = [[orderedRooms]];
 
@@ -1157,6 +1132,7 @@ function isOdd(number) {
 }
 
 // Only use this function on a copied version of neighbors and not the neighbors used for merging!
+// Makes sure that if a room is neighbor to another room, that room will also be neighbor to the first room
 function makeNeighborsWhoAreNotNeighborsNeighbors(neighbors) {
 	for (var i = 0; i < neighbors.length; i++) {
 		for (var j = 0; j < neighbors[i].length; j++) {
@@ -1168,26 +1144,12 @@ function makeNeighborsWhoAreNotNeighborsNeighbors(neighbors) {
 	return neighbors;
 }
 
+// create different merging levels for all merged groups
 function dynamicMergeAllRooms(allOrderedRooms) {
     for (var i = 0; i < allOrderedRooms.length; i++) {
         allOrderedRooms[i] = createDifferentMergingLevels(allOrderedRooms[i]);
     }
     return allOrderedRooms;
-}
-
-function mergeAllPolygonsDynamic(allOrderedRooms, roomCoordinates) {
-    for (var i = 0; i < allOrderedRooms.length; i++) {
-
-        if (allOrderedRooms[i].length > 1) {
-            for (var j = 0; j < allOrderedRooms[i].length; j++) {
-
-            }
-        }
-
-        for (var j = 0; j < allOrderedRooms[i].length; j++) {
-
-        }
-    }
 }
 
 
