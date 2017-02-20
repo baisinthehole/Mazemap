@@ -572,6 +572,45 @@ function superDuperMerge(room1, room2, test = false) {
     var connectedPoints;
     if (room1[0][0].constructor === Array && room2[0][0].constructor === Array){
         console.log("To be fixed");
+        var biggestRoomIndex1 = getBiggestRoom(room1);
+        var biggestRoomIndex2 = getBiggestRoom(room2);
+        room1[biggestRoomIndex1] = makeClockWise(room1[biggestRoomIndex1]);
+        room2[biggestRoomIndex2] = makeClockWise(room2[biggestRoomIndex2]);
+        // if (!isClockwiseTest(room1[biggestRoomIndex])){
+        //     checkPointSequence(room1[biggestRoomIndex]);
+        // }
+        addedPoints = addPointsForTwoPolygon(room1[biggestRoomIndex1], room2[biggestRoomIndex2]);
+        room1[biggestRoomIndex1] = addedPoints[0];
+        room2[biggestRoomIndex2] = addedPoints[1];
+        pairs1 = findPairsOfPoints(room1[biggestRoomIndex1], room2[biggestRoomIndex2]);
+        pairs2 = findPairsOfPoints(room2[biggestRoomIndex2], room1[biggestRoomIndex1]);
+        connectedPoints = connectCirclePoints(room1[biggestRoomIndex1], room2[biggestRoomIndex2], pairs1, pairs2);
+        if (test) {
+            console.log("Room1 contains holes");
+            console.log(deepCopy(pairs1));
+            console.log(deepCopy(pairs2));
+            console.log(isClockwise(room1[biggestRoomIndex]));
+            console.log(deepCopy(connectedPoints));
+            // drawPolygonFromOnlyCoordinates(deepCopy(room2), "white", "green");
+            // displayConnectedIndexes(connectedPoints, room1[biggestRoomIndex], room2);
+        }
+        if (connectedPoints.length > 2){
+            result = createCirclePolygons(pairs1, pairs2, room1[biggestRoomIndex1], room2[biggestRoomIndex2], connectedPoints);
+        }
+        else {
+            result = [superMergeTwo(room1[biggestRoomIndex1], room2[biggestRoomIndex2], connectedPoints)];
+        }
+        for (var i = 0; i < room1.length; i++) {
+            if (i != biggestRoomIndex1) {
+                result.push(room1[i]);
+            }
+        }
+        for (var i = 0; i < room2.length; i++) {
+            if (i != biggestRoomIndex2) {
+                result.push(room2[i]);
+            }
+        }
+        return result;
     }
     else if (room1[0][0].constructor === Array){
         var biggestRoomIndex = getBiggestRoom(room1);
