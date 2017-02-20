@@ -192,9 +192,9 @@ function mergeAllCorridors(neighbors, roomCoordinates){
             if (contains(neighbors[i], j)) {
                 if (!findOne(container[i], container[j])) {
 
-                    console.log("To be merged");
-                    console.log(i);
-                    console.log(j);
+                    // console.log("To be merged");
+                    // console.log(i);
+                    // console.log(j);
                     // if (i == 12 && j == 40){
                     // // if (false){
                     //     drawPolygonFromOnlyCoordinates(roomCoordinates[i], "white", "red");
@@ -702,8 +702,6 @@ function superDuperMerge(room1, room2, test = false) {
 }
 
 function rotateRooms(room1, room2, caseNr) {
-    console.log("Start of Rotate rooms");
-    console.log(caseNr);
     var biggestRoomIndex1;
     var biggestRoomIndex2;
     var closestRoomIndex1;
