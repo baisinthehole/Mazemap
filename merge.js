@@ -580,7 +580,6 @@ function superDuperMerge(room1, room2, test = false) {
     var pairs2;
     var connectedPoints;
     if (room1[0][0].constructor === Array && room2[0][0].constructor === Array){
-        console.log("To be fixed");
         var biggestRoomIndex1 = getBiggestRoom(room1);
         var biggestRoomIndex2 = getBiggestRoom(room2);
         room1[biggestRoomIndex1] = makeClockWise(room1[biggestRoomIndex1]);
@@ -719,7 +718,7 @@ function makeClockWise(poly) {
         return poly.reverse();
     }
 }
-  
+
 function isClockwise(poly) {
     var sum = 0
     var cur;
@@ -972,7 +971,7 @@ function checkIfDistancesIsSmallEnough2(startIndex, endIndex, polygon1, polygon2
     return true;
 }
 
-// find two points in room1 close to room2, such that the distance between those two points is as long as possible, 
+// find two points in room1 close to room2, such that the distance between those two points is as long as possible,
 // and all points in between are also close to room2
 function getMergingPoints(pointsCloseEnough, room1, room2){
     var longestDist = 0;
