@@ -757,8 +757,14 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
                 var outerIndex = getOuterIndex(index, roomNr, connectedIndexes);
                 points = findIncreasingAndDecreasingPoints(outerIndex, roomNr, polygon1, polygon2, connectedIndexes);
                 var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 1, polygon1, polygon2, connectedIndexes);
+                console.log(deepCopy(testpoints2));
                 // increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon1);
-                increasing = checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], deepCopy(points), testpoints2, polygon1, polygon2);
+                increasing = checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], deepCopy(points), deepCopy(testpoints2), polygon1, polygon2);
+                console.log("Increasing in room 1");
+                console.log(connectedIndexes[outerIndex]);
+                console.log(deepCopy(points));
+                console.log(deepCopy(testpoints2));
+                console.log(increasing);
                 points1.splice(points1.indexOf(index), 1);
                 index = getOtherConnectedPoint(index, roomNr, connectedIndexes);
                 points2.splice(points2.indexOf(index), 1);
@@ -781,6 +787,11 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
                 var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 0, polygon1, polygon2, connectedIndexes);
                 // increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon2);
                 increasing = !checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], testpoints2, deepCopy(points), polygon1, polygon2);
+                console.log("Increasing in room 2");
+                console.log(connectedIndexes[outerIndex]);
+                console.log(deepCopy(points));
+                console.log(deepCopy(testpoints2));
+                console.log(increasing);
                 points2.splice(points2.indexOf(index), 1);
                 index = getOtherConnectedPoint(index, roomNr, connectedIndexes);
                 points1.splice(points1.indexOf(index), 1);
