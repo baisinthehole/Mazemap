@@ -628,6 +628,13 @@ function getNeighborsCorridors(corridorCoordinates){
     return neighbors;
 }
 
+function isOnePointNeighbor(polygon1, polygon2){
+    // get closest points
+    // create line each way
+    // check dot prod with both lines
+    //
+}
+
 function samePoiTypeByPriority(infos1, infos2, roomNumber){
     var priority1 = 1000;
     var priority2 = 1000;
