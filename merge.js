@@ -467,18 +467,23 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
     var currentAngle;
     var currentDistance;
     var index;
+
+    // array to handle special case in floor 274
+    var usedIndexes = [];
+
     if (pointIndexes1.length > pointIndexes2.length) {
         // indexesConnected = connectWithClosest(pointIndexes1, pointIndexes2, room1, room2);
         for (var i = 0; i < pointIndexes2.length; i++) {
             var minDist = 12345654;
             for (var j = 0; j < pointIndexes1.length; j++) {
                 var dist = getDistPoints(room2[pointIndexes2[i]], room1[pointIndexes1[j]]);
-                if (dist < minDist){
+                if (dist < minDist && !contains(usedIndexes, j)){
                     minDist = dist;
                     index = j;
                 }
             }
             indexesConnected.push([pointIndexes1[index], pointIndexes2[i]]);
+            usedIndexes.push(index);
         }
         var notUsedIndexes1 = removeClosestPoint(deepCopy(pointIndexes1), pointIndexes2, room1, room2);
         for (var i = 0; i < notUsedIndexes1.length; i++) {
