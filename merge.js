@@ -195,13 +195,13 @@ function mergeAllCorridors(neighbors, roomCoordinates){
                     // console.log("To be merged");
                     // console.log(i);
                     // console.log(j);
-                    // if (i == 1 && j == 15){
+                    // if (i == 12 && j == 40){
                     // // if (false){
                     //     drawPolygonFromOnlyCoordinates(roomCoordinates[i], "white", "red");
                     //     drawPolygonFromOnlyCoordinates(roomCoordinates[j], "white", "blue");
                     //     // checkPointSequence(deepCopy(roomCoordinates[j]));
                     //     mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j], true);
-                    //     drawPolygonFromOnlyCoordinates(mergedPolygon, "white", "green");
+                    //     // drawPolygonFromOnlyCoordinates(mergedPolygon, "white", "green");
                     // }
                     // else {
                         mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j]);
@@ -580,106 +580,97 @@ function superDuperMerge(room1, room2, test = false) {
     var pairs2;
     var connectedPoints;
     if (room1[0][0].constructor === Array && room2[0][0].constructor === Array){
-        var biggestRoomIndex1 = getBiggestRoom(room1);
-        var biggestRoomIndex2 = getBiggestRoom(room2);
-        room1[biggestRoomIndex1] = makeClockWise(room1[biggestRoomIndex1]);
-        room2[biggestRoomIndex2] = makeClockWise(room2[biggestRoomIndex2]);
-        // if (!isClockwiseTest(room1[biggestRoomIndex])){
-        //     checkPointSequence(room1[biggestRoomIndex]);
-        // }
-        addedPoints = addPointsForTwoPolygon(room1[biggestRoomIndex1], room2[biggestRoomIndex2]);
+        rotateRooms(room1, room2, 0);
+        var closestRoomIndex1 = getClosestRoom(room1, room2);
+        var closestRoomIndex2 = getClosestRoom(room2, room1);
+        addedPoints = addPointsForTwoPolygon(room1[closestRoomIndex1], room2[closestRoomIndex2]);
         room1[biggestRoomIndex1] = addedPoints[0];
         room2[biggestRoomIndex2] = addedPoints[1];
-        pairs1 = findPairsOfPoints(room1[biggestRoomIndex1], room2[biggestRoomIndex2]);
-        pairs2 = findPairsOfPoints(room2[biggestRoomIndex2], room1[biggestRoomIndex1]);
-        connectedPoints = connectCirclePoints(room1[biggestRoomIndex1], room2[biggestRoomIndex2], pairs1, pairs2);
+        pairs1 = findPairsOfPoints(room1[closestRoomIndex1], room2[closestRoomIndex2]);
+        pairs2 = findPairsOfPoints(room2[closestRoomIndex2], room1[closestRoomIndex1]);
+        connectedPoints = connectCirclePoints(room1[closestRoomIndex1], room2[closestRoomIndex2], pairs1, pairs2);
         if (test) {
             console.log("Room1 contains holes");
             console.log(deepCopy(pairs1));
             console.log(deepCopy(pairs2));
-            console.log(isClockwise(room1[biggestRoomIndex]));
+            console.log(isClockwise(room1[closestRoomIndex1]));
             console.log(deepCopy(connectedPoints));
-            // drawPolygonFromOnlyCoordinates(deepCopy(room2), "white", "green");
-            // displayConnectedIndexes(connectedPoints, room1[biggestRoomIndex], room2);
+            // displayConnectedIndexes(connectedPoints, room1[closestRoomIndex1], room2);
         }
         if (connectedPoints.length > 2){
-            result = createCirclePolygons(pairs1, pairs2, room1[biggestRoomIndex1], room2[biggestRoomIndex2], connectedPoints);
+            result = createCirclePolygons(pairs1, pairs2, room1[closestRoomIndex1], room2[closestRoomIndex2], connectedPoints);
         }
         else {
-            result = [superMergeTwo(room1[biggestRoomIndex1], room2[biggestRoomIndex2], connectedPoints)];
+            result = [superMergeTwo(room1[closestRoomIndex1], room2[closestRoomIndex2], connectedPoints)];
         }
         for (var i = 0; i < room1.length; i++) {
-            if (i != biggestRoomIndex1) {
+            if (i != closestRoomIndex1) {
                 result.push(room1[i]);
             }
         }
         for (var i = 0; i < room2.length; i++) {
-            if (i != biggestRoomIndex2) {
+            if (i != closestRoomIndex2) {
                 result.push(room2[i]);
             }
         }
         return result;
     }
     else if (room1[0][0].constructor === Array){
-        var biggestRoomIndex = getBiggestRoom(room1);
-        room1[biggestRoomIndex] = makeClockWise(room1[biggestRoomIndex]);
-        room2 = makeClockWise(room2);
-        // if (!isClockwiseTest(room1[biggestRoomIndex])){
-        //     checkPointSequence(room1[biggestRoomIndex]);
-        // }
-        addedPoints = addPointsForTwoPolygon(room1[biggestRoomIndex], room2);
-        room1[biggestRoomIndex] = addedPoints[0];
+        rotateRooms(room1, room2, 1)
+        var closestRoomIndex = getClosestRoom(room1, room2);
+        addedPoints = addPointsForTwoPolygon(room1[closestRoomIndex], room2);
+        room1[closestRoomIndex] = addedPoints[0];
         room2 = addedPoints[1];
-        pairs1 = findPairsOfPoints(room1[biggestRoomIndex], room2);
-        pairs2 = findPairsOfPoints(room2, room1[biggestRoomIndex]);
-        connectedPoints = connectCirclePoints(room1[biggestRoomIndex], room2, pairs1, pairs2);
+        pairs1 = findPairsOfPoints(room1[closestRoomIndex], room2);
+        pairs2 = findPairsOfPoints(room2, room1[closestRoomIndex]);
+        connectedPoints = connectCirclePoints(room1[closestRoomIndex], room2, pairs1, pairs2);
         if (test) {
             console.log("Room1 contains holes");
             console.log(deepCopy(pairs1));
             console.log(deepCopy(pairs2));
-            console.log(isClockwise(room1[biggestRoomIndex]));
+            console.log(isClockwise(room1[closestRoomIndex]));
             console.log(deepCopy(connectedPoints));
-            // drawPolygonFromOnlyCoordinates(deepCopy(room2), "white", "green");
-            // displayConnectedIndexes(connectedPoints, room1[biggestRoomIndex], room2);
+            // displayConnectedIndexes(connectedPoints, room1[closestRoomIndex], room2);
         }
         if (connectedPoints.length > 2){
-            result = createCirclePolygons(pairs1, pairs2, room1[biggestRoomIndex], room2, connectedPoints);
+            result = createCirclePolygons(pairs1, pairs2, room1[closestRoomIndex], room2, connectedPoints);
         }
         else {
-            result = [superMergeTwo(room1[biggestRoomIndex], room2, connectedPoints)];
+            result = [superMergeTwo(room1[closestRoomIndex], room2, connectedPoints)];
         }
         for (var i = 0; i < room1.length; i++) {
-            if (i != biggestRoomIndex) {
+            if (i != closestRoomIndex) {
                 result.push(room1[i]);
             }
         }
         return result;
     }
     else if (room2[0][0].constructor === Array){
-        var biggestRoomIndex = getBiggestRoom(room2);
-        room1 = makeClockWise(room1);
-        room2[biggestRoomIndex] = makeClockWise(room2[biggestRoomIndex]);
-        addedPoints = addPointsForTwoPolygon(room1, room2[biggestRoomIndex]);
+        rotateRooms(room1, room2, 2);
+        var closestRoomIndex = getClosestRoom(room2, room1);
+        addedPoints = addPointsForTwoPolygon(room1, room2[closestRoomIndex]);
         room1 = addedPoints[0];
-        room2[biggestRoomIndex] = addedPoints[1];
-        pairs1 = findPairsOfPoints(room1, room2[biggestRoomIndex]);
-        pairs2 = findPairsOfPoints(room2[biggestRoomIndex], room1);
-        connectedPoints = connectCirclePoints(room1, room2[biggestRoomIndex], pairs1, pairs2);
+        room2[closestRoomIndex] = addedPoints[1];
+        pairs1 = findPairsOfPoints(room1, room2[closestRoomIndex]);
+        pairs2 = findPairsOfPoints(room2[closestRoomIndex], room1);
+        connectedPoints = connectCirclePoints(room1, room2[closestRoomIndex], pairs1, pairs2);
         if (test) {
             console.log("Room2 contains holes");
             console.log(deepCopy(pairs1));
             console.log(deepCopy(pairs2));
             console.log(deepCopy(connectedPoints));
-            // displayConnectedIndexes(connectedPoints, room1, room2[biggestRoomIndex]);
+            console.log(closestRoomIndex);
+            drawPolygonFromOnlyCoordinates(room2[getBiggestRoom(room2)], "white", "green");
+            displayConnectedIndexes(connectedPoints, room1, room2[closestRoomIndex]);
         }
         if (connectedPoints.length > 2){
-            result = createCirclePolygons(pairs1, pairs2, room1, room2[biggestRoomIndex], connectedPoints);
+            result = createCirclePolygons(pairs1, pairs2, room1, room2[closestRoomIndex], connectedPoints);
         }
         else {
-            result = [superMergeTwo(room1, room2[biggestRoomIndex], connectedPoints)];
+            result = [superMergeTwo(room1, room2[closestRoomIndex], connectedPoints)];
         }
         for (var i = 0; i < room2.length; i++) {
-            if (i != biggestRoomIndex) {
+            if (i != closestRoomIndex) {
                 result.push(room2[i]);
             }
         }
@@ -710,12 +701,74 @@ function superDuperMerge(room1, room2, test = false) {
     }
 }
 
+function rotateRooms(room1, room2, caseNr) {
+    var biggestRoomIndex1;
+    var biggestRoomIndex2;
+    var closestRoomIndex1;
+    var closestRoomIndex2;
+    if (caseNr == 0) {
+        biggestRoomIndex1 = getBiggestRoom(room1);
+        closestRoomIndex1 = getClosestRoom(room1, room2);
+        if (biggestRoomIndex1 == closestRoomIndex1) {
+            room1[closestRoomIndex1] = makeClockWise(room1[closestRoomIndex1]);
+        }
+        else {
+            console.log("Rotate rooms");
+            console.log(caseNr);
+            room1[closestRoomIndex1] = makeCounterClockWise(room1[closestRoomIndex1]);
+        }
+        biggestRoomIndex2 = getBiggestRoom(room2);
+        closestRoomIndex2 = getClosestRoom(room2, room1);
+        if (biggestRoomIndex2 == closestRoomIndex2) {
+            room2[closestRoomIndex2] = makeClockWise(room2[closestRoomIndex2]);
+        }
+        else {
+            console.log("Rotate rooms");
+            console.log(caseNr);
+            room2[closestRoomIndex2] = makeCounterClockWise(room2[closestRoomIndex2]);
+        }
+    }
+    else if (caseNr == 1) {
+        room2 = makeClockWise(room2);
+        biggestRoomIndex1 = getBiggestRoom(room1);
+        closestRoomIndex1 = getClosestRoom(room1, room2);
+        if (biggestRoomIndex1 == closestRoomIndex1) {
+            room1[closestRoomIndex1] = makeClockWise(room1[closestRoomIndex1]);
+        }
+        else {
+            console.log("Rotate rooms");
+            console.log(caseNr);
+            room1[closestRoomIndex1] = makeCounterClockWise(room1[closestRoomIndex1]);
+        }
+    }
+    else if (caseNr == 2) {
+        room1 = makeClockWise(room1);
+        biggestRoomIndex2 = getBiggestRoom(room2);
+        closestRoomIndex2 = getClosestRoom(room2, room1);
+        if (biggestRoomIndex2 == closestRoomIndex2) {
+            room2[closestRoomIndex2] = makeClockWise(room2[closestRoomIndex2]);
+        }
+        else {
+            room2[closestRoomIndex2] = makeCounterClockWise(room2[closestRoomIndex2]);
+        }
+    }
+}
+
 function makeClockWise(poly) {
     if (isClockwise(poly)){
         return poly;
     }
     else {
         return poly.reverse();
+    }
+}
+
+function makeCounterClockWise(poly) {
+    if (isClockwise(poly)){
+        return poly.reverse();
+    }
+    else {
+        return poly;
     }
 }
 
@@ -736,11 +789,46 @@ function isClockwise(poly) {
 
 // is meant for rooms that consist of several polygons (rooms with holes in them), and finds the largest room (the outer part)
 function getBiggestRoom(room1) {
-    var biggestCircumference = 0;
+    var index = -1;
+    var outsideRoom;
+    for (var i = 0; i < room1.length; i++) {
+        outsideRoom = true;
+        for (var j = 0; j < room1.length; j++) {
+            if (i != j) {
+                if (inside(room1[i][0], room1[j])){
+                    outsideRoom = false;
+                }
+            }
+        }
+        if (outsideRoom && index != -1) {
+            console.log("This should not happen");
+        }
+        if (outsideRoom) {
+            index = i;
+        }
+    }
+    return index;
+}
+// function getBiggestRoom(room1) {
+//     var biggestCircumference = 0;
+//     var index;
+//     for (var i = 0; i < room1.length; i++) {
+//         if (getRoomCircumference(room1[i]) > biggestCircumference){
+//             biggestCircumference = getRoomCircumference(room1[i]);
+//             index = i;
+//         }
+//     }
+//     return index;
+// }
+
+function getClosestRoom(room1, room2) {
+    var shortestDist = Infinity;
+    var dist;
     var index;
     for (var i = 0; i < room1.length; i++) {
-        if (getRoomCircumference(room1[i]) > biggestCircumference){
-            biggestCircumference = getRoomCircumference(room1[i]);
+        dist = getMinDistToPoly(room2[0], room1[i]);
+        if (dist < shortestDist){
+            shortestDist = dist;
             index = i;
         }
     }
