@@ -1,9 +1,15 @@
-var FLOOR_ID = "159";
+var FLOOR_ID = "84";
 var FILENAME = "floor_4_35.json";
 
 // Create a map
-var MAP = Maze.map('mazemap-container', { campusloader: false });
-// map.setView([10.406426561608821,63.417421008760335], 15);
+// center = Maze.latLng(63.41, 10.41);
+var MAP = Maze.map('mazemap-container', {
+            campusloader: false,
+            // center: center,
+            zoom: 5,
+            zoomSnap: 0,
+            zoomDelta: 0.5,
+            wheelPxPerZoomLevel: 100 });
 MAP.setView([63.417421008760335,10.406426561608821], 15);
 
 // Uncomment the preferred JSON file
@@ -16,30 +22,74 @@ function createglobalMergedPolygons(data, roomCoordinates){
     var neighbors;
     var indeces;
 
-    //drawPolygonFromOnlyCoordinates(simpleMergeTwo(simpleMergeTwo(roomCoordinates[19], roomCoordinates[26]), roomCoordinates[31], true), "gray", "black");
+    alterJSONfile(data, FLOOR_ID);
 
-    //checkPointSequence(simpleMergeTwo(roomCoordinates[19], roomCoordinates[26]));
-    //drawPolygonFromOnlyCoordinates(roomCoordinates[0], "gray", "black");
-
-
-    //drawPolygonFromOnlyCoordinates(roomCoordinates[0], "gray", "black");
-
-    [neighbors, indeces] = getNeighbors(data, roomCoordinates);
-
+    neighbors = getNeighbors(data, roomCoordinates);
     oldNeighbors = deepCopy(neighbors);
 
     oldNeighbors = makeNeighborsWhoAreNotNeighborsNeighbors(oldNeighbors);
 
+    var oldRooms = deepCopy(roomCoordinates);
 
-    [roomCoordinates, container, globalMergedRoomNameMarkers] = mergeAllPolygons(neighbors, indeces, roomCoordinates);
+    [roomCoordinates, container] = mergeAllPolygons(neighbors, roomCoordinates);
 
-    [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container, globalMergedRoomNameMarkers);
+    getUnmergedRooms(container, oldRooms);
+
+    [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container);
+
+    // test18();
+    //test77();
+    // getCorridorIndices();
+    globalMergedCorridorsCoordinates = mergeCorridors();
 
 
     orderedRooms = findOrderOfRooms(oldNeighbors, container);
+
+    dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms);
+
+    var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
+
+    console.log(zoomLevelsCoordinates);
+
+    fillZoomLevelPolygons(zoomLevelsCoordinates);
 
     roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
     fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
 
+    var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
+
+    convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
+
+    // var room1 = GLOBAL_CORRIDOR_COORDINATES[18];
+    // var room2 = GLOBAL_CORRIDOR_COORDINATES[1];
+    // addedPoints = addPointsForTwoPolygon(room1, room2);
+    // room1 = addedPoints[0];
+    // room2 = addedPoints[1];
+    // pairs1 = findPairsOfPoints(room1, room2);
+    // pairs2 = findPairsOfPoints(room2, room1);
+    // connectedPoints = connectCirclePoints(room1, room2, pairs1, pairs2);
+    // console.log("Output");
+    // console.log(deepCopy(pairs1));
+    // console.log(deepCopy(pairs2));
+    // console.log(deepCopy(connectedPoints));
+    // // checkPointSequence(room2);
+    // if (connectedPoints.length > 2) {
+    //     result = createCirclePolygons(pairs1, pairs2, room1, room2, connectedPoints);
+    //     console.log(result);
+    //     drawPolygonFromOnlyCoordinates(result, "white", "red");
+    // }
+    // else {
+    //     result = superMergeTwo(room1, room2);
+    //     drawPolygonFromOnlyCoordinates(result, "white", "red");
+    // }
+
+    // var room1 = globalCorridorCoordinates[0];
+    // var room2 = globalCorridorCoordinates[8];
+    // // drawPolygonFromOnlyCoordinates(room1, "white", "red");
+    // // drawPolygonFromOnlyCoordinates(room2, "white", "blue");
+    // var mergedPolygon = superDuperMerge(room1, room2);
+    // drawPolygonFromOnlyCoordinates(mergedPolygon, "white", "green");
+
 }
+

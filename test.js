@@ -42,3 +42,49 @@ function markClosestCorners(data, simplifiedRoomCoordinates){
         }
     }
 }
+
+function testCrossing(point1, point2, polygon) {
+    for (var i = 0; i < polygon.length - 1; i++) {
+        console.log(crosses(point1, point2, polygon[i], polygon[i + 1]));
+        if (crosses(point1, point2, polygon[i], polygon[i + 1])) {
+            Maze.polyline([point1, point2], {color: 'black', weight: 1}).addTo(MAP);
+            Maze.marker(point2).addTo(MAP);
+
+            Maze.polyline([polygon[i], polygon[i + 1]], {color: 'black', weight: 1}).addTo(MAP);
+            Maze.marker(polygon[i + 1]).addTo(MAP);
+
+            console.log(i);
+            console.log(i + 1);
+        }
+    }
+}
+
+function testCircleMerge(room1, room2) {
+    drawPolygonFromOnlyCoordinates(room1, "red", "blue");
+    drawPolygonFromOnlyCoordinates(room2, "red", "blue");
+}
+
+function drawAllCorridors() {
+    for (var i = 0; i < GLOBAL_CORRIDOR_COORDINATES.length; i++) {
+        drawPolygonFromOnlyCoordinates(GLOBAL_CORRIDOR_COORDINATES[i], "red", "blue");
+    }
+}
+
+function testCirclePoints(testPoints1, testPoints2, testConnectedIndexes) {
+    console.log(createCirclePolygons(testPoints1, testPoints2, testConnectedIndexes));
+}
+
+function getCorridorIndices() {
+    for (var i = 0; i < GLOBAL_CORRIDOR_COORDINATES.length; i++) {
+        if (GLOBAL_CORRIDOR_COORDINATES[i].length > 2) {
+            Maze.popup().setLatLng(getPoint(deepCopy(GLOBAL_CORRIDOR_COORDINATES[i]))).setContent(i.toString()).addTo(MAP);
+        }
+    }
+}
+
+function displayConnectedIndexes(connectedIndexes, room1, room2){
+    for (var i = 0; i < connectedIndexes.length; i++) {
+        Maze.popup().setLatLng(room1[connectedIndexes[i][0]]).setContent(connectedIndexes[i][0].toString()).addTo(MAP);
+        Maze.popup().setLatLng(room2[connectedIndexes[i][1]]).setContent(connectedIndexes[i][1].toString()).addTo(MAP);
+    }
+}

@@ -1,0 +1,71 @@
+<meta charset="utf-8">
+
+<link rel="stylesheet" href="https://api.mazemap.com/js/v1.0.6/mazemap.min.css">
+<script type='text/javascript' src='https://api.mazemap.com/js/v1.0.6/mazemap.min.js'></script>
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<div id='map'></div>
+
+<div class="container">
+	<div class="btn-group-vertical">
+	    <button id="plusButton" type="button" class="btn btn-primary" onmousedown="createInterval(increaseZoomLevel, zoomIncrement, timeIntervalBetweenZoom)" onmouseup="stopZooming()">+</button>
+		<button id="minusButton" type="button" class="btn btn-primary" onmousedown="createInterval(decreaseZoomLevel, zoomIncrement, timeIntervalBetweenZoom)" onmouseup="stopZooming()">-</button>
+	</div>
+</div>
+
+<style>
+#map {
+	width: 100vw;
+	height: 100vh;
+	z-index: -1;
+}
+
+.btn-group-vertical {
+	left: -80px;
+	top: -640px;
+}
+</style>
+
+<script>
+var zoomIncrement = 0.5;
+var timeIntervalBetweenZoom = 500;
+
+var currentZoomValue = 12;
+
+
+var map = Maze.map('map', {
+	zoomControl: false,
+ 	campusloader: false
+});
+
+map.setView([51.505, -0.09], 12)
+
+var interval;
+
+function createInterval(nameOfFunction, functionParameter, timeInterval) { 
+	interval = setInterval(function() { 
+		nameOfFunction(functionParameter); 
+	}, timeInterval); 
+}
+
+function increaseZoomLevel(value) {
+	if (currentZoomValue + value <= 20) {
+		currentZoomValue += value;
+		map.setZoom(currentZoomValue);
+	}
+}
+
+function decreaseZoomLevel(value) {
+	if (currentZoomValue - value >= 0) {
+		currentZoomValue -= value;
+		map.setZoom(currentZoomValue);
+	}
+}
+
+function stopZooming() {
+	clearInterval(interval);
+}
+</script>
