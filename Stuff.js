@@ -630,9 +630,34 @@ function getNeighborsCorridors(corridorCoordinates){
 
 function isOnePointNeighbor(polygon1, polygon2){
     // get closest points
+    var index1;
+    var index2;
+    [index1, index2] = getClosestPointForEachPolygon(polygon1, polygon2);
     // create line each way
+
     // check dot prod with both lines
     //
+}
+
+function getClosestPointForEachPolygon(polygon1, polygon2){
+    var minDist = Infinity;
+    var dist1;
+    for (var i = 0; i < polygon1.length; i++) {
+        dist = getMinDistToPoly(polygon1[i], polygon2);
+        if (dist < minDist){
+            minDist = dist;
+            index1 = i;
+        }
+    }
+    minDist = Infinity;
+    for (i = 0; i < polygon2.length; i++) {
+        dist = getMinDistToPoly(polygon2[i], polygon1);
+        if (dist < minDist){
+            minDist = dist;
+            index2 = i;
+        }
+    }
+    return [index1, index2];
 }
 
 function samePoiTypeByPriority(infos1, infos2, roomNumber){
