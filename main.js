@@ -40,6 +40,7 @@ function createglobalMergedPolygons(data, roomCoordinates){
     // test18();
     //test77();
     // getCorridorIndices();
+    // test8();
     globalMergedCorridorsCoordinates = mergeCorridors();
 
 
@@ -48,8 +49,6 @@ function createglobalMergedPolygons(data, roomCoordinates){
     dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms);
 
     var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
-
-    console.log(zoomLevelsCoordinates);
 
     fillZoomLevelPolygons(zoomLevelsCoordinates);
 
