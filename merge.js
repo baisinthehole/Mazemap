@@ -4,11 +4,11 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2, point1 = undef
         if (indeces1 != null && indeces2 != null){
             indeces1.sort(sorter);
             indeces2.sort(sorter);
-            var shiftedPolygon1 = polygon1.slice(0, polygon1.length-1);
+            var shiftedPolygon1 = polygon1.slice(0, polygon1.length);
             for (var i = 0; i < indeces1[0]; i++) {
                 shiftedPolygon1.push(shiftedPolygon1.shift());
             }
-            var shiftedPolygon2 = polygon2.slice(0, polygon2.length-1);
+            var shiftedPolygon2 = polygon2.slice(0, polygon2.length);
             for (var i = 0; i < indeces2[0]; i++) {
                 shiftedPolygon2.push(shiftedPolygon2.shift());
             }
@@ -26,13 +26,13 @@ function mergeTwoPolygons(polygon1, polygon2, indeces1, indeces2, point1 = undef
             if (oneCloseCorner(polygon1, polygon2)){
                 indeces1.sort(sorter);
                 var resultIndeces = getClosestCorner(polygon1, polygon2, indeces1);
-                var shiftedPolygon2 = polygon2.slice(0, polygon2.length-1);
+                var shiftedPolygon2 = polygon2.slice(0, polygon2.length);
                 for (var i = 0; i < resultIndeces[1]+1; i++) {
                     shiftedPolygon2.push(shiftedPolygon2.shift());
                 }
                 shiftedPolygon2.pop();
 
-                var shiftedPolygon1 = polygon1.slice(0, polygon1.length-1);
+                var shiftedPolygon1 = polygon1.slice(0, polygon1.length);
                 for (var i = 0; i < indeces1[0]; i++) {
                     shiftedPolygon1.push(shiftedPolygon1.shift());
                 }
@@ -1443,11 +1443,11 @@ function mergeWithRoomWithoutCloseCorners(polygon1, polygon2, indeces1, point1, 
     var indeces2 = [leastIndex1, leastIndex2];
     indeces1.sort(sorter);
     indeces2.sort(sorter);
-    var shiftedPolygon1 = polygon1.slice(0, polygon1.length-1);
+    var shiftedPolygon1 = polygon1.slice(0, polygon1.length);
     for (var i = 0; i < indeces1[0]; i++) {
         shiftedPolygon1.push(shiftedPolygon1.shift());
     }
-    var shiftedPolygon2 = polygon2.slice(0, polygon2.length-1);
+    var shiftedPolygon2 = polygon2.slice(0, polygon2.length);
     for (var i = 0; i < indeces2[0]; i++) {
         shiftedPolygon2.push(shiftedPolygon2.shift());
     }
