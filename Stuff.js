@@ -621,6 +621,11 @@ function getNeighborsCorridors(corridorCoordinates){
                 if (result[2] < VERY_IMPORTANCE_DISTANCE) {
                     adjacent.push(j);
                 }
+                else if (getMinDistPolyToPoly(corridorCoordinates[i], corridorCoordinates[j]) < VERY_IMPORTANCE_DISTANCE) {
+                    if (isOnePointNeighbor(corridorCoordinates[i], corridorCoordinates[j])) {
+                        adjacent.push(j);
+                    }
+                }
             }
         }
         neighbors.push(adjacent);
@@ -630,18 +635,40 @@ function getNeighborsCorridors(corridorCoordinates){
 
 function isOnePointNeighbor(polygon1, polygon2){
     // get closest points
-    var index1;
-    var index2;
-    [index1, index2] = getClosestPointForEachPolygon(polygon1, polygon2);
-    // create line each way
+    indexes = getClosestPointForEachPolygon(polygon1, polygon2);
+    var index1 = indexes[0];
+    var index2 = indexes[1];
+    // create lines
+    var line11 = [polygon1[index1], polygon1[mod(index1+1, polygon1.length-1)]];
+    var line12 = [polygon1[mod(index1-1, polygon1.length-1)], polygon1[index1]];
+    var line21 = [polygon2[index2], polygon2[mod(index2+1, polygon2.length-1)]];
+    var line22 = [polygon2[mod(index2-1, polygon2.length-1)], polygon2[index2]];
+    // use dot product to see if shortest line form point to line is orthogonal
+    var isOrth1 = isShortestLineFromPointToLineOrthogonal(polygon1[index1], line21);
+    var isOrth2 = isShortestLineFromPointToLineOrthogonal(polygon1[index1], line22);
+    var isOrth3 = isShortestLineFromPointToLineOrthogonal(polygon2[index2], line11);
+    var isOrth4 = isShortestLineFromPointToLineOrthogonal(polygon2[index2], line12);
+    return  ((isOrth1 || isOrth2) || (isOrth3 || isOrth4));
+}
 
-    // check dot prod with both lines
-    //
+function isShortestLineFromPointToLineOrthogonal(point, line){
+    dotResult0 = dotProd(makeLine(line[0],line[1]), makeLine(line[0],point));
+    dotResult1 = dotProd(makeLine(line[1],line[0]), makeLine(line[1],point));
+    if (dotResult0 > 0 && dotResult1 > 0){
+        return true;
+    }
+    return false;
+}
+
+function getLinesOnEachSideOfIndex(polygon1, index1){
+    var line1 = makeLine(polygon1[index], polygon1[mod(index+1, polygon1.length-1)]);
+    var line2 = makeLine(polygon1[mod(index-1, polygon1.length-1)], polygon1[index]);
+    return [line1, line2];
 }
 
 function getClosestPointForEachPolygon(polygon1, polygon2){
     var minDist = Infinity;
-    var dist1;
+    var dist;
     for (var i = 0; i < polygon1.length; i++) {
         dist = getMinDistToPoly(polygon1[i], polygon2);
         if (dist < minDist){
@@ -749,6 +776,18 @@ function checkPoiType(infos, poiType){
         }
     }
     return same;
+}
+
+function getMinDistPolyToPoly(polygon1, polygon2){
+    var minDist = Infinity;
+    var dist;
+    for (var i = 0; i < polygon1.length-1; i++) {
+        dist = getMinDistToPoly(polygon1[i], polygon2);
+        if (dist < minDist){
+            minDist = dist;
+        }
+    }
+    return minDist;
 }
 
 function getDistPolyToPoly(polygon1, polygon2){
