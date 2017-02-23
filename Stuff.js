@@ -687,6 +687,20 @@ function getClosestPointForEachPolygon(polygon1, polygon2){
     return [index1, index2];
 }
 
+function getClosestPointInPolygonToPoint(point, polygon) {
+    var minDist = Infinity;
+    var index;
+    var dist;
+    for (var i = 0; i < polygon.length; i++) {
+        dist = getDistPoints(point, polygon[i]);
+        if (dist < minDist) {
+            minDist = dist;
+            index = i;
+        }
+    }
+    return index;
+}
+
 function samePoiTypeByPriority(infos1, infos2, roomNumber){
     var priority1 = 1000;
     var priority2 = 1000;

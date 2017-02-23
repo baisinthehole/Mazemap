@@ -192,20 +192,20 @@ function mergeAllCorridors(neighbors, roomCoordinates){
             if (contains(neighbors[i], j)) {
                 if (!findOne(container[i], container[j])) {
 
-                    console.log("To be merged");
-                    console.log(i);
-                    console.log(j);
-                    if (i == 1 && j == 9){
-                    // if (false){
-                        drawPolygonFromOnlyCoordinates(roomCoordinates[i], "white", "red");
-                        drawPolygonFromOnlyCoordinates(roomCoordinates[j], "white", "blue");
-                        // checkPointSequence(deepCopy(roomCoordinates[j]));
-                        mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j], true);
-                        // drawPolygonFromOnlyCoordinates(mergedPolygon, "white", "green");
-                    }
-                    else {
+                    // console.log("To be merged");
+                    // console.log(i);
+                    // console.log(j);
+                    // if (i == 1 && j == 9){
+                    // // if (false){
+                    //     drawPolygonFromOnlyCoordinates(roomCoordinates[i], "white", "red");
+                    //     drawPolygonFromOnlyCoordinates(roomCoordinates[j], "white", "blue");
+                    //     // checkPointSequence(deepCopy(roomCoordinates[j]));
+                    //     mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j], true);
+                    //     // drawPolygonFromOnlyCoordinates(mergedPolygon, "white", "green");
+                    // }
+                    // else {
                         mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j]);
-                    }
+                    // }
 
 
 
@@ -374,7 +374,6 @@ function findPairsOfPoints(polygon1, polygon2, test=false, testPoints=[], testRo
     }
     else {
         points = getClosePoints(room1, room2);
-        console.log(points);
         length = room1.length;
     }
 
@@ -416,9 +415,6 @@ function findPairsOfPoints(polygon1, polygon2, test=false, testPoints=[], testRo
         resultingPoints.push(points[originalIndex]);
         resultingPoints.push(points[points.length - 1]);
     }
-    console.log("length");
-    console.log(resultingPoints[1]-resultingPoints[0]);
-    console.log(polygon1.length);
 
     return resultingPoints;
 }
@@ -619,8 +615,9 @@ function superDuperMerge(room1, room2, test = false) {
         addedPoints = addPointsForTwoPolygon(room1[closestRoomIndex1], room2[closestRoomIndex2]);
         room1[closestRoomIndex1] = addedPoints[0];
         room2[closestRoomIndex2] = addedPoints[1];
-        pairs1 = findPairsOfPoints(room1[closestRoomIndex1], room2[closestRoomIndex2]);
-        pairs2 = findPairsOfPoints(room2[closestRoomIndex2], room1[closestRoomIndex1]);
+        [pairs1, pairs2] = findBothPairOfPoints(room1[closestRoomIndex1], room2[closestRoomIndex2]);
+        // pairs1 = findPairsOfPoints(room1[closestRoomIndex1], room2[closestRoomIndex2]);
+        // pairs2 = findPairsOfPoints(room2[closestRoomIndex2], room1[closestRoomIndex1]);
         connectedPoints = connectCirclePoints(room1[closestRoomIndex1], room2[closestRoomIndex2], pairs1, pairs2);
         if (test) {
             console.log("Room1 contains holes");
@@ -654,8 +651,9 @@ function superDuperMerge(room1, room2, test = false) {
         addedPoints = addPointsForTwoPolygon(room1[closestRoomIndex], room2);
         room1[closestRoomIndex] = addedPoints[0];
         room2 = addedPoints[1];
-        pairs1 = findPairsOfPoints(room1[closestRoomIndex], room2);
-        pairs2 = findPairsOfPoints(room2, room1[closestRoomIndex]);
+        [pairs1, pairs2] = findBothPairOfPoints(room1[closestRoomIndex], room2);
+        // pairs1 = findPairsOfPoints(room1[closestRoomIndex], room2);
+        // pairs2 = findPairsOfPoints(room2, room1[closestRoomIndex]);
         connectedPoints = connectCirclePoints(room1[closestRoomIndex], room2, pairs1, pairs2);
         if (test) {
             console.log("Room1 contains holes");
@@ -684,8 +682,9 @@ function superDuperMerge(room1, room2, test = false) {
         addedPoints = addPointsForTwoPolygon(room1, room2[closestRoomIndex]);
         room1 = addedPoints[0];
         room2[closestRoomIndex] = addedPoints[1];
-        pairs1 = findPairsOfPoints(room1, room2[closestRoomIndex]);
-        pairs2 = findPairsOfPoints(room2[closestRoomIndex], room1);
+        [pairs1, pairs2] = findBothPairOfPoints(room1, room2[closestRoomIndex]);
+        // pairs1 = findPairsOfPoints(room1, room2[closestRoomIndex]);
+        // pairs2 = findPairsOfPoints(room2[closestRoomIndex], room1);
         connectedPoints = connectCirclePoints(room1, room2[closestRoomIndex], pairs1, pairs2);
         if (test) {
             console.log("Room2 contains holes");
@@ -714,8 +713,9 @@ function superDuperMerge(room1, room2, test = false) {
     addedPoints = addPointsForTwoPolygon(room1, room2);
     room1 = addedPoints[0];
     room2 = addedPoints[1];
-    pairs1 = findPairsOfPoints(room1, room2);
-    pairs2 = findPairsOfPoints(room2, room1);
+    [pairs1, pairs2] = findBothPairOfPoints(room1, room2);
+    // pairs1 = findPairsOfPoints(room1, room2);
+    // pairs2 = findPairsOfPoints(room2, room1);
     if (test) {
         console.log("No room contains holes");
         console.log(deepCopy(pairs1));
@@ -731,9 +731,27 @@ function superDuperMerge(room1, room2, test = false) {
         return result;
     }
     else {
-        result = superMergeTwo(room1, room2);
+        result = superMergeTwo(room1, room2, connectedPoints);
         return result;
     }
+}
+
+function findBothPairOfPoints(polygon1, polygon2) {
+    var pairs1 = findPairsOfPoints(polygon1, polygon2);
+    var pairs2 = findPairsOfPoints(polygon2, polygon1);
+    if (mod(pairs1[1]-pairs1[0]+1, polygon1.length) == polygon1.length - 1){
+        pairs1 = [];
+        for (var i = 0; i < pairs2.length; i++) {
+            pairs1.push(getClosestPointInPolygonToPoint(polygon2[pairs2[i]], polygon1));
+        }
+    }
+    else if (mod(pairs2[1]-pairs2[0]+1, polygon2.length) == polygon2.length - 1){
+        pairs2 = [];
+        for (var i = 0; i < pairs1.length; i++) {
+            pairs2.push(getClosestPointInPolygonToPoint(polygon1[pairs1[i]], polygon2));
+        }
+    }
+    return [pairs1, pairs2];
 }
 
 function rotateRooms(room1, room2, caseNr) {
@@ -1090,7 +1108,6 @@ function checkIfDistancesIsSmallEnough(startIndex, endIndex, polygon1, polygon2)
 function checkIfDistancesIsSmallEnough2(startIndex, endIndex, polygon1, polygon2) {
     for (var i = 1; i < mod(startIndex-endIndex-1,polygon1.length); i++) {
         if (getMinDistToPoly(polygon1[mod(startIndex-i,polygon1.length)], polygon2) > VERY_IMPORTANCE_DISTANCE) {
-            console.log("Return false");
             return false;
         }
     }
@@ -1418,9 +1435,9 @@ function mergeCorridors(){
     // console.log(neighborCorridors);
     // getCorridorIndices();
     [mergedCorridors, corridorContainer] = mergeAllCorridors(neighborCorridors, globalCorridorCoordinates);
-    // for (var i = 0; i < mergedCorridors.length; i++) {
-    //     drawPolygonFromOnlyCoordinates(mergedCorridors[i], "white", "blue");
-    // }
+    for (var i = 0; i < mergedCorridors.length; i++) {
+        drawPolygonFromOnlyCoordinates(mergedCorridors[i], "white", "blue");
+    }
     return mergedCorridors;
 }
 
