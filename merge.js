@@ -192,20 +192,20 @@ function mergeAllCorridors(neighbors, roomCoordinates){
             if (contains(neighbors[i], j)) {
                 if (!findOne(container[i], container[j])) {
 
-                    // console.log("To be merged");
-                    // console.log(i);
-                    // console.log(j);
-                    // if (i == 1 && j == 9){
-                    // // if (false){
-                    //     drawPolygonFromOnlyCoordinates(roomCoordinates[i], "white", "red");
-                    //     drawPolygonFromOnlyCoordinates(roomCoordinates[j], "white", "blue");
-                    //     // checkPointSequence(deepCopy(roomCoordinates[j]));
-                    //     mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j], true);
-                    //     // drawPolygonFromOnlyCoordinates(mergedPolygon, "white", "green");
-                    // }
-                    // else {
+                    console.log("To be merged");
+                    console.log(i);
+                    console.log(j);
+                    if (i == 2 && j == 11){
+                    // if (false){
+                        drawPolygonFromOnlyCoordinates(roomCoordinates[i], "white", "red");
+                        drawPolygonFromOnlyCoordinates(roomCoordinates[j], "white", "blue");
+                        // checkPointSequence(deepCopy(roomCoordinates[j]));
+                        mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j], true);
+                        // drawPolygonFromOnlyCoordinates(mergedPolygon, "white", "green");
+                    }
+                    else {
                         mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j]);
-                    // }
+                    }
 
 
 
@@ -287,6 +287,9 @@ function superMergeTwo(room1, room2, connectedIndexes = false, test=false){
         if (connectedIndexes[0] != undefined) {
             var mergingPoints1 = [connectedIndexes[0][0], connectedIndexes[1][0]];
             var mergingPoints2 = [connectedIndexes[0][1], connectedIndexes[1][1]];
+            console.log("mergingPoints1");
+            console.log(deepCopy(mergingPoints1));
+            console.log(deepCopy(mergingPoints2));
         }
         else {
             var pointsCloseEnough1 = getClosePoints(room1, room2);
@@ -741,15 +744,23 @@ function findBothPairOfPoints(polygon1, polygon2) {
     var pairs2 = findPairsOfPoints(polygon2, polygon1);
     if (mod(pairs1[1]-pairs1[0]+1, polygon1.length) == polygon1.length - 1){
         pairs1 = [];
-        for (var i = 0; i < pairs2.length; i++) {
+        for (var i = pairs2.length-1; i >= 0 ; i--) {
             pairs1.push(getClosestPointInPolygonToPoint(polygon2[pairs2[i]], polygon1));
         }
+        console.log("New pairs1");
+        console.log(pairs1);
     }
     else if (mod(pairs2[1]-pairs2[0]+1, polygon2.length) == polygon2.length - 1){
         pairs2 = [];
-        for (var i = 0; i < pairs1.length; i++) {
+        console.log("Create new pairs2");
+        console.log(deepCopy(pairs1));
+        for (var i = pairs1.length-1; i >= 0 ; i--) {
+            // console.log(getClosestPointInPolygonToPoint(polygon1[pairs1[i]], polygon2));
             pairs2.push(getClosestPointInPolygonToPoint(polygon1[pairs1[i]], polygon2));
+            // Maze.popup().setLatLng(polygon2[pairs2[i]]).setContent("Closest points").addTo(MAP);
         }
+        console.log("New pairs2");
+        console.log(deepCopy(pairs2));
     }
     return [pairs1, pairs2];
 }
