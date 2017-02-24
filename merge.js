@@ -743,6 +743,7 @@ function findBothPairOfPoints(polygon1, polygon2) {
     var pairs1 = findPairsOfPoints(polygon1, polygon2);
     var pairs2 = findPairsOfPoints(polygon2, polygon1);
     if (mod(pairs1[1]-pairs1[0]+1, polygon1.length) == polygon1.length - 1){
+        addPointWhenAllPointsAreClose(polygon1, polygon2);
         pairs1 = [];
         for (var i = pairs2.length-1; i >= 0 ; i--) {
             pairs1.push(getClosestPointInPolygonToPoint(polygon2[pairs2[i]], polygon1));
@@ -751,6 +752,7 @@ function findBothPairOfPoints(polygon1, polygon2) {
         console.log(pairs1);
     }
     else if (mod(pairs2[1]-pairs2[0]+1, polygon2.length) == polygon2.length - 1){
+        addPointWhenAllPointsAreClose(polygon2, polygon1);
         pairs2 = [];
         console.log("Create new pairs2");
         console.log(deepCopy(pairs1));
@@ -763,6 +765,24 @@ function findBothPairOfPoints(polygon1, polygon2) {
         console.log(deepCopy(pairs2));
     }
     return [pairs1, pairs2];
+}
+
+function addPointWhenAllPointsAreClose(room1, room2) {
+    var maxDist = 0;
+    var dist;
+    var point;
+    var pointFarthestAway;
+    var index;
+    for (var i = room1.length - 2; i >= 0; i--) {
+        point = getPointInMiddleOfLine(room1[i], room1[i+1]);
+        dist = getMinDistToPoly(point, room2);
+        if (dist > maxDist) {
+            maxDist = dist;
+            pointFarthestAway = deepCopy(point);
+            index = i;
+        }
+    }
+    room1.splice(index+1, 0, pointFarthestAway);
 }
 
 function rotateRooms(room1, room2, caseNr) {

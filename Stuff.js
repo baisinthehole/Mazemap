@@ -1184,3 +1184,7 @@ var cookieCut= function(){
 function mod(n, m){
     return ((n % m) + m) % m;
 }
+
+function getPointInMiddleOfLine(point1, point2){
+    return [(point1[0]+point2[0])/2,(point1[1]+point2[1])/2];
+}
