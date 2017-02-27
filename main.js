@@ -40,6 +40,8 @@ function createglobalMergedPolygons(data, roomCoordinates){
     //test77();
     // getCorridorIndices();
     // test8();
+    //test38();
+    //test91();
     globalMergedCorridorsCoordinates = mergeCorridors();
 
 

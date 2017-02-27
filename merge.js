@@ -192,9 +192,9 @@ function mergeAllCorridors(neighbors, roomCoordinates){
             if (contains(neighbors[i], j)) {
                 if (!findOne(container[i], container[j])) {
 
-                    // console.log("To be merged");
-                    // console.log(i);
-                    // console.log(j);
+                    console.log("To be merged");
+                    console.log(i);
+                    console.log(j);
                     // if (i == 2 && j == 11){
                     // // if (false){
                     //     drawPolygonFromOnlyCoordinates(roomCoordinates[i], "white", "red");
@@ -820,6 +820,7 @@ function rotateRooms(room1, room2, caseNr) {
         room1 = makeClockWise(room1);
         biggestRoomIndex2 = getBiggestRoom(room2);
         closestRoomIndex2 = getClosestRoom(room2, room1);
+
         if (biggestRoomIndex2 == closestRoomIndex2) {
             room2[closestRoomIndex2] = makeClockWise(room2[closestRoomIndex2]);
         }
@@ -870,7 +871,8 @@ function getBiggestRoom(room1) {
         outsideRoom = true;
         for (var j = 0; j < room1.length; j++) {
             if (i != j) {
-                if (inside(room1[i][0], room1[j])){
+                // made two inside tests to decrease chances of getting points that are on the lines of both polygons
+                if (inside(room1[i][0], room1[j]) && inside(room1[i][Math.floor(room1[i].length / 2)], room1[j])){
                     outsideRoom = false;
                 }
             }

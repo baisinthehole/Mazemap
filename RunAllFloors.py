@@ -7,9 +7,9 @@ PATH_FIREFOX = "C://Program Files (x86)/Mozilla Firefox/firefox.exe"
 # path to Stuff.html
 PATH_MAZEMAP = "C://Users/Butikk/Documents/Mazemap/Stuff.html"
 
-NUM_FLOORS = 50
+NUM_FLOORS = 20
 
-START_FLOOR = 1
+START_FLOOR = 401
 
 # delay in seconds
 DELAY = 5
@@ -17,11 +17,15 @@ DELAY = 5
 def updateID(ID):
 
 	#clear file of content
-	file = open("floorID.js", "w").close()
+	#file = open("floorID.js", "w").close()
 
 	file = open("floorID.js", "w")
 
-	file.write("var FLOOR_ID = " + str(ID) + ";")
+	line1 = "var FLOOR_ID = " + str(ID) + ";"
+
+	line2 = "console.log(" + str(ID) + ");"
+
+	file.writelines([line1, line2])
 
 	file.close()
 
