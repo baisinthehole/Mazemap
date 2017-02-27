@@ -88,3 +88,82 @@ function displayConnectedIndexes(connectedIndexes, room1, room2){
         Maze.popup().setLatLng(room2[connectedIndexes[i][1]]).setContent(connectedIndexes[i][1].toString()).addTo(MAP);
     }
 }
+
+function test6() {
+    for (var i = globalCorridorCoordinates.length-1; i >= 0; i--) {
+        if (globalCorridorCoordinates[i].length == 2){
+            globalCorridorCoordinates.splice(i, 1);
+        }
+    }
+    var neighborCorridors = getNeighborsCorridors(globalCorridorCoordinates);
+
+    // works if this line is present.
+    globalCorridorCoordinates = addPointsOnAllCorridors(neighborCorridors);
+    
+    //globalCorridorCoordinates = removeDuplicatesFromAllRooms(globalCorridorCoordinates);
+
+    getCorridorIndices(globalCorridorCoordinates);
+
+    var mergedPolygon = superDuperMerge(globalCorridorCoordinates[0], globalCorridorCoordinates[4]);
+    var mergedPolygon2 = superDuperMerge(mergedPolygon, globalCorridorCoordinates[5]);
+    var mergedPolygon3 = superDuperMerge(mergedPolygon2, globalCorridorCoordinates[6]);
+    var mergedPolygon4 = superDuperMerge(mergedPolygon3, globalCorridorCoordinates[7]);
+    var mergedPolygon5 = superDuperMerge(globalCorridorCoordinates[1], mergedPolygon4);
+    var mergedPolygon6 = superDuperMerge(globalCorridorCoordinates[2], mergedPolygon5);
+
+    drawPolygonFromOnlyCoordinates(mergedPolygon6, "red", "blue");
+}
+
+function test38() {
+    // inside was wrong because the point that was tested was on the lines of both polygons, making it counterclockwise instead of clockwise
+    for (var i = globalCorridorCoordinates.length-1; i >= 0; i--) {
+        if (globalCorridorCoordinates[i].length == 2){
+            globalCorridorCoordinates.splice(i, 1);
+        }
+    }
+    var neighborCorridors = getNeighborsCorridors(globalCorridorCoordinates);
+
+    // globalCorridorCoordinates = addPointsOnAllCorridors(neighborCorridors);
+    
+    // globalCorridorCoordinates = removeDuplicatesFromAllRooms(globalCorridorCoordinates);
+
+    //getCorridorIndices(globalCorridorCoordinates);
+
+    var mergedPolygon = superDuperMerge(globalCorridorCoordinates[2], globalCorridorCoordinates[0]);
+    var mergedPolygon2 = superDuperMerge(globalCorridorCoordinates[4], mergedPolygon);
+
+    checkPointSequence(globalCorridorCoordinates[4]);
+    checkPointSequence(mergedPolygon[1]);
+
+    console.log(isClockwise(mergedPolygon[1]));
+
+    drawPolygonFromOnlyCoordinates(mergedPolygon2, "red", "blue");
+}
+
+function test91() {
+    for (var i = globalCorridorCoordinates.length-1; i >= 0; i--) {
+        if (globalCorridorCoordinates[i].length == 2){
+            globalCorridorCoordinates.splice(i, 1);
+        }
+    }
+    var neighborCorridors = getNeighborsCorridors(globalCorridorCoordinates);
+
+    // globalCorridorCoordinates = addPointsOnAllCorridors(neighborCorridors);
+    
+    // globalCorridorCoordinates = removeDuplicatesFromAllRooms(globalCorridorCoordinates);
+
+    getCorridorIndices(globalCorridorCoordinates);
+
+    var mergedPolygon = superDuperMerge(globalCorridorCoordinates[0], globalCorridorCoordinates[2]);
+    var mergedPolygon2 = superDuperMerge(mergedPolygon, globalCorridorCoordinates[3]);
+    var mergedPolygon3 = superDuperMerge(globalCorridorCoordinates[1], mergedPolygon2);
+
+    checkPointSequence(globalCorridorCoordinates[1]);
+    checkPointSequence(mergedPolygon2);
+
+    console.log(findPairsOfPoints(globalCorridorCoordinates[1], mergedPolygon2));
+    console.log(findPairsOfPoints(mergedPolygon2, globalCorridorCoordinates[1]));
+
+
+    drawPolygonFromOnlyCoordinates(mergedPolygon2, "red", "blue");
+}
