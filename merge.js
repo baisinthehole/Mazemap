@@ -1459,9 +1459,6 @@ function mergeCorridors(){
     // console.log(neighborCorridors);
     // getCorridorIndices();
     [mergedCorridors, corridorContainer] = mergeAllCorridors(neighborCorridors, globalCorridorCoordinates);
-    for (var i = 0; i < mergedCorridors.length; i++) {
-        drawPolygonFromOnlyCoordinates(mergedCorridors[i], "white", "blue");
-    }
     return mergedCorridors;
 }
 

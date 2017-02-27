@@ -42,8 +42,21 @@ function createglobalMergedPolygons(data, roomCoordinates){
     // test8();
     //test38();
     //test91();
-    globalMergedCorridorsCoordinates = mergeCorridors();
 
+    // Uncomment to store the corridors for the floor
+    // if (localStorage.getItem('corridors'+FLOOR_ID) === null) {
+    if (true){
+        // Merge corridors from scratch
+        globalMergedCorridorsCoordinates = mergeCorridors();
+        // localStorage.setItem('corridors'-FLOOR_ID, JSON.stringify(globalMergedCorridorsCoordinates));
+    }
+    else {
+        // Retrieve the object from storage
+        // globalMergedCorridorsCoordinates = JSON.parse(localStorage.getItem('corridors'+FLOOR_ID));
+    }
+    for (var i = 0; i < globalMergedCorridorsCoordinates.length; i++) {
+        drawPolygonFromOnlyCoordinates(globalMergedCorridorsCoordinates[i], "white", "blue");
+    }
 
     orderedRooms = findOrderOfRooms(oldNeighbors, container);
 
