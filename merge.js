@@ -951,8 +951,8 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
             resultRoom.push(polygon1[index]);
             if (contains(points1, index)){
                 var outerIndex = getOuterIndex(index, roomNr, connectedIndexes);
-                points = findIncreasingAndDecreasingPoints(outerIndex, roomNr, polygon1, polygon2, connectedIndexes);
-                var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 1, polygon1, polygon2, connectedIndexes);
+                points = findIncreasingAndDecreasingPoints(outerIndex, 0, polygon1, connectedIndexes);
+                var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 1, polygon2, connectedIndexes);
                 // increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon1);
                 increasing = checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], deepCopy(points), deepCopy(testpoints2), polygon1, polygon2);
                 points1.splice(points1.indexOf(index), 1);
@@ -973,8 +973,8 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
             resultRoom.push(polygon2[index]);
             if (contains(points2, index)){
                 var outerIndex = getOuterIndex(index, roomNr, connectedIndexes);
-                points = findIncreasingAndDecreasingPoints(outerIndex, roomNr, polygon1, polygon2, connectedIndexes);
-                var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 0, polygon1, polygon2, connectedIndexes);
+                var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 0, polygon1, connectedIndexes);
+                points = findIncreasingAndDecreasingPoints(outerIndex, 1, polygon2, connectedIndexes);
                 // increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon2);
                 increasing = !checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], testpoints2, deepCopy(points), polygon1, polygon2);
                 points2.splice(points2.indexOf(index), 1);
@@ -1027,7 +1027,7 @@ function getOtherConnectedPoint(index, roomNr, connectedIndexes){
 }
 
 // finds two other connect pairs that are closest to the indexes given
-function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, polygon2, connectedIndexes) {
+function findIncreasingAndDecreasingPoints(outerIndex, innerIndex, polygon1, connectedIndexes) {
 
     var connectPoint = connectedIndexes[outerIndex][innerIndex];
 
