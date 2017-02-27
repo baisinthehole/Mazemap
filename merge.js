@@ -192,10 +192,10 @@ function mergeAllCorridors(neighbors, roomCoordinates){
             if (contains(neighbors[i], j)) {
                 if (!findOne(container[i], container[j])) {
 
-                    console.log("To be merged");
-                    console.log(i);
-                    console.log(j);
-                    // if (i == 2 && j == 11){
+                    // console.log("To be merged");
+                    // console.log(i);
+                    // console.log(j);
+                    // if (i == 13 && j == 27){
                     // // if (false){
                     //     drawPolygonFromOnlyCoordinates(roomCoordinates[i], "white", "red");
                     //     drawPolygonFromOnlyCoordinates(roomCoordinates[j], "white", "blue");
@@ -674,6 +674,12 @@ function superDuperMerge(room1, room2, test = false) {
                 result.push(room1[i]);
             }
         }
+        if(test){
+            console.log(result[0]);
+            console.log(result[1]);
+            drawPolygonFromOnlyCoordinates(result[1], "white", "green");
+            drawPolygonFromOnlyCoordinates(result[2], "white", "yellow");
+        }
         return result;
     }
     else if (room2[0][0].constructor === Array){
@@ -954,7 +960,11 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
                 points = findIncreasingAndDecreasingPoints(outerIndex, 0, polygon1, connectedIndexes);
                 var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 1, polygon2, connectedIndexes);
                 // increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon1);
+                console.log("Test");
+                console.log(roomNr);
+                console.log(connectedIndexes[outerIndex]);
                 increasing = checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], deepCopy(points), deepCopy(testpoints2), polygon1, polygon2);
+                console.log(increasing);
                 points1.splice(points1.indexOf(index), 1);
                 index = getOtherConnectedPoint(index, roomNr, connectedIndexes);
                 points2.splice(points2.indexOf(index), 1);
@@ -976,7 +986,11 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
                 var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 0, polygon1, connectedIndexes);
                 points = findIncreasingAndDecreasingPoints(outerIndex, 1, polygon2, connectedIndexes);
                 // increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon2);
+                console.log("Test");
+                console.log(roomNr);
+                console.log(connectedIndexes[outerIndex]);
                 increasing = !checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], testpoints2, deepCopy(points), polygon1, polygon2);
+                console.log(increasing);
                 points2.splice(points2.indexOf(index), 1);
                 index = getOtherConnectedPoint(index, roomNr, connectedIndexes);
                 points1.splice(points1.indexOf(index), 1);
@@ -1117,7 +1131,11 @@ function isIncreasing(startIndex, endIndex1, endIndex2, polygon) {
 }
 
 function checkIncreasingIsSmallEnough(roomNr, startIndexes, points1, points2, polygon1, polygon2) {
-    return (checkIfDistancesIsSmallEnough(startIndexes[0], points1[0], polygon1, polygon2) && checkIfDistancesIsSmallEnough2(startIndexes[1], points2[1], polygon2, polygon1));
+    var test1 = checkIfDistancesIsSmallEnough(startIndexes[0], points1[0], polygon1, polygon2);
+    var test2 = checkIfDistancesIsSmallEnough2(startIndexes[1], points2[1], polygon2, polygon1);
+    console.log(test1);
+    console.log(test2);
+    return (test1 && test2);
 }
 
 function checkIfDistancesIsSmallEnough(startIndex, endIndex, polygon1, polygon2) {
@@ -1130,7 +1148,7 @@ function checkIfDistancesIsSmallEnough(startIndex, endIndex, polygon1, polygon2)
 }
 
 function checkIfDistancesIsSmallEnough2(startIndex, endIndex, polygon1, polygon2) {
-    for (var i = 1; i < mod(startIndex-endIndex-1,polygon1.length); i++) {
+    for (var i = 1; i < mod(startIndex-endIndex,polygon1.length); i++) {
         if (getMinDistToPoly(polygon1[mod(startIndex-i,polygon1.length)], polygon2) > VERY_IMPORTANCE_DISTANCE) {
             return false;
         }
