@@ -17,7 +17,7 @@ DELAY = 5
 def updateID(ID):
 
 	#clear file of content
-	#file = open("floorID.js", "w").close()
+	file = open("floorID.js", "w").close()
 
 	file = open("floorID.js", "w")
 
