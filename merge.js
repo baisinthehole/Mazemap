@@ -739,14 +739,14 @@ function superDuperMerge(room1, room2, test = false) {
 function findBothPairOfPoints(polygon1, polygon2) {
     var pairs1 = findPairsOfPoints(polygon1, polygon2);
     var pairs2 = findPairsOfPoints(polygon2, polygon1);
-    if (mod(pairs1[1]-pairs1[0]+1, polygon1.length) == polygon1.length - 1){
+    if (mod(pairs1[1]-pairs1[0]+1, polygon1.length) == polygon1.length - 1 && pairs1[0] == 0){
         addPointWhenAllPointsAreClose(polygon1, polygon2);
         pairs1 = [];
         for (var i = pairs2.length-1; i >= 0 ; i--) {
             pairs1.push(getClosestPointInPolygonToPoint(polygon2[pairs2[i]], polygon1));
         }
     }
-    else if (mod(pairs2[1]-pairs2[0]+1, polygon2.length) == polygon2.length - 1){
+    else if (mod(pairs2[1]-pairs2[0]+1, polygon2.length) == polygon2.length - 1 && pairs2[0] == 0){
         addPointWhenAllPointsAreClose(polygon2, polygon1);
         pairs2 = [];
         for (var i = pairs1.length-1; i >= 0 ; i--) {
