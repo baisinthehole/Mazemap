@@ -44,35 +44,43 @@ function createglobalMergedPolygons(data, roomCoordinates){
     //test91();
 
     // Uncomment to store the corridors for the floor
-    // if (localStorage.getItem('corridors'+FLOOR_ID) === null) {
-    if (true){
+    if (localStorage.getItem('corridors'+FLOOR_ID) === null) {
+    // if (true){
         // Merge corridors from scratch
-        globalMergedCorridorsCoordinates = mergeCorridors();
-        // localStorage.setItem('corridors'-FLOOR_ID, JSON.stringify(globalMergedCorridorsCoordinates));
+        var test = mergeCorridors();
+        localStorage.setItem('corridors'+FLOOR_ID, JSON.stringify(test));
     }
     else {
+        console.log("Found in local storage");
         // Retrieve the object from storage
-        // globalMergedCorridorsCoordinates = JSON.parse(localStorage.getItem('corridors'+FLOOR_ID));
+        for (var i = 0; i < FLOOR_IDS.length; i++) {
+            if (localStorage.getItem('corridors'+FLOOR_IDS[i]) !== null) {
+                globalMergedCorridorsCoordinates.push(JSON.parse(localStorage.getItem('corridors'+FLOOR_IDS[i])));
+            }
+        }
     }
-    for (var i = 0; i < globalMergedCorridorsCoordinates.length; i++) {
-        drawPolygonFromOnlyCoordinates(globalMergedCorridorsCoordinates[i], "white", "blue");
+    console.log(globalMergedCorridorsCoordinates);
+    for (var j = 0; j < globalMergedCorridorsCoordinates.length; j++) {
+        for (var i = 0; i < globalMergedCorridorsCoordinates[j].length; i++) {
+            drawPolygonFromOnlyCoordinates(globalMergedCorridorsCoordinates[j][i], "white", "blue");
+        }
     }
 
-    orderedRooms = findOrderOfRooms(oldNeighbors, container);
+    // orderedRooms = findOrderOfRooms(oldNeighbors, container);
 
-    dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms);
+    // dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms);
 
-    var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
+    // var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
 
-    fillZoomLevelPolygons(zoomLevelsCoordinates);
+    // fillZoomLevelPolygons(zoomLevelsCoordinates);
 
-    roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
+    // roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
-    fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
+    // fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
 
-    var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
+    // var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
 
-    convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
+    // convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
 
     // var room1 = GLOBAL_CORRIDOR_COORDINATES[18];
     // var room2 = GLOBAL_CORRIDOR_COORDINATES[1];
