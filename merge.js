@@ -1276,17 +1276,18 @@ function createDifferentMergingLevelsArea(orderedRooms, rooms) {
 
         for (var i = 0; i < mergingLevels[currentIndex].length; i++) {
 
-            console.log(deepCopy(areaLists[currentIndex][i]));
+            //console.log(deepCopy(areaLists[currentIndex][i]));
             splitAreas = areaMerge(2, areaLists[currentIndex][i]);
-            console.log(deepCopy(splitAreas));
+            //console.log(deepCopy(splitAreas));
 
-            currentInternalEndIndex = splitAreas[1].length;
+            currentInternalStartIndex = currentInternalEndIndex;
+            currentInternalEndIndex += splitAreas[0].length;
 
             mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
             areaLists[currentIndex + 1].push(splitAreas[0]);
             
             currentInternalStartIndex = currentInternalEndIndex;
-            currentInternalEndIndex = splitAreas[1].length;
+            currentInternalEndIndex += splitAreas[1].length;
 
             mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
             areaLists[currentIndex + 1].push(splitAreas[1]);
@@ -1296,14 +1297,16 @@ function createDifferentMergingLevelsArea(orderedRooms, rooms) {
             }
             
         }
-        currentInternalStartIndex = 0;
-        currentInternalEndIndex = 0;
+        if (currentInternalEndIndex == orderedRooms.length) {
+            currentInternalStartIndex = 0;
+            currentInternalEndIndex = 0;
+        }
 
         currentIndex++;
 
     }
     
-    //console.log(mergingLevels);
+    console.log(mergingLevels);
     return mergingLevels;
 }
 
