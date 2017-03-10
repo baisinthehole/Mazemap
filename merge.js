@@ -960,11 +960,7 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
                 points = findIncreasingAndDecreasingPoints(outerIndex, 0, polygon1, connectedIndexes);
                 var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 1, polygon2, connectedIndexes);
                 // increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon1);
-                console.log("Test");
-                console.log(roomNr);
-                console.log(connectedIndexes[outerIndex]);
                 increasing = checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], deepCopy(points), deepCopy(testpoints2), polygon1, polygon2);
-                console.log(increasing);
                 points1.splice(points1.indexOf(index), 1);
                 index = getOtherConnectedPoint(index, roomNr, connectedIndexes);
                 points2.splice(points2.indexOf(index), 1);
@@ -986,11 +982,7 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
                 var testpoints2 = findIncreasingAndDecreasingPoints(outerIndex, 0, polygon1, connectedIndexes);
                 points = findIncreasingAndDecreasingPoints(outerIndex, 1, polygon2, connectedIndexes);
                 // increasing = isIncreasing(connectedIndexes[outerIndex][roomNr], points[0], points[1], polygon2);
-                console.log("Test");
-                console.log(roomNr);
-                console.log(connectedIndexes[outerIndex]);
                 increasing = !checkIncreasingIsSmallEnough(roomNr, connectedIndexes[outerIndex], testpoints2, deepCopy(points), polygon1, polygon2);
-                console.log(increasing);
                 points2.splice(points2.indexOf(index), 1);
                 index = getOtherConnectedPoint(index, roomNr, connectedIndexes);
                 points1.splice(points1.indexOf(index), 1);
@@ -1133,8 +1125,6 @@ function isIncreasing(startIndex, endIndex1, endIndex2, polygon) {
 function checkIncreasingIsSmallEnough(roomNr, startIndexes, points1, points2, polygon1, polygon2) {
     var test1 = checkIfDistancesIsSmallEnough(startIndexes[0], points1[0], polygon1, polygon2);
     var test2 = checkIfDistancesIsSmallEnough2(startIndexes[1], points2[1], polygon2, polygon1);
-    console.log(test1);
-    console.log(test2);
     return (test1 && test2);
 }
 

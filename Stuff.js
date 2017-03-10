@@ -104,12 +104,14 @@ var globalRoomNameCoordinates = [];
 // all room name strings
 var globalNameList = [];
 
+// all polygons
+ var polygonList;
 
 // contains all the data that are displayed on different zoom levels and updates display accordingly
 function zoom() {
 
     // contains all kinds of polygons displayed on different levels
-    var polygonList = [globalOutlinePolygons, globalCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons];
+    polygonList = [globalOutlinePolygons, globalCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons];
 
     // contains all kinds of room names displayed on different levels
     var nameList = [globalRoomNames, globalUnmergedNames, mergedTextLarge, mergedTextMedium, mergedTextSmall];
@@ -237,7 +239,9 @@ function recievedJSONfromServer() {
     // This function is defined in main.js
     createglobalMergedPolygons(geoJSON, simplifiedRoomCoordinates);
 
-
+    if (localStorage.getItem('everything'+FLOOR_ID) === null) {
+        localStorage.setItem('everything'+FLOOR_ID, JSON.stringify(polygonList));
+    }
 }
 
   // Function for requesting JSON object from server

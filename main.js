@@ -42,7 +42,7 @@ function createglobalMergedPolygons(data, roomCoordinates){
     // test8();
     //test38();
     //test91();
-
+    var allPolygons = [];
     // Uncomment to store the corridors for the floor
     if (localStorage.getItem('corridors'+FLOOR_ID) === null) {
     // if (true){
@@ -50,15 +50,18 @@ function createglobalMergedPolygons(data, roomCoordinates){
         var test = mergeCorridors();
         localStorage.setItem('corridors'+FLOOR_ID, JSON.stringify(test));
     }
-    else {
-        console.log("Found in local storage");
-        // Retrieve the object from storage
-        for (var i = 0; i < FLOOR_IDS.length; i++) {
-            if (localStorage.getItem('corridors'+FLOOR_IDS[i]) !== null) {
-                globalMergedCorridorsCoordinates.push(JSON.parse(localStorage.getItem('corridors'+FLOOR_IDS[i])));
-            }
+
+    // Retrieve objects from storage
+    for (var i = 0; i < FLOOR_IDS.length; i++) {
+        if (localStorage.getItem('corridors'+FLOOR_IDS[i]) !== null) {
+            globalMergedCorridorsCoordinates.push(JSON.parse(localStorage.getItem('corridors'+FLOOR_IDS[i])));
+        }
+        if (localStorage.getItem('everything'+FLOOR_IDS[i]) !== null) {
+            allPolygons.push(localStorage.getItem('everything'+FLOOR_ID));
         }
     }
+    console.log(allPolygons);
+
     console.log(globalMergedCorridorsCoordinates);
     for (var j = 0; j < globalMergedCorridorsCoordinates.length; j++) {
         for (var i = 0; i < globalMergedCorridorsCoordinates[j].length; i++) {
@@ -112,5 +115,6 @@ function createglobalMergedPolygons(data, roomCoordinates){
     // var mergedPolygon = superDuperMerge(room1, room2);
     // drawPolygonFromOnlyCoordinates(mergedPolygon, "white", "green");
 
+    // localStorage.clear();
 }
 
