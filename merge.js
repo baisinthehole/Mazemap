@@ -1373,6 +1373,9 @@ function fillZoomLevels(dynamicMergedRooms, oldRooms){
 }
 
 function fillZoomLevelPolygons(coordinates){
+    GLOBAL_ALL_COORDINATES[2] = deepCopy(coordinates[0]);
+    GLOBAL_ALL_COORDINATES[3] = deepCopy(coordinates[1]);
+    GLOBAL_ALL_COORDINATES[4] = deepCopy(coordinates[2]);
     fillPolygons(coordinates[0], mergedLarge, "gray", "lemonchiffon", "polygon");
     fillPolygons(coordinates[1], mergedMedium, "gray", "lemonchiffon", "polygon");
     fillPolygons(coordinates[2], mergedSmall, "gray", "lemonchiffon", "polygon");
@@ -1388,6 +1391,8 @@ function getUnmergedRooms(container, coordinates) {
             }
         }
     }
+    GLOBAL_ALL_COORDINATES[6] = deepCopy(globalUnmergedRoomsSimplified);
+    GLOBAL_ALL_COORDINATES[7] = deepCopy(globalUnmergedRooms);
     fillPolygons(globalUnmergedRoomsSimplified, globalUnmergedPolygonsSimplified, "gray", "white", "line");
     fillPolygons(globalUnmergedRooms, globalUnmergedPolygons, "gray", "white", "line");
 
@@ -1467,6 +1472,7 @@ function mergeCorridors(){
     // console.log(neighborCorridors);
     // getCorridorIndices();
     [mergedCorridors, corridorContainer] = mergeAllCorridors(neighborCorridors, globalCorridorCoordinates);
+    [mergedCorridors, corridorContainer] = removeDuplicateRooms(mergedCorridors, corridorContainer);
     return mergedCorridors;
 }
 

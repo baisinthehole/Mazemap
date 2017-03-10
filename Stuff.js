@@ -39,6 +39,12 @@ var RAW_RESPONSE;
 // geoJSON parsed from the raw data
 var GEO_JSON;
 
+// all coordinates
+var GLOBAL_ALL_COORDINATES = [];
+for (var i = 0; i < 8; i++) {
+    GLOBAL_ALL_COORDINATES.push([]);
+}
+
 // all room coordinates
 var GLOBAL_ROOM_COORDINATES;
 
@@ -229,9 +235,9 @@ function recievedJSONfromServer() {
     fillCoordinateTypeServer(geoJSON, globalCorridorCoordinates, globalCorridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
     fillCoordinateTypeServer(geoJSON, globalRoomCoordinates, globalRoomPolygons, ROOM_TYPE.ROOM, color, 'white', 0.2, "line");
     GLOBAL_ROOM_COORDINATES = deepCopy(globalRoomCoordinates);
-    console.log(GLOBAL_ROOM_COORDINATES);
+    GLOBAL_ALL_COORDINATES[5] = deepCopy(globalRoomCoordinates);
     GLOBAL_CORRIDOR_COORDINATES = deepCopy(globalCorridorCoordinates);
-
+    GLOBAL_ALL_COORDINATES[1] = deepCopy(GLOBAL_CORRIDOR_COORDINATES);
 
     removedDuplicatePoints = removeDuplicatesFromAllRooms(globalRoomCoordinates);
     var simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);
@@ -404,10 +410,14 @@ function findFarthestRooms(container) {
 function fillPolygons(coordinates, polygonList, color, fillColor, lineOrPolygon) {
     for (var i = 0; i < coordinates.length; i++) {
         if (lineOrPolygon == "line") {
-            polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: SERVER_WEIGHT}));
+            if (coordinates[i].length != 2){
+                polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: SERVER_WEIGHT}));
+            }
         }
         else {
-            polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, fillOpacity: 1, weight: SERVER_WEIGHT}));
+            if (coordinates[i].length != 2){
+                polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, fillOpacity: 1, weight: SERVER_WEIGHT}));
+            }
         }
     }
 }
@@ -1191,4 +1201,41 @@ function mod(n, m){
 
 function getPointInMiddleOfLine(point1, point2){
     return [(point1[0]+point2[0])/2,(point1[1]+point2[1])/2];
+}
+
+function drawFromLocalStorage() {
+    var localStorageCoordinates = [];
+    for (var i = 0; i < FLOOR_IDS.length; i++) {
+        if (localStorage.getItem('allCoordinates'+FLOOR_IDS[i]) !== null) {
+            localStorageCoordinates.push(JSON.parse(localStorage.getItem('allCoordinates'+FLOOR_IDS[i])));
+        }
+    }
+    console.log(localStorageCoordinates);
+    allMergedCorridorPolygons = fillAllPolygons(localStorageCoordinates, 0, "blue", "white", "polygon");
+    allCorridorPolygons = fillAllPolygons(localStorageCoordinates, 1, "blue", "white", "polygon");
+    allMergedLargePolygons = fillAllPolygons(localStorageCoordinates, 2, "blue", "white", "polygon");
+    allMergedMediumPolygons = fillAllPolygons(localStorageCoordinates, 3, "blue", "white", "polygon");
+    allMergedSmallPolygons = fillAllPolygons(localStorageCoordinates, 4, "blue", "white", "polygon");
+    allRoomPolygons = fillAllPolygons(localStorageCoordinates, 5, "blue", "white", "polygon");
+    allUnmergedRoomPolygonsSimplified = fillAllPolygons(localStorageCoordinates, 6, "blue", "white", "polygon");
+    allUnmergedRoomPolygons = fillAllPolygons(localStorageCoordinates, 7, "blue", "white", "polygon");
+    var everything = [allMergedCorridorPolygons, allCorridorPolygons, allMergedLargePolygons, allMergedMediumPolygons, allMergedSmallPolygons, allRoomPolygons, allUnmergedRoomPolygonsSimplified, allUnmergedRoomPolygons];
+    console.log(allMergedCorridorPolygons);
+    for (var k= 0; k < everything.length; k++) {
+        for (var i = 0; i < everything[k].length; i++) {
+            for (var j = 0; j < everything[k][i].length; j++) {
+                MAP.addLayer(everything[k][i][j]);
+            }
+        }
+    }
+}
+
+function fillAllPolygons(coordinates, index, color, fillColor, lineOrPolygon) {
+    var polygons = [];
+    for (var i = 0; i < coordinates.length; i++) {
+        var polygon = [];
+        fillPolygons(coordinates[i][index], polygon, color, fillColor, lineOrPolygon);
+        polygons.push(polygon);
+    }
+    return polygons;
 }
