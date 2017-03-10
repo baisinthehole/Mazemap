@@ -41,7 +41,7 @@ var GEO_JSON;
 
 // all coordinates
 var GLOBAL_ALL_COORDINATES = [];
-for (var i = 0; i < 8; i++) {
+for (var i = 0; i < 10; i++) {
     GLOBAL_ALL_COORDINATES.push([]);
 }
 
@@ -333,6 +333,15 @@ function fillCoordinateTypeLocal(data, polygonList, coordinateType, color, lineO
 	        }
 	    }
 	}
+    if (coordinateType == 'outlines') {
+        GLOBAL_ALL_COORDINATES[0] = deepCopy(coordinates);
+    }
+    else if (coordinateType == 'doors') {
+        GLOBAL_ALL_COORDINATES[6] = deepCopy(coordinates);
+    }
+    else if (coordinateType == 'stairsfull') {
+        GLOBAL_ALL_COORDINATES[7] = deepCopy(coordinates);
+    }
 }
 
 function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, fillColor, fillOpacity, lineOrPolygon) {
@@ -1217,8 +1226,8 @@ function drawFromLocalStorage() {
     }
     // globalOutlinePolygons, globalCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons
     console.log(localStorageCoordinates);
-    globalCorridorPolygons = fillAllPolygons(localStorageCoordinates, 0, "blue", "red", "polygon");
-    allCorridorPolygons = fillAllPolygons(localStorageCoordinates, 1, "blue", "white", "polygon");
+    globalCorridorPolygons = fillAllPolygons(localStorageCoordinates, 1, "blue", "red", "polygon");
+    // allCorridorPolygons = fillAllPolygons(localStorageCoordinates, 1, "blue", "white", "polygon");
     mergedLarge = fillAllPolygons(localStorageCoordinates, 2, "gray", "lemonchiffon", "polygon");
     mergedMedium = fillAllPolygons(localStorageCoordinates, 3, "gray", "lemonchiffon", "polygon");
     mergedSmall = fillAllPolygons(localStorageCoordinates, 4, "gray", "lemonchiffon", "polygon");
