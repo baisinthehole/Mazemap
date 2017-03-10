@@ -13,7 +13,6 @@ MAP.setView([63.417421008760335,10.406426561608821], 15);
 
 // Uncomment the preferred JSON file
 getLocalJSON(FILENAME);
-    zoom();
 if (FLOOR_ID != false) {
     getJSONfromServer();
 
@@ -129,5 +128,6 @@ if (FLOOR_ID != false) {
 else {
     drawFromLocalStorage();
 }
+zoom();
 
 // localStorage.clear();

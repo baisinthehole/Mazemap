@@ -471,25 +471,30 @@ function getRoomCircumference(singleRoomCoordinates) {
 }
 
 function drawPolygons(polygonList) {
+    console.log(polygonList);
     for (var i = 0; i < polygonList.length; i++) {
-        if (polygonList[i]._latlngs.length > 1) {
-            if (polygonList[i]._latlngs[0]) {
-                MAP.addLayer(polygonList[i]);
+        for (var j = 0; j < polygonList[i].length; j++) {
+            if (polygonList[i][j]._latlngs.length > 1) {
+                if (polygonList[i][j]._latlngs[0]) {
+                    MAP.addLayer(polygonList[i][j]);
+                }
             }
-        }
-        else if (polygonList[i]._latlngs[0][0]) {
-            MAP.addLayer(polygonList[i]);
-        }
-        else {
-            console.log("Trying to draw a non-polygon");
-            // console.log(polygonList[i]._latlngs);
+            else if (polygonList[i][j]._latlngs[0][0]) {
+                MAP.addLayer(polygonList[i][j]);
+            }
+            else {
+                console.log("Trying to draw a non-polygon");
+                // console.log(polygonList[i]._latlngs);
+            }
         }
     }
 }
 
 function removePolygons(polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
-        MAP.removeLayer(polygonList[i]);
+        for (var j = 0; j < polygonList[i].length; j++) {
+            MAP.removeLayer(polygonList[i][j]);
+        }
     }
 }
 
@@ -1210,24 +1215,25 @@ function drawFromLocalStorage() {
             localStorageCoordinates.push(JSON.parse(localStorage.getItem('allCoordinates'+FLOOR_IDS[i])));
         }
     }
+    // globalOutlinePolygons, globalCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons
     console.log(localStorageCoordinates);
-    allMergedCorridorPolygons = fillAllPolygons(localStorageCoordinates, 0, "blue", "white", "polygon");
+    globalCorridorPolygons = fillAllPolygons(localStorageCoordinates, 0, "blue", "red", "polygon");
     allCorridorPolygons = fillAllPolygons(localStorageCoordinates, 1, "blue", "white", "polygon");
-    allMergedLargePolygons = fillAllPolygons(localStorageCoordinates, 2, "blue", "white", "polygon");
-    allMergedMediumPolygons = fillAllPolygons(localStorageCoordinates, 3, "blue", "white", "polygon");
-    allMergedSmallPolygons = fillAllPolygons(localStorageCoordinates, 4, "blue", "white", "polygon");
-    allRoomPolygons = fillAllPolygons(localStorageCoordinates, 5, "blue", "white", "polygon");
-    allUnmergedRoomPolygonsSimplified = fillAllPolygons(localStorageCoordinates, 6, "blue", "white", "polygon");
-    allUnmergedRoomPolygons = fillAllPolygons(localStorageCoordinates, 7, "blue", "white", "polygon");
-    var everything = [allMergedCorridorPolygons, allCorridorPolygons, allMergedLargePolygons, allMergedMediumPolygons, allMergedSmallPolygons, allRoomPolygons, allUnmergedRoomPolygonsSimplified, allUnmergedRoomPolygons];
-    console.log(allMergedCorridorPolygons);
-    for (var k= 0; k < everything.length; k++) {
-        for (var i = 0; i < everything[k].length; i++) {
-            for (var j = 0; j < everything[k][i].length; j++) {
-                MAP.addLayer(everything[k][i][j]);
-            }
-        }
-    }
+    mergedLarge = fillAllPolygons(localStorageCoordinates, 2, "gray", "lemonchiffon", "polygon");
+    mergedMedium = fillAllPolygons(localStorageCoordinates, 3, "gray", "lemonchiffon", "polygon");
+    mergedSmall = fillAllPolygons(localStorageCoordinates, 4, "gray", "lemonchiffon", "polygon");
+    globalRoomPolygons = fillAllPolygons(localStorageCoordinates, 5, "blue", "white", "polygon");
+    globalUnmergedPolygonsSimplified = fillAllPolygons(localStorageCoordinates, 6, "blue", "white", "polygon");
+    globalUnmergedPolygons = fillAllPolygons(localStorageCoordinates, 7, "blue", "white", "polygon");
+    // var everything = [allMergedCorridorPolygons, allCorridorPolygons, allMergedLargePolygons, allMergedMediumPolygons, allMergedSmallPolygons, allRoomPolygons, allUnmergedRoomPolygonsSimplified, allUnmergedRoomPolygons];
+    // console.log(allMergedCorridorPolygons);
+    // for (var k= 0; k < everything.length; k++) {
+    //     for (var i = 0; i < everything[k].length; i++) {
+    //         for (var j = 0; j < everything[k][i].length; j++) {
+    //             MAP.addLayer(everything[k][i][j]);
+    //         }
+    //     }
+    // }
 }
 
 function fillAllPolygons(coordinates, index, color, fillColor, lineOrPolygon) {
