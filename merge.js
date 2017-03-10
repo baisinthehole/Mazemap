@@ -1246,6 +1246,67 @@ function findOrderOfRooms(oldNeighbors, container) {
 	return orderedRooms;
 }
 
+function createDifferentMergingLevelsArea(orderedRooms, rooms) {
+    var mergingLevels = [[orderedRooms]];
+
+    if (orderedRooms.length < 2) {
+        return mergingLevels;
+    }
+
+
+    var areaLists = [[[]], []];
+    for (var i = 0; i < orderedRooms.length; i++) {
+        areaLists[0][0].push(getArea(rooms[orderedRooms[i]]) * 1000000000);
+    }
+
+    var minNumberOfRooms = 3;
+
+    var currentNumberOfRooms = orderedRooms.length;
+
+    var currentInternalStartIndex = 0;
+    var currentInternalEndIndex = 0;
+
+    var currentIndex = 0;
+
+    var splitAreas;
+
+    while (currentNumberOfRooms > minNumberOfRooms) {
+        mergingLevels.push([]);
+        areaLists.push([]);
+
+        for (var i = 0; i < mergingLevels[currentIndex].length; i++) {
+
+            console.log(deepCopy(areaLists[currentIndex][i]));
+            splitAreas = areaMerge(2, areaLists[currentIndex][i]);
+            console.log(deepCopy(splitAreas));
+
+            currentInternalEndIndex = splitAreas[1].length;
+
+            mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+            areaLists[currentIndex + 1].push(splitAreas[0]);
+            
+            currentInternalStartIndex = currentInternalEndIndex;
+            currentInternalEndIndex = splitAreas[1].length;
+
+            mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+            areaLists[currentIndex + 1].push(splitAreas[1]);
+
+            if (Math.min(splitAreas[0].length, splitAreas[1].length) < currentNumberOfRooms) {
+                currentNumberOfRooms = Math.min(splitAreas[0].length, splitAreas[1].length);
+            }
+            
+        }
+        currentInternalStartIndex = 0;
+        currentInternalEndIndex = 0;
+
+        currentIndex++;
+
+    }
+    
+    //console.log(mergingLevels);
+    return mergingLevels;
+}
+
 // create different merging levels, so that merged rooms can be split into smaller merged rooms
 function createDifferentMergingLevels(orderedRooms) {
 	var mergingLevels = [[orderedRooms]];
@@ -1329,9 +1390,9 @@ function makeNeighborsWhoAreNotNeighborsNeighbors(neighbors) {
 }
 
 // create different merging levels for all merged groups
-function dynamicMergeAllRooms(allOrderedRooms) {
+function dynamicMergeAllRooms(allOrderedRooms, rooms) {
     for (var i = 0; i < allOrderedRooms.length; i++) {
-        allOrderedRooms[i] = createDifferentMergingLevels(allOrderedRooms[i]);
+        allOrderedRooms[i] = createDifferentMergingLevelsArea(allOrderedRooms[i], rooms);
     }
     return allOrderedRooms;
 }

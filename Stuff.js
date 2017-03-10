@@ -1188,3 +1188,60 @@ function mod(n, m){
 function getPointInMiddleOfLine(point1, point2){
     return [(point1[0]+point2[0])/2,(point1[1]+point2[1])/2];
 }
+
+// http://stackoverflow.com/questions/2166335/what-algorithm-to-use-to-segment-a-sequence-of-numbers-into-n-subsets-to-minimi
+function areaMerge(numSplit, areaList) {
+    var sum = 0;
+
+    var f = [];
+    var g = [];
+
+    for (var i = 0; i < areaList.length + 1; i++) {
+        f.push([]);
+        g.push([]);
+        for (var j = 0; j < numSplit + 1; j++) {
+            f[i].push(0);
+            g[i].push(0);
+        }
+    }
+
+    for (var i = 1; i < areaList.length + 1; i++) {
+        sum += areaList[i-1];
+        f[i][1] = sum * sum;
+        g[i][1] = 0;
+    }
+
+    for (var i = 2; i < numSplit + 1; i++) {
+        f[0][i] = 0;
+        g[0][i] = 0;
+        for (var j = 1; j < areaList.length + 1; j++) {
+            sum = 0;
+            f[j][i] = f[j][i-1];
+            g[j][i] = j;
+            for (var k = j-1; k >= 0; k--) {
+                sum += areaList[k];
+                if (f[j][i] > f[k][i-1] + (sum * sum)) {
+                    f[j][i] = f[k][i-1] + (sum * sum);
+                    g[j][i] = k;
+                }
+            }
+        }
+    }
+
+    var result = [];
+    var i = areaList.length;
+    var j = numSplit;
+    var k;
+    var tempArray;
+
+    while (j) {
+        k = g[i][j];
+        tempArray = areaList.slice(k, i);
+        result.push(tempArray);
+        i = k;
+        j--;
+    }
+    result.reverse();
+    return result;
+
+}
