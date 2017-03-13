@@ -1014,6 +1014,25 @@ function getArea(polygon){
     return Math.abs(sum)/2;
 }
 
+function computeAreaOfRooms(rooms, indices) {
+
+    var totalArea = 0;
+
+    for (var i of indices) {
+        totalArea += getArea(rooms[i]);
+    }
+
+    return totalArea;
+}
+
+function computeTotalAreaOfAreaList(areaList) {
+    var totalArea = 0;
+    for (var i = 0; i < areaList.length; i++) {
+        totalArea += areaList[i];
+    }
+    return totalArea;
+}
+
 function mergeablePoint(AB, AC){
     if (dotProd(AB, AC) <= 0 && crossProd(AB, AC) > 0){
             return true;
