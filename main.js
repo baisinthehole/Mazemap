@@ -88,6 +88,14 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
 
+    [globalMergedCorridorCoordinates, corridorContainer] = mergeCorridors();
+
+	[globalMergedCorridorCoordinates, corridorContainer] = removeDuplicateRooms(globalMergedCorridorCoordinates, corridorContainer)
+
+    fillMergedCoordinates(globalMergedCorridorCoordinates);
+
+
+
     // var room1 = GLOBAL_CORRIDOR_COORDINATES[18];
     // var room2 = GLOBAL_CORRIDOR_COORDINATES[1];
     // addedPoints = addPointsForTwoPolygon(room1, room2);

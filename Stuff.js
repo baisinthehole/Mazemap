@@ -55,6 +55,9 @@ var mergedTextSmall = [];
 var mergedTextMedium = [];
 var mergedTextLarge = [];
 
+// merged corridor polygons
+var globalMergedCorridorPolygons = [];
+
 // simplified room coordinates that are never merged
 var globalUnmergedRoomsSimplified = [];
 
@@ -109,7 +112,7 @@ var globalNameList = [];
 function zoom() {
 
     // contains all kinds of polygons displayed on different levels
-    var polygonList = [globalOutlinePolygons, globalCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons];
+    var polygonList = [globalOutlinePolygons, globalCorridorPolygons, globalMergedCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons];
 
     // contains all kinds of room names displayed on different levels
     var nameList = [globalRoomNames, globalUnmergedNames, mergedTextLarge, mergedTextMedium, mergedTextSmall];
@@ -138,28 +141,28 @@ function zoom() {
         if (MAP.getZoom() < 16){
         }
         else if (MAP.getZoom() < 17){
-            drawings = [true, false, false, false, false, false, false, false, false, false];
+            drawings = [true, false, false, false, false, false, false, false, false, false, false];
             names = [false, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 18){
-            drawings = [true, true, true, false, false, false, false, false, true, false];
+            drawings = [true, false, true, true, false, false, false, false, false, true, false];
             names = [false, false, true, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 19){
-            drawings = [true, true, false, true, false, false, false, false, true, false];
+            drawings = [true, false, true, false, true, false, false, false, false, true, false];
             names = [false, false, false, true, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 20){
-            drawings = [true, true, false, false, true, false, false, true, false, true];
+            drawings = [true, true, false, false, false, true, false, false, true, false, true];
             names = [false, true, false, false, true];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         // else if (MAP.getZoom() < 21){
         else {
-            drawings = [true, true, false, false, false, true, true, true, false, false];
+            drawings = [true, true, false, false, false, false, true, true, true, false, false];
             names = [true, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
@@ -227,7 +230,7 @@ function recievedJSONfromServer() {
     fillCoordinateTypeServer(geoJSON, globalCorridorCoordinates, globalCorridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
     fillCoordinateTypeServer(geoJSON, globalRoomCoordinates, globalRoomPolygons, ROOM_TYPE.ROOM, color, 'white', 0.2, "line");
     GLOBAL_ROOM_COORDINATES = deepCopy(globalRoomCoordinates);
-    console.log(GLOBAL_ROOM_COORDINATES);
+    //console.log(GLOBAL_ROOM_COORDINATES);
     GLOBAL_CORRIDOR_COORDINATES = deepCopy(globalCorridorCoordinates);
 
 
@@ -397,13 +400,13 @@ function findFarthestRooms(container) {
     return [maxIndex1, maxIndex2];
 }
 
-function fillPolygons(coordinates, polygonList, color, fillColor, lineOrPolygon) {
+function fillPolygons(coordinates, polygonList, color, fillColor, lineOrPolygon, fillOpacity) {
     for (var i = 0; i < coordinates.length; i++) {
         if (lineOrPolygon == "line") {
             polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: SERVER_WEIGHT}));
         }
         else {
-            polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, fillOpacity: 1, weight: SERVER_WEIGHT}));
+            polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, fillOpacity: fillOpacity, weight: SERVER_WEIGHT}));
         }
     }
 }
@@ -1003,7 +1006,6 @@ function removeDuplicateRooms(roomCoordinates, container){
     }
     return [resultRooms, resultContainer];
 }
-
 
 function getArea(polygon){
     var sum = 0;
