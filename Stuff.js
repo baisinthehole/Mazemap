@@ -184,8 +184,6 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
     for (var i = 0; i < drawings.length; i++) {
         if (drawings[i] != nowDrawings[i]){
             if (!nowDrawings[i]){
-                console.log(polygonList);
-                console.log(i);
                 drawPolygons(polygonList[i]);
             }
             else if (nowDrawings[i]){
@@ -487,11 +485,8 @@ function getRoomCircumference(singleRoomCoordinates) {
 }
 
 function drawPolygons(polygonList) {
-    console.log(polygonList);
     for (var i = 0; i < polygonList.length; i++) {
         for (var j = 0; j < polygonList[i].length; j++) {
-            console.log("polygonList[i][j]");
-            console.log(polygonList[i][j]);
             if (polygonList[i][j]._latlngs.length > 1) {
                 if (polygonList[i][j]._latlngs[0]) {
                     MAP.addLayer(polygonList[i][j]);
@@ -501,7 +496,7 @@ function drawPolygons(polygonList) {
                 MAP.addLayer(polygonList[i][j]);
             }
             else {
-                console.log("Trying to draw a non-polygon");
+                // console.log("Trying to draw a non-polygon");
                 // console.log(polygonList[i]._latlngs);
             }
         }
@@ -1234,10 +1229,7 @@ function drawFromLocalStorage() {
         }
     }
     // globalOutlinePolygons, globalCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons
-    console.log("localStorageCoordinates");
-    console.log(localStorageCoordinates);
     setCoordinatesAsOneFloorId(localStorageCoordinates);
-    console.log(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
     createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
 }
 
@@ -1254,7 +1246,6 @@ function setCoordinatesAsOneFloorId(localStorageCoordinates) {
 
 
 function createPolygonsFromAllCoordinatesAsOneFloorId(coordinates) {
-    console.log("coordinates");
     console.log(coordinates);
     // for (var i = 0; i < coordinates[1].length; i++) {
     //     drawPolygonFromOnlyCoordinates(coordinates[1][i], "blue", "red");
@@ -1275,8 +1266,6 @@ function createPolygonsFromAllCoordinatesAsOneFloorId(coordinates) {
     // //     drawPolygonFromOnlyCoordinates(coordinates[6][i], "blue", "white");
     // // }
     globalCorridorPolygons = fillAllPolygons(coordinates[1], "blue", "red", "polygon");
-    console.log("globalCorridorPolygons");
-    console.log(globalCorridorPolygons);
     mergedLarge = fillAllPolygons(coordinates[2], "gray", "lemonchiffon", "polygon");
     mergedMedium = fillAllPolygons(coordinates[3], "gray", "lemonchiffon", "polygon");
     mergedSmall = fillAllPolygons(coordinates[4], "gray", "lemonchiffon", "polygon");
@@ -1297,12 +1286,11 @@ function createPolygonsFromAllCoordinates(localStorageCoordinates) {
 }
 
 function fillAllPolygons(coordinates, color, fillColor, lineOrPolygon) {
-    console.log(coordinates);
     var polygons = [];
     for (var i = 0; i < coordinates.length; i++) {
         if (coordinates[i].length > 0) {
             var polygon = [];
-            fillPolygons(coordinates[i], polygon, color, fillColor, lineOrPolygon);
+            fillPolygons(coordinates, polygon, color, fillColor, lineOrPolygon);
             polygons.push(polygon);
         }
     }
