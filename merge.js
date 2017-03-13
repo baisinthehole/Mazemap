@@ -140,8 +140,8 @@ function mergeAllPolygons(neighbors, roomCoordinates){
 
 
                     // var mergedPolygon = simpleMergeTwo(roomCoordinates[i], roomCoordinates[j]);
-                    mergedPolygon = superMergeTwo(roomCoordinates[i], roomCoordinates[j]);
-                    // mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j]);
+                    // mergedPolygon = superMergeTwo(roomCoordinates[i], roomCoordinates[j]);
+                    mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j]);
 
 
 
@@ -1254,12 +1254,12 @@ function createDifferentMergingLevelsArea(orderedRooms, rooms) {
     }
 
 
-    var areaLists = [[[]], []];
+    var areaLists = [[[]]];
     for (var i = 0; i < orderedRooms.length; i++) {
-        areaLists[0][0].push(getArea(rooms[orderedRooms[i]]) * 1000000000);
+        areaLists[0][0].push(getArea(rooms[orderedRooms[i]]));
     }
 
-    var minNumberOfRooms = 3;
+    var minNumberOfRooms = 2;
 
     var currentNumberOfRooms = orderedRooms.length;
 
@@ -1285,7 +1285,7 @@ function createDifferentMergingLevelsArea(orderedRooms, rooms) {
 
             mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
             areaLists[currentIndex + 1].push(splitAreas[0]);
-            
+
             currentInternalStartIndex = currentInternalEndIndex;
             currentInternalEndIndex += splitAreas[1].length;
 
@@ -1295,7 +1295,7 @@ function createDifferentMergingLevelsArea(orderedRooms, rooms) {
             if (Math.min(splitAreas[0].length, splitAreas[1].length) < currentNumberOfRooms) {
                 currentNumberOfRooms = Math.min(splitAreas[0].length, splitAreas[1].length);
             }
-            
+
         }
         if (currentInternalEndIndex == orderedRooms.length) {
             currentInternalStartIndex = 0;
@@ -1305,7 +1305,7 @@ function createDifferentMergingLevelsArea(orderedRooms, rooms) {
         currentIndex++;
 
     }
-    
+
     console.log(mergingLevels);
     return mergingLevels;
 }
@@ -1405,15 +1405,15 @@ function mergeZoomLevel(index, rooms){
     if (index.length < 2){
         return rooms[index[0]];
     }
-    var resultRoom = simpleMergeTwo(rooms[index[0]], rooms[index[1]]);
+    var resultRoom = superDuperMerge(rooms[index[0]], rooms[index[1]]);
     if (resultRoom==-1){
-        resultRoom = simpleMergeTwo(rooms[index[1]], rooms[index[0]]);
+        resultRoom = superDuperMerge(rooms[index[1]], rooms[index[0]]);
     }
     var tempResultRoom;
     for (var i = 2; i < index.length; i++) {
-        tempResultRoom = simpleMergeTwo(resultRoom, rooms[index[i]]);
+        tempResultRoom = superDuperMerge(resultRoom, rooms[index[i]]);
         if (tempResultRoom == -1){
-            resultRoom = simpleMergeTwo(rooms[index[i]],resultRoom);
+            resultRoom = superDuperMerge(rooms[index[i]],resultRoom);
         }
         else {
             resultRoom = tempResultRoom;
