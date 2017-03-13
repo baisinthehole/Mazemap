@@ -9,7 +9,7 @@ Maze.Map = Maze.Map.extend({
         });
     }
 });
-
+var globalMergedCorridorsCoordinates = [];
 // enum for all room types
 var ROOM_TYPE = {"OFFICE": 1, "CORRIDOR": 2, "STAIRS": 3, "COMPUTER_LAB": 4, "MEETING_ROOM": 5, "LECTURE_HALL": 6, "STUDY_ROOM": 7, "NOT_AVAILABLE": 8, "TOILETS": 9, "STORAGE_ROOM": 10, "LAB": 11, "COPY_ROOM": 12, "TECHNICAL": 13, "WARDROBE": 14, "SHOWER": 15, "GROUP_ROOM": 16, "INSTITUTE": 17, "FRAT": 18, "DRAWING_ROOM": 19, "LIBRARY": 20, "TEACHING_ROOM": 21, "STORE": 22, "CANTEEN": 23, "SIT": 24, "BUS_STOP": 27, "PARKING_LOT": 28, "WORKSHOP": 29, "ROOM":91};
 
@@ -1014,6 +1014,25 @@ function getArea(polygon){
     return Math.abs(sum)/2;
 }
 
+function computeAreaOfRooms(rooms, indices) {
+
+    var totalArea = 0;
+
+    for (var i of indices) {
+        totalArea += getArea(rooms[i]);
+    }
+
+    return totalArea;
+}
+
+function computeTotalAreaOfAreaList(areaList) {
+    var totalArea = 0;
+    for (var i = 0; i < areaList.length; i++) {
+        totalArea += areaList[i];
+    }
+    return totalArea;
+}
+
 function mergeablePoint(AB, AC){
     if (dotProd(AB, AC) <= 0 && crossProd(AB, AC) > 0){
             return true;
@@ -1187,4 +1206,61 @@ function mod(n, m){
 
 function getPointInMiddleOfLine(point1, point2){
     return [(point1[0]+point2[0])/2,(point1[1]+point2[1])/2];
+}
+
+// http://stackoverflow.com/questions/2166335/what-algorithm-to-use-to-segment-a-sequence-of-numbers-into-n-subsets-to-minimi
+function areaMerge(numSplit, areaList) {
+    var sum = 0;
+
+    var f = [];
+    var g = [];
+
+    for (var i = 0; i < areaList.length + 1; i++) {
+        f.push([]);
+        g.push([]);
+        for (var j = 0; j < numSplit + 1; j++) {
+            f[i].push(0);
+            g[i].push(0);
+        }
+    }
+
+    for (var i = 1; i < areaList.length + 1; i++) {
+        sum += areaList[i-1];
+        f[i][1] = sum * sum;
+        g[i][1] = 0;
+    }
+
+    for (var i = 2; i < numSplit + 1; i++) {
+        f[0][i] = 0;
+        g[0][i] = 0;
+        for (var j = 1; j < areaList.length + 1; j++) {
+            sum = 0;
+            f[j][i] = f[j][i-1];
+            g[j][i] = j;
+            for (var k = j-1; k >= 0; k--) {
+                sum += areaList[k];
+                if (f[j][i] > f[k][i-1] + (sum * sum)) {
+                    f[j][i] = f[k][i-1] + (sum * sum);
+                    g[j][i] = k;
+                }
+            }
+        }
+    }
+
+    var result = [];
+    var i = areaList.length;
+    var j = numSplit;
+    var k;
+    var tempArray;
+
+    while (j) {
+        k = g[i][j];
+        tempArray = areaList.slice(k, i);
+        result.push(tempArray);
+        i = k;
+        j--;
+    }
+    result.reverse();
+    return result;
+
 }

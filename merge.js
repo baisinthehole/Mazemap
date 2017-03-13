@@ -140,8 +140,8 @@ function mergeAllPolygons(neighbors, roomCoordinates){
 
 
                     // var mergedPolygon = simpleMergeTwo(roomCoordinates[i], roomCoordinates[j]);
-                    mergedPolygon = superMergeTwo(roomCoordinates[i], roomCoordinates[j]);
-                    // mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j]);
+                    // mergedPolygon = superMergeTwo(roomCoordinates[i], roomCoordinates[j]);
+                    mergedPolygon = superDuperMerge(roomCoordinates[i], roomCoordinates[j]);
 
 
 
@@ -1246,6 +1246,101 @@ function findOrderOfRooms(oldNeighbors, container) {
 	return orderedRooms;
 }
 
+function createDifferentMergingLevelsArea(orderedRooms, rooms) {
+    var mergingLevels = [[orderedRooms]];
+
+    if (orderedRooms.length < 2) {
+        return mergingLevels;
+    }
+
+
+    var areaLists = [[[]]];
+    for (var i = 0; i < orderedRooms.length; i++) {
+        areaLists[0][0].push(getArea(rooms[orderedRooms[i]]));
+    }
+
+    var minArea = 0.000000008;
+
+    var currentArea = computeTotalAreaOfAreaList(areaLists[0][0]);
+
+    var currentInternalStartIndex = 0;
+    var currentInternalEndIndex = 0;
+
+    var currentIndex = 0;
+
+    var splitAreas;
+
+    while (currentArea > minArea) {
+        mergingLevels.push([]);
+        areaLists.push([]);
+
+        for (var i = 0; i < mergingLevels[currentIndex].length; i++) {
+
+            if (areaLists[currentIndex][i].length > 1) {
+                splitAreas = areaMerge(2, areaLists[currentIndex][i]);
+
+                // split in 3, because areas are too uneven when split in two
+                if (computeTotalAreaOfAreaList(splitAreas[0]) / computeTotalAreaOfAreaList(splitAreas[1]) > 1.5 ||
+                    computeTotalAreaOfAreaList(splitAreas[1]) / computeTotalAreaOfAreaList(splitAreas[0]) > 1.5) {
+                    
+                    splitAreas = areaMerge(3, areaLists[currentIndex][i]);
+
+                    currentInternalStartIndex = currentInternalEndIndex;
+                    currentInternalEndIndex += splitAreas[0].length;
+
+                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+                    areaLists[currentIndex + 1].push(splitAreas[0]);
+
+                    currentInternalStartIndex = currentInternalEndIndex;
+                    currentInternalEndIndex += splitAreas[1].length;
+
+                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+                    areaLists[currentIndex + 1].push(splitAreas[1]);
+
+                    currentInternalStartIndex = currentInternalEndIndex;
+                    currentInternalEndIndex += splitAreas[2].length;
+
+                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+                    areaLists[currentIndex + 1].push(splitAreas[2]);
+
+                    if (Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1]), computeTotalAreaOfAreaList(splitAreas[2])) < currentArea) {
+                        currentArea = Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1]), computeTotalAreaOfAreaList(splitAreas[2]));
+                    }
+                }
+
+                // split in 2
+                else {
+                    currentInternalStartIndex = currentInternalEndIndex;
+                    currentInternalEndIndex += splitAreas[0].length;
+
+                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+                    areaLists[currentIndex + 1].push(splitAreas[0]);
+
+                    currentInternalStartIndex = currentInternalEndIndex;
+                    currentInternalEndIndex += splitAreas[1].length;
+
+                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+                    areaLists[currentIndex + 1].push(splitAreas[1]);
+
+                    if (Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1])) < currentArea) {
+                        currentArea = Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1]));
+                    }
+                }
+            }
+        }
+        if (currentInternalEndIndex == orderedRooms.length) {
+            currentInternalStartIndex = 0;
+            currentInternalEndIndex = 0;
+        }
+
+        currentIndex++;
+
+    }
+
+    //console.log(mergingLevels);
+    return mergingLevels;
+}
+
 // create different merging levels, so that merged rooms can be split into smaller merged rooms
 function createDifferentMergingLevels(orderedRooms) {
 	var mergingLevels = [[orderedRooms]];
@@ -1329,9 +1424,9 @@ function makeNeighborsWhoAreNotNeighborsNeighbors(neighbors) {
 }
 
 // create different merging levels for all merged groups
-function dynamicMergeAllRooms(allOrderedRooms) {
+function dynamicMergeAllRooms(allOrderedRooms, rooms) {
     for (var i = 0; i < allOrderedRooms.length; i++) {
-        allOrderedRooms[i] = createDifferentMergingLevels(allOrderedRooms[i]);
+        allOrderedRooms[i] = createDifferentMergingLevelsArea(allOrderedRooms[i], rooms);
     }
     return allOrderedRooms;
 }
@@ -1341,15 +1436,15 @@ function mergeZoomLevel(index, rooms){
     if (index.length < 2){
         return rooms[index[0]];
     }
-    var resultRoom = simpleMergeTwo(rooms[index[0]], rooms[index[1]]);
+    var resultRoom = superDuperMerge(rooms[index[0]], rooms[index[1]]);
     if (resultRoom==-1){
-        resultRoom = simpleMergeTwo(rooms[index[1]], rooms[index[0]]);
+        resultRoom = superDuperMerge(rooms[index[1]], rooms[index[0]]);
     }
     var tempResultRoom;
     for (var i = 2; i < index.length; i++) {
-        tempResultRoom = simpleMergeTwo(resultRoom, rooms[index[i]]);
+        tempResultRoom = superDuperMerge(resultRoom, rooms[index[i]]);
         if (tempResultRoom == -1){
-            resultRoom = simpleMergeTwo(rooms[index[i]],resultRoom);
+            resultRoom = superDuperMerge(rooms[index[i]],resultRoom);
         }
         else {
             resultRoom = tempResultRoom;

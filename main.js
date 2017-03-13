@@ -11,6 +11,11 @@ var MAP = Maze.map('mazemap-container', {
             wheelPxPerZoomLevel: 100 });
 MAP.setView([63.417421008760335,10.406426561608821], 15);
 
+// console.log(areaMerge(2, [1.7207639757543802, 1.7427055354346521, 1.7428192222723737, 1.3365593076741789, 
+// 						  1.3642988960782532, 1.3698695511266124, 1.3363887774175964, 1.7425918485969305, 
+// 						  1.7427055354346521, 1.7426486920157913, 1.7425918485969305, 1.7427055354346521, 
+// 						  1.7351453607261647, 1.7427055354346521, 1.7428192222723737]));
+
 // Uncomment the preferred JSON file
 getLocalJSON(FILENAME);
 getJSONfromServer();
@@ -42,25 +47,34 @@ function createglobalMergedPolygons(data, roomCoordinates){
     // test8();
     //test38();
     //test91();
-
-    // Uncomment to store the corridors for the floor
+    // // Uncomment to store the corridors for the floor
     // if (localStorage.getItem('corridors'+FLOOR_ID) === null) {
-    if (true){
-        // Merge corridors from scratch
-        globalMergedCorridorsCoordinates = mergeCorridors();
-        // localStorage.setItem('corridors'-FLOOR_ID, JSON.stringify(globalMergedCorridorsCoordinates));
-    }
-    else {
-        // Retrieve the object from storage
-        // globalMergedCorridorsCoordinates = JSON.parse(localStorage.getItem('corridors'+FLOOR_ID));
-    }
-    for (var i = 0; i < globalMergedCorridorsCoordinates.length; i++) {
-        drawPolygonFromOnlyCoordinates(globalMergedCorridorsCoordinates[i], "white", "blue");
-    }
+    // // if (true){
+    //     // Merge corridors from scratch
+    //     var test = mergeCorridors();
+    //     localStorage.setItem('corridors'+FLOOR_ID, JSON.stringify(test));
+    // }
+    // else {
+    //     console.log("Found in local storage");
+    //     // Retrieve the object from storage
+    //     for (var i = 0; i < FLOOR_IDS.length; i++) {
+    //         if (localStorage.getItem('corridors'+FLOOR_IDS[i]) !== null) {
+    //             globalMergedCorridorsCoordinates.push(JSON.parse(localStorage.getItem('corridors'+FLOOR_IDS[i])));
+    //         }
+    //     }
+    // }
+    // console.log(globalMergedCorridorsCoordinates);
+    // for (var j = 0; j < globalMergedCorridorsCoordinates.length; j++) {
+    //     for (var i = 0; i < globalMergedCorridorsCoordinates[j].length; i++) {
+    //         drawPolygonFromOnlyCoordinates(globalMergedCorridorsCoordinates[j][i], "white", "blue");
+    //     }
+    // }
 
-    orderedRooms = findOrderOfRooms(oldNeighbors, container);
+    var orderedRooms = findOrderOfRooms(oldNeighbors, container);
 
-    dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms);
+    dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms, GLOBAL_ROOM_COORDINATES);
+
+    //console.log(deepCopy(dynamicMergedRooms));
 
     var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
 
