@@ -534,6 +534,10 @@ function makeLocalRoomNames(coordinates, title) {
 
 
 function getPoint(coordinates){
+    if (coordinates[0][0].constructor === Array) {
+        var index = getBiggestRoom(coordinates);
+        coordinates = coordinates[index];
+    }
     var minX = coordinates[0][0];
     var minY = coordinates[0][1];
     var maxX = coordinates[0][0];
