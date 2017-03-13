@@ -71,7 +71,7 @@ if (FLOOR_ID != false) {
         globalMergedCorridorsCoordinates = mergeCorridors();
         console.log("globalMergedCorridorsCoordinates");
         console.log(deepCopy(globalMergedCorridorsCoordinates));
-        GLOBAL_ALL_COORDINATES[0] = deepCopy(globalMergedCorridorsCoordinates);
+        GLOBAL_ALL_COORDINATES[1] = deepCopy(globalMergedCorridorsCoordinates);
         orderedRooms = findOrderOfRooms(oldNeighbors, container);
 
         dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms);

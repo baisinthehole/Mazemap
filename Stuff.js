@@ -45,6 +45,11 @@ for (var i = 0; i < 10; i++) {
     GLOBAL_ALL_COORDINATES.push([]);
 }
 
+var GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID = [];
+for (var i = 0; i < 10; i++) {
+    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID.push([]);
+}
+
 // all room coordinates
 var GLOBAL_ROOM_COORDINATES;
 
@@ -179,6 +184,8 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
     for (var i = 0; i < drawings.length; i++) {
         if (drawings[i] != nowDrawings[i]){
             if (!nowDrawings[i]){
+                console.log(polygonList);
+                console.log(i);
                 drawPolygons(polygonList[i]);
             }
             else if (nowDrawings[i]){
@@ -237,7 +244,7 @@ function recievedJSONfromServer() {
     GLOBAL_ROOM_COORDINATES = deepCopy(globalRoomCoordinates);
     GLOBAL_ALL_COORDINATES[5] = deepCopy(globalRoomCoordinates);
     GLOBAL_CORRIDOR_COORDINATES = deepCopy(globalCorridorCoordinates);
-    GLOBAL_ALL_COORDINATES[1] = deepCopy(GLOBAL_CORRIDOR_COORDINATES);
+    // GLOBAL_ALL_COORDINATES[1] = deepCopy(GLOBAL_CORRIDOR_COORDINATES);
 
     removedDuplicatePoints = removeDuplicatesFromAllRooms(globalRoomCoordinates);
     var simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);
@@ -483,6 +490,8 @@ function drawPolygons(polygonList) {
     console.log(polygonList);
     for (var i = 0; i < polygonList.length; i++) {
         for (var j = 0; j < polygonList[i].length; j++) {
+            console.log("polygonList[i][j]");
+            console.log(polygonList[i][j]);
             if (polygonList[i][j]._latlngs.length > 1) {
                 if (polygonList[i][j]._latlngs[0]) {
                     MAP.addLayer(polygonList[i][j]);
@@ -1225,32 +1234,77 @@ function drawFromLocalStorage() {
         }
     }
     // globalOutlinePolygons, globalCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons
+    console.log("localStorageCoordinates");
     console.log(localStorageCoordinates);
+    setCoordinatesAsOneFloorId(localStorageCoordinates);
+    console.log(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+    createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+}
+
+function setCoordinatesAsOneFloorId(localStorageCoordinates) {
+    for (var i = 0; i < localStorageCoordinates.length; i++) {
+        for (var j = 0; j < localStorageCoordinates[i].length; j++) {
+            for (var k = 0; k < localStorageCoordinates[i][j].length; k++) {
+            GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[j].push(localStorageCoordinates[i][j][k]);
+        }
+        }
+    }
+}
+
+
+
+function createPolygonsFromAllCoordinatesAsOneFloorId(coordinates) {
+    console.log("coordinates");
+    console.log(coordinates);
+    // for (var i = 0; i < coordinates[1].length; i++) {
+    //     drawPolygonFromOnlyCoordinates(coordinates[1][i], "blue", "red");
+    // }
+    // for (var i = 0; i < coordinates[2].length; i++) {
+    //     drawPolygonFromOnlyCoordinates(coordinates[2][i], "gray", "lemonchiffon");
+    // }
+    // for (var i = 0; i < coordinates[3].length; i++) {
+    //     drawPolygonFromOnlyCoordinates(coordinates[3][i], "gray", "lemonchiffon");
+    // }
+    // for (var i = 0; i < coordinates[4].length; i++) {
+    //     drawPolygonFromOnlyCoordinates(coordinates[4][i], "gray", "lemonchiffon");
+    // }
+    // // for (var i = 0; i < coordinates[5].length; i++) {
+    // //     drawPolygonFromOnlyCoordinates(coordinates[5][i], "blue", "white");
+    // // }
+    // // for (var i = 0; i < coordinates[6].length; i++) {
+    // //     drawPolygonFromOnlyCoordinates(coordinates[6][i], "blue", "white");
+    // // }
+    globalCorridorPolygons = fillAllPolygons(coordinates[1], "blue", "red", "polygon");
+    console.log("globalCorridorPolygons");
+    console.log(globalCorridorPolygons);
+    mergedLarge = fillAllPolygons(coordinates[2], "gray", "lemonchiffon", "polygon");
+    mergedMedium = fillAllPolygons(coordinates[3], "gray", "lemonchiffon", "polygon");
+    mergedSmall = fillAllPolygons(coordinates[4], "gray", "lemonchiffon", "polygon");
+    globalRoomPolygons = fillAllPolygons(coordinates[5], "blue", "white", "polygon");
+    globalUnmergedPolygonsSimplified = fillAllPolygons(coordinates[6], "blue", "white", "polygon");
+    globalUnmergedPolygons = fillAllPolygons(coordinates[7], "blue", "white", "polygon");
+}
+
+
+function createPolygonsFromAllCoordinates(localStorageCoordinates) {
     globalCorridorPolygons = fillAllPolygons(localStorageCoordinates, 1, "blue", "red", "polygon");
-    // allCorridorPolygons = fillAllPolygons(localStorageCoordinates, 1, "blue", "white", "polygon");
     mergedLarge = fillAllPolygons(localStorageCoordinates, 2, "gray", "lemonchiffon", "polygon");
     mergedMedium = fillAllPolygons(localStorageCoordinates, 3, "gray", "lemonchiffon", "polygon");
     mergedSmall = fillAllPolygons(localStorageCoordinates, 4, "gray", "lemonchiffon", "polygon");
     globalRoomPolygons = fillAllPolygons(localStorageCoordinates, 5, "blue", "white", "polygon");
     globalUnmergedPolygonsSimplified = fillAllPolygons(localStorageCoordinates, 6, "blue", "white", "polygon");
     globalUnmergedPolygons = fillAllPolygons(localStorageCoordinates, 7, "blue", "white", "polygon");
-    // var everything = [allMergedCorridorPolygons, allCorridorPolygons, allMergedLargePolygons, allMergedMediumPolygons, allMergedSmallPolygons, allRoomPolygons, allUnmergedRoomPolygonsSimplified, allUnmergedRoomPolygons];
-    // console.log(allMergedCorridorPolygons);
-    // for (var k= 0; k < everything.length; k++) {
-    //     for (var i = 0; i < everything[k].length; i++) {
-    //         for (var j = 0; j < everything[k][i].length; j++) {
-    //             MAP.addLayer(everything[k][i][j]);
-    //         }
-    //     }
-    // }
 }
 
-function fillAllPolygons(coordinates, index, color, fillColor, lineOrPolygon) {
+function fillAllPolygons(coordinates, color, fillColor, lineOrPolygon) {
+    console.log(coordinates);
     var polygons = [];
     for (var i = 0; i < coordinates.length; i++) {
-        var polygon = [];
-        fillPolygons(coordinates[i][index], polygon, color, fillColor, lineOrPolygon);
-        polygons.push(polygon);
+        if (coordinates[i].length > 0) {
+            var polygon = [];
+            fillPolygons(coordinates[i], polygon, color, fillColor, lineOrPolygon);
+            polygons.push(polygon);
+        }
     }
     return polygons;
 }
