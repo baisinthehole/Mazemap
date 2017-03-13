@@ -1391,8 +1391,8 @@ function getUnmergedRooms(container, coordinates) {
             }
         }
     }
-    GLOBAL_ALL_COORDINATES[6] = deepCopy(globalUnmergedRoomsSimplified);
-    GLOBAL_ALL_COORDINATES[7] = deepCopy(globalUnmergedRooms);
+    GLOBAL_ALL_COORDINATES[8] = deepCopy(globalUnmergedRoomsSimplified);
+    GLOBAL_ALL_COORDINATES[9] = deepCopy(globalUnmergedRooms);
     fillPolygons(globalUnmergedRoomsSimplified, globalUnmergedPolygonsSimplified, "gray", "white", "line");
     fillPolygons(globalUnmergedRooms, globalUnmergedPolygons, "gray", "white", "line");
 
