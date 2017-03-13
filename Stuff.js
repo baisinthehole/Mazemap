@@ -304,7 +304,7 @@ function recievedLocalJSON(data) {
     for (var i = 0; i < data.features.length; i++) {
         // if (data.features[i].geometry.coordinates.length == 1){
             if (data.features[i].properties.campusId == 1){
-                if (data.features[i].properties.layer == "buildings"){
+                if (data.features[i].properties.layer == "outlines"){
                     switchLatLong(data.features[i].geometry.coordinates[0]);
                     GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[0].push(data.features[i].geometry.coordinates[0]);
                 }
