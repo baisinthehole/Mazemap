@@ -212,6 +212,10 @@ function getJSONfromServer() {
 // This will be run when we know we have received the data from the server
 function recievedJSONfromServer() {
     var geoJSON = JSON.parse(RAW_RESPONSE);
+
+    // edits JSON file
+    geoJSON = alterJSONfile(geoJSON, FLOOR_ID);
+
     for (var i = geoJSON.pois.length -1; i >= 0 ; i--) {
         var poiTypeRoom = false;
         for (var j = 0; j < geoJSON.pois[i].infos.length; j++) {
@@ -363,7 +367,7 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
                         coordinates[coordinates.length - 1][1] = temp;
                     }
                     if (coordinateType == ROOM_TYPE.ROOM){
-                        makeRoomNames(coordinates[coordinates.length-1], data.pois[i].title);
+                        makeRoomNames(coordinates[coordinates.length-1], i);
                     }
                 }
             }
@@ -605,7 +609,7 @@ function getNeighbors(data, simplified){
             if (i!=j){
                 result = getDistPolyToPoly(simplified[i], simplified[j]);
                 if (result[2] < VERY_IMPORTANCE_DISTANCE) {
-                    if (poiTypeOffice(data.pois[i].infos, data.pois[j].infos, i)){
+                    if (samePoiTypeNotCorridors(data.pois[i].infos, data.pois[j].infos, i)){
                         adjacent.push(j);
                     }
                 }

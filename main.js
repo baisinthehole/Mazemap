@@ -17,6 +17,7 @@ MAP.setView([63.417421008760335,10.406426561608821], 15);
 // 						  1.7351453607261647, 1.7427055354346521, 1.7428192222723737]));
 
 // Uncomment the preferred JSON file
+
 getLocalJSON(FILENAME);
 getJSONfromServer();
 
@@ -25,8 +26,6 @@ zoom();
 function createglobalMergedPolygons(data, roomCoordinates){
     var neighbors;
     var indeces;
-
-    alterJSONfile(data, FLOOR_ID);
 
     neighbors = getNeighbors(data, roomCoordinates);
     oldNeighbors = deepCopy(neighbors);
@@ -75,6 +74,8 @@ function createglobalMergedPolygons(data, roomCoordinates){
     dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms, GLOBAL_ROOM_COORDINATES);
 
     //console.log(deepCopy(dynamicMergedRooms));
+
+    console.log(dynamicMergedRooms);
 
     var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
 

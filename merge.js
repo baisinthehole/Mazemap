@@ -1279,10 +1279,33 @@ function createDifferentMergingLevelsArea(orderedRooms, rooms) {
             if (areaLists[currentIndex][i].length > 1) {
                 splitAreas = areaMerge(2, areaLists[currentIndex][i]);
 
-                // split in 3, because areas are too uneven when split in two
-                if (computeTotalAreaOfAreaList(splitAreas[0]) / computeTotalAreaOfAreaList(splitAreas[1]) > 1.5 ||
-                    computeTotalAreaOfAreaList(splitAreas[1]) / computeTotalAreaOfAreaList(splitAreas[0]) > 1.5) {
-                    
+                // split in 2
+                if (computeTotalAreaOfAreaList(splitAreas[0]) / computeTotalAreaOfAreaList(splitAreas[1]) < 1.5 ||
+                    computeTotalAreaOfAreaList(splitAreas[1]) / computeTotalAreaOfAreaList(splitAreas[0]) < 1.5) {
+
+                    currentInternalStartIndex = currentInternalEndIndex;
+                    currentInternalEndIndex += splitAreas[0].length;
+
+                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+                    areaLists[currentIndex + 1].push(splitAreas[0]);
+
+                    currentInternalStartIndex = currentInternalEndIndex;
+                    currentInternalEndIndex += splitAreas[1].length;
+
+                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+                    areaLists[currentIndex + 1].push(splitAreas[1]);
+
+                    if (Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1])) < currentArea) {
+                        currentArea = Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1]));
+                    }
+
+                    if (splitAreas[0].length == 1 || splitAreas[1].length == 1) {
+                        return mergingLevels;
+                    }
+                }
+
+                // split in 3, because area are too uneven to split in 2
+                else {
                     splitAreas = areaMerge(3, areaLists[currentIndex][i]);
 
                     currentInternalStartIndex = currentInternalEndIndex;
@@ -1305,25 +1328,6 @@ function createDifferentMergingLevelsArea(orderedRooms, rooms) {
 
                     if (Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1]), computeTotalAreaOfAreaList(splitAreas[2])) < currentArea) {
                         currentArea = Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1]), computeTotalAreaOfAreaList(splitAreas[2]));
-                    }
-                }
-
-                // split in 2
-                else {
-                    currentInternalStartIndex = currentInternalEndIndex;
-                    currentInternalEndIndex += splitAreas[0].length;
-
-                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
-                    areaLists[currentIndex + 1].push(splitAreas[0]);
-
-                    currentInternalStartIndex = currentInternalEndIndex;
-                    currentInternalEndIndex += splitAreas[1].length;
-
-                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
-                    areaLists[currentIndex + 1].push(splitAreas[1]);
-
-                    if (Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1])) < currentArea) {
-                        currentArea = Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1]));
                     }
                 }
             }
