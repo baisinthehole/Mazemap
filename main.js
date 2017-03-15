@@ -1,4 +1,4 @@
-var FILENAME = "floor_4_35.json";
+var FILENAME = "gloes1.geojson";
 
 // Create a map
 // center = Maze.latLng(63.41, 10.41);

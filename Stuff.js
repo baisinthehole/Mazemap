@@ -118,12 +118,14 @@ var globalRoomNameCoordinates = [];
 // all room name strings
 var globalNameList = [];
 
+// all polygons
+var polygonList;
 
 // contains all the data that are displayed on different zoom levels and updates display accordingly
 function zoom() {
 
     // contains all kinds of polygons displayed on different levels
-    var polygonList = [globalOutlinePolygons, globalCorridorPolygons, globalMergedCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons];
+    polygonList = [globalOutlinePolygons, globalCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons];
 
     // contains all kinds of room names displayed on different levels
     var nameList = [globalRoomNames, globalUnmergedNames, mergedTextLarge, mergedTextMedium, mergedTextSmall];
@@ -146,38 +148,47 @@ function zoom() {
     for (var i = 0; i < nameList.length; i++) {
         nowNames.push(false);
     }
-	// Zoom listener, is triggered on every change in zoom level
-	MAP.on('zoomend', function () {
-	    console.log(MAP.getZoom());
+    console.log("polygonList");
+    console.log(polygonList);
+    // Zoom listener, is triggered on every change in zoom level
+    MAP.on('zoomend', function () {
+        console.log(MAP.getZoom());
         if (MAP.getZoom() < 16){
+            drawings = [false, false, false, false, false, false, false, false, false, false];
+            names = [false, false, false, false, false];
+            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 17){
-            drawings = [true, false, false, false, false, false, false, false, false, false, false];
+            drawings = [true, false, false, false, false, false, false, false, false, false];
             names = [false, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 18){
-            drawings = [true, false, true, true, false, false, false, false, false, true, false];
+            drawings = [true, true, true, false, false, false, false, false, false, true];
             names = [false, false, true, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 19){
-            drawings = [true, false, true, false, true, false, false, false, false, true, false];
+            drawings = [true, true, false, true, false, false, false, false, false, true];
             names = [false, false, false, true, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 20){
-            drawings = [true, true, false, false, false, true, false, false, true, false, true];
+            drawings = [true, true, false, false, true, false, false, false, false, true];
             names = [false, true, false, false, true];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
-        // else if (MAP.getZoom() < 21){
-        else {
-            drawings = [true, true, false, false, false, false, true, true, true, false, false];
+        else if (MAP.getZoom() < 21){
+            drawings = [true, true, false, false, false, true, false, false, false, false];
             names = [true, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
-	});
+        else {
+            drawings = [true, true, false, false, false, true, true, false, false, false];
+            names = [true, false, false, false, false];
+            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
+        }
+    });
 }
 
 // draws and removes polygons and room names when zooming
@@ -255,6 +266,10 @@ function recievedJSONfromServer() {
     // This function is defined in main.js
     createglobalMergedPolygons(geoJSON, simplifiedRoomCoordinates);
 
+    if (localStorage.getItem('everything'+FLOOR_ID) === null) {
+        localStorage.setItem('everything'+FLOOR_ID, JSON.stringify(polygonList));
+    }
+
 
 }
 
@@ -314,6 +329,14 @@ function recievedLocalJSON(data) {
     }
     drawFromLocalStorage();
     zoom();
+}
+
+function switchLatLong(coordinates) {
+    for (var i = 0; i < coordinates.length; i++) {
+        var temp = coordinates[i][0];
+        coordinates[i][0] = coordinates[i][1];
+        coordinates[i][1] = temp;
+    }
 }
 
 function fillStairCoordinates(data, coordinates, polygonList, coordinateType, color, lineOrPolygon) {
@@ -495,24 +518,29 @@ function getRoomCircumference(singleRoomCoordinates) {
 
 function drawPolygons(polygonList) {
     for (var i = 0; i < polygonList.length; i++) {
-        if (polygonList[i]._latlngs.length > 1) {
-            if (polygonList[i]._latlngs[0]) {
-                MAP.addLayer(polygonList[i]);
+        for (var j = 0; j < polygonList[i].length; j++) {
+            if (polygonList[i][j]._latlngs.length > 1) {
+                if (polygonList[i][j]._latlngs[0]) {
+                    MAP.addLayer(polygonList[i][j]);
+                }
             }
-        }
-        else if (polygonList[i]._latlngs[0][0]) {
-            MAP.addLayer(polygonList[i]);
-        }
-        else {
-            console.log("Trying to draw a non-polygon");
-            // console.log(polygonList[i]._latlngs);
+            else if (polygonList[i][j]._latlngs[0][0]) {
+                MAP.addLayer(polygonList[i][j]);
+            }
+            else {
+                console.log("Trying to draw a non-polygon");
+                // console.log(polygonList[i]._latlngs);
+            }
         }
     }
 }
 
 function removePolygons(polygonList) {
+    // MAP.removeLayer(polygonList);
     for (var i = 0; i < polygonList.length; i++) {
-        MAP.removeLayer(polygonList[i]);
+        for (var j = 0; j < polygonList[i].length; j++) {
+            MAP.removeLayer(polygonList[i][j]);
+        }
     }
 }
 
