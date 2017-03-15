@@ -19,11 +19,11 @@ MAP.setView([63.417421008760335,10.406426561608821], 15);
 // Uncomment the preferred JSON file
 
 if (FLOOR_ID != false) {
-    getLocalJSON(FILENAME);
+    getJSONfromServer();
     zoom();
 }
 else {
-    getJSONfromServer();
+    getLocalJSON(FILENAME);
 }
 
 function createglobalMergedPolygons(data, roomCoordinates){
