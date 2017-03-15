@@ -878,7 +878,7 @@ function getBiggestRoom(room1) {
         for (var j = 0; j < room1.length; j++) {
             if (i != j) {
                 // made two inside tests to decrease chances of getting points that are on the lines of both polygons
-                if (inside(room1[i][0], room1[j]) && inside(room1[i][Math.floor(room1[i].length / 2)], room1[j])){
+                if (inside(room1[i][0], room1[j]) || inside(room1[i][Math.floor(room1[i].length / 2)], room1[j])){
                     outsideRoom = false;
                 }
             }
