@@ -39,6 +39,17 @@ var RAW_RESPONSE;
 // geoJSON parsed from the raw data
 var GEO_JSON;
 
+// all coordinates
+var GLOBAL_ALL_COORDINATES = [];
+for (var i = 0; i < 10; i++) {
+    GLOBAL_ALL_COORDINATES.push([]);
+}
+
+var GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID = [];
+for (var i = 0; i < 10; i++) {
+    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID.push([]);
+}
+
 // all room coordinates
 var GLOBAL_ROOM_COORDINATES;
 
@@ -234,9 +245,9 @@ function recievedJSONfromServer() {
     fillCoordinateTypeServer(geoJSON, globalCorridorCoordinates, globalCorridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
     fillCoordinateTypeServer(geoJSON, globalRoomCoordinates, globalRoomPolygons, ROOM_TYPE.ROOM, color, 'white', 0.2, "line");
     GLOBAL_ROOM_COORDINATES = deepCopy(globalRoomCoordinates);
-    //console.log(GLOBAL_ROOM_COORDINATES);
+    GLOBAL_ALL_COORDINATES[5] = deepCopy(globalRoomCoordinates);
     GLOBAL_CORRIDOR_COORDINATES = deepCopy(globalCorridorCoordinates);
-
+    // GLOBAL_ALL_COORDINATES[1] = deepCopy(GLOBAL_CORRIDOR_COORDINATES);
 
     removedDuplicatePoints = removeDuplicatesFromAllRooms(globalRoomCoordinates);
     var simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);
@@ -280,10 +291,29 @@ function recievedLocalJSON(data) {
     var color = ['blue', 'gray', 'green', 'black'];
 
     // Fill the coordinate arrays for each type of polygon and draw to map
-    fillCoordinateTypeLocal(data, globalStairPolygons, 'stairsfull', 'black', "line");
-    fillCoordinateTypeLocal(data, globalDoorPolygons, 'doors', color[2], "line");
-    fillCoordinateTypeLocal(data, globalOutlinePolygons, 'outlines', 'black', "polygon");
-
+    // fillCoordinateTypeLocal(data, globalStairPolygons, 'stairsfull', 'black', "line");
+    // fillCoordinateTypeLocal(data, globalDoorPolygons, 'doors', color[2], "line");
+    // fillCoordinateTypeLocal(data, globalOutlinePolygons, 'outlines', 'black', "polygon");
+    for (var i = 0; i < data.features.length; i++) {
+        // if (data.features[i].geometry.coordinates.length == 1){
+            if (data.features[i].properties.campusId == 1){
+                if (data.features[i].properties.layer == "outlines"){
+                    switchLatLong(data.features[i].geometry.coordinates[0]);
+                    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[0].push(data.features[i].geometry.coordinates[0]);
+                }
+                else if (data.features[i].properties.layer == "stairs"){
+                    switchLatLong(data.features[i].geometry.coordinates);
+                    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[7].push(data.features[i].geometry.coordinates);
+                }
+                else if (data.features[i].properties.layer == "doors"){
+                    switchLatLong(data.features[i].geometry.coordinates);
+                    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[6].push(data.features[i].geometry.coordinates);
+                }
+            }
+        // }
+    }
+    drawFromLocalStorage();
+    zoom();
 }
 
 function fillStairCoordinates(data, coordinates, polygonList, coordinateType, color, lineOrPolygon) {
@@ -1273,4 +1303,65 @@ function areaMerge(numSplit, areaList) {
     result.reverse();
     return result;
 
+}
+
+function drawFromLocalStorage() {
+    var localStorageCoordinates = [];
+    for (var i = 0; i < FLOOR_IDS.length; i++) {
+        if (localStorage.getItem('allCoordinates'+FLOOR_IDS[i]) !== null) {
+            localStorageCoordinates.push(JSON.parse(localStorage.getItem('allCoordinates'+FLOOR_IDS[i])));
+        }
+    }
+    console.log("localStorageCoordinates");
+    console.log(localStorageCoordinates);
+    // globalOutlinePolygons, globalCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons
+    setCoordinatesAsOneFloorId(localStorageCoordinates);
+    console.log("GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID");
+    console.log(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+    createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+}
+
+function setCoordinatesAsOneFloorId(localStorageCoordinates) {
+    for (var i = 0; i < localStorageCoordinates.length; i++) {
+        for (var j = 0; j < localStorageCoordinates[i].length; j++) {
+            for (var k = 0; k < localStorageCoordinates[i][j].length; k++) {
+                if (localStorageCoordinates[i][j][k].length > 0) {
+                    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[j].push(localStorageCoordinates[i][j][k]);
+                }
+            }
+        }
+    }
+}
+
+
+
+function createPolygonsFromAllCoordinatesAsOneFloorId(coordinates) {
+    console.log(coordinates);
+    globalOutlinePolygons = fillAllPolygons(coordinates[0],"black", "white", "polygon");
+    globalCorridorPolygons = fillAllPolygons(coordinates[1], "blue", "red", "polygon");
+    mergedLarge = fillAllPolygons(coordinates[2], "gray", "lemonchiffon", "polygon");
+    mergedMedium = fillAllPolygons(coordinates[3], "gray", "lemonchiffon", "polygon");
+    mergedSmall = fillAllPolygons(coordinates[4], "gray", "lemonchiffon", "polygon");
+    globalRoomPolygons = fillAllPolygons(coordinates[5], "gray", "white", "line");
+    globalDoorPolygons = fillAllPolygons(coordinates[6], "gray", "white", "line");
+    globalStairPolygons = fillAllPolygons(coordinates[7], "gray", "white", "line");
+    globalUnmergedPolygonsSimplified = fillAllPolygons(coordinates[8], "gray", "white", "line");
+    globalUnmergedPolygons = fillAllPolygons(coordinates[9], "gray", "white", "line");
+}
+
+
+function createPolygonsFromAllCoordinates(localStorageCoordinates) {
+    globalCorridorPolygons = fillAllPolygons(localStorageCoordinates, 1, "blue", "red", "polygon");
+    mergedLarge = fillAllPolygons(localStorageCoordinates, 2, "gray", "lemonchiffon", "polygon");
+    mergedMedium = fillAllPolygons(localStorageCoordinates, 3, "gray", "lemonchiffon", "polygon");
+    mergedSmall = fillAllPolygons(localStorageCoordinates, 4, "gray", "lemonchiffon", "polygon");
+    globalRoomPolygons = fillAllPolygons(localStorageCoordinates, 5, "gray", "white", "polygon");
+    globalUnmergedPolygonsSimplified = fillAllPolygons(localStorageCoordinates, 6, "blue", "white", "polygon");
+    globalUnmergedPolygons = fillAllPolygons(localStorageCoordinates, 7, "blue", "white", "polygon");
+}
+
+function fillAllPolygons(coordinates, color, fillColor, lineOrPolygon) {
+    var polygons = [];
+    fillPolygons(coordinates, polygons, color, fillColor, lineOrPolygon);
+    return [polygons];
 }
