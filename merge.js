@@ -1482,9 +1482,9 @@ function fillZoomLevels(dynamicMergedRooms, oldRooms){
 }
 
 function fillZoomLevelPolygons(coordinates){
-    GLOBAL_ALL_COORDINATES[2] = deepCopy(coordinates[0]);
-    GLOBAL_ALL_COORDINATES[3] = deepCopy(coordinates[1]);
-    GLOBAL_ALL_COORDINATES[4] = deepCopy(coordinates[2]);
+    GLOBAL_ALL_COORDINATES[3] = deepCopy(coordinates[0]);
+    GLOBAL_ALL_COORDINATES[4] = deepCopy(coordinates[1]);
+    GLOBAL_ALL_COORDINATES[5] = deepCopy(coordinates[2]);
     fillPolygons(coordinates[0], mergedLarge, "gray", "yellow", "polygon", 0.2);
     fillPolygons(coordinates[1], mergedMedium, "gray", "yellow", "polygon", 0.2);
     fillPolygons(coordinates[2], mergedSmall, "gray", "yellow", "polygon", 0.2);
@@ -1504,8 +1504,8 @@ function getUnmergedRooms(container, coordinates) {
             }
         }
     }
-    GLOBAL_ALL_COORDINATES[8] = deepCopy(globalUnmergedRoomsSimplified);
-    GLOBAL_ALL_COORDINATES[9] = deepCopy(globalUnmergedRooms);
+    GLOBAL_ALL_COORDINATES[9] = deepCopy(globalUnmergedRoomsSimplified);
+    GLOBAL_ALL_COORDINATES[10] = deepCopy(globalUnmergedRooms);
     fillPolygons(globalUnmergedRoomsSimplified, globalUnmergedPolygonsSimplified, "gray", "white", "line", 1);
     fillPolygons(globalUnmergedRooms, globalUnmergedPolygons, "gray", "white", "line", 1);
 

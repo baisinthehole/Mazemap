@@ -62,9 +62,8 @@ function createglobalMergedPolygons(data, roomCoordinates){
     convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
 
     [globalMergedCorridorCoordinates, corridorContainer] = mergeCorridors();
-
-	[globalMergedCorridorCoordinates, corridorContainer] = removeDuplicateRooms(globalMergedCorridorCoordinates, corridorContainer)
-    GLOBAL_ALL_COORDINATES[1] = deepCopy(globalMergedCorridorsCoordinates);
+	[globalMergedCorridorCoordinates, corridorContainer] = removeDuplicateRooms(globalMergedCorridorCoordinates, corridorContainer);
+    GLOBAL_ALL_COORDINATES[2] = deepCopy(globalMergedCorridorCoordinates);
 
     fillMergedCoordinates(globalMergedCorridorCoordinates);
 
@@ -72,7 +71,7 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     // convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
 
-    // Store coordinates in localStorage if it is not there alreaddy
+    // Store coordinates in localStorage if it is not there already
     if (localStorage.getItem('allCoordinates'+FLOOR_ID) === null) {
         localStorage.setItem('allCoordinates'+FLOOR_ID, JSON.stringify(GLOBAL_ALL_COORDINATES));
     }
