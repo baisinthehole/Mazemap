@@ -243,9 +243,6 @@ function getJSONfromServer() {
 function recievedJSONfromServer() {
     var geoJSON = JSON.parse(RAW_RESPONSE);
 
-    // edits JSON file
-    geoJSON = alterJSONfile(geoJSON, FLOOR_ID);
-
     for (var i = geoJSON.pois.length -1; i >= 0 ; i--) {
         var poiTypeRoom = false;
         for (var j = 0; j < geoJSON.pois[i].infos.length; j++) {
@@ -258,6 +255,11 @@ function recievedJSONfromServer() {
             geoJSON.pois.splice(i, 1);
         }
     }
+
+    // edits JSON file
+    geoJSON = alterJSONfile(geoJSON, FLOOR_ID);
+    console.log(geoJSON);
+
     GEO_JSON = geoJSON;
     var color = "gray";
     var fillColor = "red";
