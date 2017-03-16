@@ -19,10 +19,12 @@ MAP.setView([63.417421008760335,10.406426561608821], 15);
 // Uncomment the preferred JSON file
 
 if (FLOOR_ID != false) {
+    console.log("Get data from server");
     getJSONfromServer();
     zoom();
 }
 else {
+    console.log("Get data from localStorage");
     getLocalJSON(FILENAME);
 }
 

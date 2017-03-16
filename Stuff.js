@@ -148,8 +148,6 @@ function zoom() {
     for (var i = 0; i < nameList.length; i++) {
         nowNames.push(false);
     }
-    console.log("polygonList");
-    console.log(polygonList);
     // Zoom listener, is triggered on every change in zoom level
     MAP.on('zoomend', function () {
         console.log(MAP.getZoom());
@@ -184,7 +182,7 @@ function zoom() {
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else {
-            drawings = [true, true, false, false, false, true, true, false, false, false];
+            drawings = [true, true, false, false, false, true, false, false, false, false];
             names = [true, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
@@ -1340,12 +1338,7 @@ function drawFromLocalStorage() {
             localStorageCoordinates.push(JSON.parse(localStorage.getItem('allCoordinates'+FLOOR_IDS[i])));
         }
     }
-    console.log("localStorageCoordinates");
-    console.log(localStorageCoordinates);
-    // globalOutlinePolygons, globalCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons
     setCoordinatesAsOneFloorId(localStorageCoordinates);
-    console.log("GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID");
-    console.log(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
     createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
 }
 
