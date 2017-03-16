@@ -1259,7 +1259,7 @@ function createDifferentMergingLevelsArea(orderedRooms, rooms) {
         areaLists[0][0].push(getArea(rooms[orderedRooms[i]]));
     }
 
-    var minArea = 0.000000008;
+    var minArea = 0.000000007;
 
     var currentArea = computeTotalAreaOfAreaList(areaLists[0][0]);
 
@@ -1270,6 +1270,8 @@ function createDifferentMergingLevelsArea(orderedRooms, rooms) {
 
     var splitAreas;
 
+    var done = false;
+
     while (currentArea > minArea) {
         mergingLevels.push([]);
         areaLists.push([]);
@@ -1279,33 +1281,11 @@ function createDifferentMergingLevelsArea(orderedRooms, rooms) {
             if (areaLists[currentIndex][i].length > 1) {
                 splitAreas = areaMerge(2, areaLists[currentIndex][i]);
 
-                // split in 2
-                if (computeTotalAreaOfAreaList(splitAreas[0]) / computeTotalAreaOfAreaList(splitAreas[1]) < 1.5 ||
-                    computeTotalAreaOfAreaList(splitAreas[1]) / computeTotalAreaOfAreaList(splitAreas[0]) < 1.5) {
+                // split in 3
+                if ((computeTotalAreaOfAreaList(splitAreas[0]) / computeTotalAreaOfAreaList(splitAreas[1]) > 1.5 ||
+                    computeTotalAreaOfAreaList(splitAreas[1]) / computeTotalAreaOfAreaList(splitAreas[0]) > 1.5) &&
+                    areaLists[currentIndex][i].length > 2) {
 
-                    currentInternalStartIndex = currentInternalEndIndex;
-                    currentInternalEndIndex += splitAreas[0].length;
-
-                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
-                    areaLists[currentIndex + 1].push(splitAreas[0]);
-
-                    currentInternalStartIndex = currentInternalEndIndex;
-                    currentInternalEndIndex += splitAreas[1].length;
-
-                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
-                    areaLists[currentIndex + 1].push(splitAreas[1]);
-
-                    if (Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1])) < currentArea) {
-                        currentArea = Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1]));
-                    }
-
-                    if (splitAreas[0].length == 1 || splitAreas[1].length == 1) {
-                        return mergingLevels;
-                    }
-                }
-
-                // split in 3, because area are too uneven to split in 2
-                else {
                     splitAreas = areaMerge(3, areaLists[currentIndex][i]);
 
                     currentInternalStartIndex = currentInternalEndIndex;
@@ -1329,7 +1309,35 @@ function createDifferentMergingLevelsArea(orderedRooms, rooms) {
                     if (Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1]), computeTotalAreaOfAreaList(splitAreas[2])) < currentArea) {
                         currentArea = Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1]), computeTotalAreaOfAreaList(splitAreas[2]));
                     }
+                    if (splitAreas[0].length == 1 || splitAreas[1].length == 1 || splitAreas[2].length == 1) {
+                        done = true;
+                    }
                 }
+
+                // split in 2
+                else {
+                    currentInternalStartIndex = currentInternalEndIndex;
+                    currentInternalEndIndex += splitAreas[0].length;
+
+                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+                    areaLists[currentIndex + 1].push(splitAreas[0]);
+
+                    currentInternalStartIndex = currentInternalEndIndex;
+                    currentInternalEndIndex += splitAreas[1].length;
+
+                    mergingLevels[currentIndex + 1].push(orderedRooms.slice(currentInternalStartIndex, currentInternalEndIndex));
+                    areaLists[currentIndex + 1].push(splitAreas[1]);
+
+                    if (Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1])) < currentArea) {
+                        currentArea = Math.max(computeTotalAreaOfAreaList(splitAreas[0]), computeTotalAreaOfAreaList(splitAreas[1]));
+                    }
+                    if (splitAreas[0].length == 1 || splitAreas[1].length == 1) {
+                        done = true;
+                    }
+                }
+            }
+            if (currentInternalEndIndex == orderedRooms.length && done) {
+                return mergingLevels;
             }
         }
         if (currentInternalEndIndex == orderedRooms.length) {
@@ -1340,8 +1348,6 @@ function createDifferentMergingLevelsArea(orderedRooms, rooms) {
         currentIndex++;
 
     }
-
-    //console.log(mergingLevels);
     return mergingLevels;
 }
 
