@@ -1,2 +1,5 @@
 RunAllFloors.py
 *.txt
+node_modules
+testSlicer.html
+npm-debug.log
