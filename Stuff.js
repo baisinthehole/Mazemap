@@ -346,7 +346,7 @@ function recievedLocalJSON(data) {
                    {"geometry": {"coordinates": [[[10.398774147033686, 63.42151069127344], [10.400340557098385, 63.42165470086864], [10.40439605712891, 63.42155869455225], [10.406241416931163, 63.420982649901084], [10.410125255584717, 63.417814197391614], [10.411884784698493, 63.4162586470939], [10.41177749633789, 63.41403079844845], [10.405104160308827, 63.413387378909704], [10.39787292480469, 63.41481824749007], [10.396199226379387, 63.418764769914894], [10.398774147033686, 63.42151069127344]]], "type": "Polygon"}, "id": 1, "properties": {"campusId": 1, "id": 1, "layer": "campuses"}, "type": "Feature"}] 
     }
 
-    corridorJSON = makeGeoJSON(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[1]);
+    corridorJSON = makeGeoJSON(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[2]);
 
     console.log(corridorJSON);
     console.log(testData);
@@ -368,21 +368,41 @@ function recievedLocalJSON(data) {
 
 function makeGeoJSON (coordinates) {
 
-	switchLatLong(coordinates);
+	for (var i = 0; i < coordinates.length; i++) {
+		switchLatLong(coordinates[i]);
+	}
+
 
 	result = {type: "FeatureCollection", features: []};
 
 	for (var i = 0; i < coordinates.length; i++) {
 		result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "Polygon"}, "properties": {"floorId": 246, "layer": "hallways"}});
 
-		if (coordinates[i][0] != coordinates[i][coordinates.length - 1]) {
-			coordinates[i].push(coordinates[i][0]);
+		if (coordinates[i][0][0].constructor === Array) {
+			moveBiggestRoomFirst(coordinates);
+			for (var j = 0; j < coordinates[i].length; j++) {
+				if (coordinates[i][j][0] != coordinates[i][j][coordinates[i].length - 1]) {
+					coordinates[i][j].push(coordinates[i][j][0]);
+				}
+			}
+		}
+		else {
+			if (coordinates[i][0] != coordinates[i][coordinates.length - 1]) {
+				coordinates[i].push(coordinates[i][0]);
+			}
 		}
 
 		result.features[i].geometry.coordinates.push(coordinates[i]);
 	}
 	
 	return result;
+}
+
+function moveBiggestRoomFirst(coordinates) {
+	var index = getBiggestRoom(coordinates);
+	var temp = coordinates[0];
+	coordinates[0] = coordinates[index];
+	coordinates[index] = temp;
 }
 
 function switchLatLong(coordinates) {
