@@ -348,22 +348,22 @@ function recievedLocalJSON(data) {
 
     corridorJSON = makeGeoJSON(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[2]);
 
-    console.log(corridorJSON);
-    console.log(testData);
+    renderGeoJSON(corridorJSON, "green", "blue");
+}
 
-    var layer = L.vectorGrid.slicer(corridorJSON, {
+function renderGeoJSON(geoJSON, fillColor, color) {
+	var layer = L.vectorGrid.slicer(corridorJSON, {
         maxZoom: 25,
         vectorTileLayerStyles: {
             sliced: function() {
                 return {
-                    fillColor: "blue",
-                    color: "green",
+                    fillColor: fillColor,
+                    color: color,
                     fill: true
                 }
             }
         }
     }).addTo(MAP);
-    console.log("jsdbvjeb");
 }
 
 function makeGeoJSON (coordinates) {
@@ -1462,4 +1462,25 @@ function fillAllPolygons(coordinates, color, fillColor, lineOrPolygon) {
     var polygons = [];
     fillPolygons(coordinates, polygons, color, fillColor, lineOrPolygon);
     return [polygons];
+}
+
+function angleFromCoordinate(lat1, long1, lat2, long2) {
+
+	var lat1 = lat1 * Math.PI / 180;
+	var long1 = long1 * Math.PI / 180;
+	var lat2 = lat2 * Math.PI / 180;
+	var long2 = long2 * Math.PI / 180;
+
+    var dLon = (long2 - long1);
+
+    var y = Math.sin(dLon) * Math.cos(lat2);
+    var x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+
+    var brng = Math.atan2(y, x);
+
+    brng = brng * (180 / Math.PI);
+    brng = (brng + 360) % 360;
+    brng = 360 - brng; // count degrees counter-clockwise - remove to make clockwise
+
+    return brng;
 }
