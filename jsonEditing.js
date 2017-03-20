@@ -35,7 +35,7 @@ function alterJSONfile(JSON, ID) {
         JSON.pois[26].infos.push({poiTypeId: 2});
     }
     if (ID == "141") { // Kjemiblokk
-        // JSON.pois[4].infos.push({poiTypeId: 2}); // Fix this
+        JSON.pois[4].infos.push({poiTypeId: 2}); // Maybe this is fixed by dividing with 100 in getNeighborsCorridors
         JSON.pois[17].infos.push({poiTypeId: 2});
     }
     if (ID == "148") { // Kjemiblokk

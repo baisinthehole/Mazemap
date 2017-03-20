@@ -696,7 +696,8 @@ function getNeighborsCorridors(corridorCoordinates){
         for (var j = 0; j < corridorCoordinates.length; j++) {
             if (i!=j){
                 result = getDistPolyToPoly(corridorCoordinates[i], corridorCoordinates[j]);
-                if (result[2] < VERY_IMPORTANCE_DISTANCE) {
+                // dived by 100 to only get rooms that are almost on top of each other
+                if (result[2] < VERY_IMPORTANCE_DISTANCE/100) {
                     adjacent.push(j);
                 }
                 else if (getMinDistPolyToPoly(corridorCoordinates[i], corridorCoordinates[j]) < VERY_IMPORTANCE_DISTANCE) {
