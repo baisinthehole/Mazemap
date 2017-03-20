@@ -71,7 +71,7 @@ function alterJSONfile(JSON, ID) {
         JSON.pois[41].infos.push({poiTypeId: 2}); // Trapp
         JSON.pois[44].infos.push({poiTypeId: 2}); // Trapp
         JSON.pois[59].infos.push({poiTypeId: 2});
-        // JSON.pois[63].infos.push({poiTypeId: 2}); // Fix this
+        JSON.pois[63].infos.push({poiTypeId: 2}); // Maybe this is fixed by removeTooClosePointsFromResultingPoints
         JSON.pois[61].infos.push({poiTypeId: 2}); // Mergelig tegnet trapp
         JSON.pois[62].infos.push({poiTypeId: 2}); // Trapp
         JSON.pois[100].infos.push({poiTypeId: 2}); // Trapp
