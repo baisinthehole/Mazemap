@@ -416,6 +416,19 @@ function findPairsOfPoints(polygon1, polygon2, test=false, testPoints=[], testRo
         resultingPoints.push(points[points.length - 1]);
     }
 
+    resultingPoints = removeTooClosePointsFromResultingPoints(resultingPoints, polygon1);
+
+    return resultingPoints;
+}
+
+// Is used on floorID 300 to remove points
+function removeTooClosePointsFromResultingPoints(resultingPoints, polygon1) {
+    for (var i = resultingPoints.length-1; i > 0; i-=2) {
+        if (getDistPoints(polygon1[resultingPoints[i]], polygon1[resultingPoints[i-1]]) < VERY_IMPORTANCE_DISTANCE/100) {
+            resultingPoints.splice(i,1);
+            resultingPoints.splice(i-1,1);
+        }
+    }
     return resultingPoints;
 }
 
