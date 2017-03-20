@@ -337,7 +337,72 @@ function recievedLocalJSON(data) {
         // }
     }
     drawFromLocalStorage();
-    zoom();
+    // zoom();
+
+    var testData = {
+        type: 'FeatureCollection',
+        features: [{"geometry": {"coordinates": [[[10.395156587873059, 63.42201376164299], [10.39529800415039, 63.420685022295736], [10.395748615264887, 63.41912002630238], [10.39086914062612, 63.41836190064434], [10.39086914062612, 63.42201376164299], [10.395156587873059, 63.42201376164299]]], "type": "Polygon"}, "id": 3, "properties": {"campusId": 3, "id": 3, "layer": "campuses"}, "type": "Feature"},
+                   {"geometry": {"coordinates": [[10.408474110378641, 63.41476577915904], [10.408467429815557, 63.414772262881996]], "type": "LineString"}, "id": 105778540, "properties": {"campusId": 1, "floorId": 160, "id": 105778540, "layer": "doors"}, "type": "Feature"},
+                   {"geometry": {"coordinates": [[[10.398774147033686, 63.42151069127344], [10.400340557098385, 63.42165470086864], [10.40439605712891, 63.42155869455225], [10.406241416931163, 63.420982649901084], [10.410125255584717, 63.417814197391614], [10.411884784698493, 63.4162586470939], [10.41177749633789, 63.41403079844845], [10.405104160308827, 63.413387378909704], [10.39787292480469, 63.41481824749007], [10.396199226379387, 63.418764769914894], [10.398774147033686, 63.42151069127344]]], "type": "Polygon"}, "id": 1, "properties": {"campusId": 1, "id": 1, "layer": "campuses"}, "type": "Feature"}] 
+    }
+
+    corridorJSON = makeGeoJSON(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[2]);
+
+    renderGeoJSON(corridorJSON, "green", "blue");
+}
+
+function renderGeoJSON(geoJSON, fillColor, color) {
+	var layer = L.vectorGrid.slicer(corridorJSON, {
+        maxZoom: 25,
+        vectorTileLayerStyles: {
+            sliced: function() {
+                return {
+                    fillColor: fillColor,
+                    color: color,
+                    fill: true
+                }
+            }
+        }
+    }).addTo(MAP);
+}
+
+function makeGeoJSON (coordinates) {
+
+	for (var i = 0; i < coordinates.length; i++) {
+		switchLatLong(coordinates[i]);
+	}
+
+
+	result = {type: "FeatureCollection", features: []};
+
+	for (var i = 0; i < coordinates.length; i++) {
+		result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "Polygon"}, "properties": {"floorId": 246, "layer": "hallways"}});
+
+		if (coordinates[i][0][0].constructor === Array) {
+			moveBiggestRoomFirst(coordinates);
+			for (var j = 0; j < coordinates[i].length; j++) {
+				if (coordinates[i][j][0] != coordinates[i][j][coordinates[i].length - 1]) {
+					coordinates[i][j].push(coordinates[i][j][0]);
+				}
+			}
+		}
+		else {
+			if (coordinates[i][0] != coordinates[i][coordinates.length - 1]) {
+				coordinates[i].push(coordinates[i][0]);
+			}
+		}
+
+		result.features[i].geometry.coordinates.push(coordinates[i]);
+	}
+	
+	return result;
+}
+
+function moveBiggestRoomFirst(coordinates) {
+	var index = getBiggestRoom(coordinates);
+	var temp = coordinates[0];
+	coordinates[0] = coordinates[index];
+	coordinates[index] = temp;
 }
 
 function switchLatLong(coordinates) {
@@ -1398,4 +1463,25 @@ function fillAllPolygons(coordinates, color, fillColor, lineOrPolygon) {
     var polygons = [];
     fillPolygons(coordinates, polygons, color, fillColor, lineOrPolygon);
     return [polygons];
+}
+
+function angleFromCoordinate(lat1, long1, lat2, long2) {
+
+	var lat1 = lat1 * Math.PI / 180;
+	var long1 = long1 * Math.PI / 180;
+	var lat2 = lat2 * Math.PI / 180;
+	var long2 = long2 * Math.PI / 180;
+
+    var dLon = (long2 - long1);
+
+    var y = Math.sin(dLon) * Math.cos(lat2);
+    var x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+
+    var brng = Math.atan2(y, x);
+
+    brng = brng * (180 / Math.PI);
+    brng = (brng + 360) % 360;
+    brng = 360 - brng; // count degrees counter-clockwise - remove to make clockwise
+
+    return brng;
 }
