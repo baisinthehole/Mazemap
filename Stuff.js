@@ -318,25 +318,25 @@ function recievedLocalJSON(data) {
     // fillCoordinateTypeLocal(data, globalStairPolygons, 'stairsfull', 'black', "line");
     // fillCoordinateTypeLocal(data, globalDoorPolygons, 'doors', color[2], "line");
     // fillCoordinateTypeLocal(data, globalOutlinePolygons, 'outlines', 'black', "polygon");
-    // for (var i = 0; i < data.features.length; i++) {
-    //     // if (data.features[i].geometry.coordinates.length == 1){
-    //         if (data.features[i].properties.campusId == 1){
-    //             if (data.features[i].properties.layer == "outlines"){
-    //                 switchLatLong(data.features[i].geometry.coordinates[0]);
-    //                 GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[0].push(data.features[i].geometry.coordinates[0]);
-    //             }
-    //             else if (data.features[i].properties.layer == "stairs"){
-    //                 switchLatLong(data.features[i].geometry.coordinates);
-    //                 GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[8].push(data.features[i].geometry.coordinates);
-    //             }
-    //             else if (data.features[i].properties.layer == "doors"){
-    //                 switchLatLong(data.features[i].geometry.coordinates);
-    //                 GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[7].push(data.features[i].geometry.coordinates);
-    //             }
-    //         }
-    //     // }
-    // }
-    // drawFromLocalStorage();
+    for (var i = 0; i < data.features.length; i++) {
+        // if (data.features[i].geometry.coordinates.length == 1){
+            if (data.features[i].properties.campusId == 1){
+                if (data.features[i].properties.layer == "outlines"){
+                    switchLatLong(data.features[i].geometry.coordinates[0]);
+                    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[0].push(data.features[i].geometry.coordinates[0]);
+                }
+                else if (data.features[i].properties.layer == "stairs"){
+                    switchLatLong(data.features[i].geometry.coordinates);
+                    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[8].push(data.features[i].geometry.coordinates);
+                }
+                else if (data.features[i].properties.layer == "doors"){
+                    switchLatLong(data.features[i].geometry.coordinates);
+                    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[7].push(data.features[i].geometry.coordinates);
+                }
+            }
+        // }
+    }
+    drawFromLocalStorage();
     // zoom();
 
     var testData = {
@@ -345,8 +345,14 @@ function recievedLocalJSON(data) {
                    {"geometry": {"coordinates": [[10.408474110378641, 63.41476577915904], [10.408467429815557, 63.414772262881996]], "type": "LineString"}, "id": 105778540, "properties": {"campusId": 1, "floorId": 160, "id": 105778540, "layer": "doors"}, "type": "Feature"},
                    {"geometry": {"coordinates": [[[10.398774147033686, 63.42151069127344], [10.400340557098385, 63.42165470086864], [10.40439605712891, 63.42155869455225], [10.406241416931163, 63.420982649901084], [10.410125255584717, 63.417814197391614], [10.411884784698493, 63.4162586470939], [10.41177749633789, 63.41403079844845], [10.405104160308827, 63.413387378909704], [10.39787292480469, 63.41481824749007], [10.396199226379387, 63.418764769914894], [10.398774147033686, 63.42151069127344]]], "type": "Polygon"}, "id": 1, "properties": {"campusId": 1, "id": 1, "layer": "campuses"}, "type": "Feature"}] 
     }
-    var layer = L.vectorGrid.slicer(data, {
-    	maxZoom: 25,
+
+    corridorJSON = makeGeoJSON(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[1]);
+
+    console.log(corridorJSON);
+    console.log(testData);
+
+    var layer = L.vectorGrid.slicer(corridorJSON, {
+        maxZoom: 25,
         vectorTileLayerStyles: {
             sliced: function() {
                 return {
@@ -357,6 +363,26 @@ function recievedLocalJSON(data) {
             }
         }
     }).addTo(MAP);
+    console.log("jsdbvjeb");
+}
+
+function makeGeoJSON (coordinates) {
+
+	switchLatLong(coordinates);
+
+	result = {type: "FeatureCollection", features: []};
+
+	for (var i = 0; i < coordinates.length; i++) {
+		result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "Polygon"}, "properties": {"floorId": 246, "layer": "hallways"}});
+
+		if (coordinates[i][0] != coordinates[i][coordinates.length - 1]) {
+			coordinates[i].push(coordinates[i][0]);
+		}
+
+		result.features[i].geometry.coordinates.push(coordinates[i]);
+	}
+	
+	return result;
 }
 
 function switchLatLong(coordinates) {
