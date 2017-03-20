@@ -75,6 +75,8 @@ function createglobalMergedPolygons(data, roomCoordinates){
     // if (localStorage.getItem('allCoordinates'+FLOOR_ID) === null) {
         localStorage.setItem('allCoordinates'+FLOOR_ID, JSON.stringify(GLOBAL_ALL_COORDINATES));
     // }
+
+
 }
 
 // Uncomment to clear localStorage
