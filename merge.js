@@ -905,6 +905,7 @@ function getBiggestRoom(room1) {
             index = i;
         }
     }
+    console.log(deepCopy(index));
     return index;
 }
 // function getBiggestRoom(room1) {

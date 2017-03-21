@@ -32,6 +32,8 @@ function createglobalMergedPolygons(data, roomCoordinates){
     var neighbors;
     var indeces;
 
+    console.log("oisdvniednv");
+
     neighbors = getNeighbors(data, roomCoordinates);
     oldNeighbors = deepCopy(neighbors);
 
