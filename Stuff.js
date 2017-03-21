@@ -313,7 +313,6 @@ function getLocalJSON(filename) {
 }
 function recievedLocalJSON(data) {
     var color = ['blue', 'gray', 'green', 'black'];
-
     // Fill the coordinate arrays for each type of polygon and draw to map
     // fillCoordinateTypeLocal(data, globalStairPolygons, 'stairsfull', 'black', "line");
     // fillCoordinateTypeLocal(data, globalDoorPolygons, 'doors', color[2], "line");
@@ -336,15 +335,28 @@ function recievedLocalJSON(data) {
             }
         // }
     }
+    // zoom();
     drawFromLocalStorage();
+    console.log("GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID");
+    console.log(deepCopy(globalCorridorCoordinates));
+    globalCorridorCoordinates = deepCopy(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[1]);
+    console.log(deepCopy(globalCorridorCoordinates));
+    [globalMergedCorridorCoordinates, corridorContainer] = mergeCorridors();
+    console.log("corridorContainer");
+    console.log(deepCopy(corridorContainer));
+    [globalMergedCorridorCoordinates, corridorContainer] = removeDuplicateRooms(globalMergedCorridorCoordinates, corridorContainer);
+    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[2] = deepCopy(globalMergedCorridorCoordinates);
+    fillMergedCoordinates(globalMergedCorridorCoordinates);
+    drawPolygons([globalMergedCorridorPolygons]);
+
     // zoom();
 
-    var testData = {
-        type: 'FeatureCollection',
-        features: [{"geometry": {"coordinates": [[[10.395156587873059, 63.42201376164299], [10.39529800415039, 63.420685022295736], [10.395748615264887, 63.41912002630238], [10.39086914062612, 63.41836190064434], [10.39086914062612, 63.42201376164299], [10.395156587873059, 63.42201376164299]]], "type": "Polygon"}, "id": 3, "properties": {"campusId": 3, "id": 3, "layer": "campuses"}, "type": "Feature"},
-                   {"geometry": {"coordinates": [[10.408474110378641, 63.41476577915904], [10.408467429815557, 63.414772262881996]], "type": "LineString"}, "id": 105778540, "properties": {"campusId": 1, "floorId": 160, "id": 105778540, "layer": "doors"}, "type": "Feature"},
-                   {"geometry": {"coordinates": [[[10.398774147033686, 63.42151069127344], [10.400340557098385, 63.42165470086864], [10.40439605712891, 63.42155869455225], [10.406241416931163, 63.420982649901084], [10.410125255584717, 63.417814197391614], [10.411884784698493, 63.4162586470939], [10.41177749633789, 63.41403079844845], [10.405104160308827, 63.413387378909704], [10.39787292480469, 63.41481824749007], [10.396199226379387, 63.418764769914894], [10.398774147033686, 63.42151069127344]]], "type": "Polygon"}, "id": 1, "properties": {"campusId": 1, "id": 1, "layer": "campuses"}, "type": "Feature"}] 
-    }
+    // var testData = {
+    //     type: 'FeatureCollection',
+    //     features: [{"geometry": {"coordinates": [[[10.395156587873059, 63.42201376164299], [10.39529800415039, 63.420685022295736], [10.395748615264887, 63.41912002630238], [10.39086914062612, 63.41836190064434], [10.39086914062612, 63.42201376164299], [10.395156587873059, 63.42201376164299]]], "type": "Polygon"}, "id": 3, "properties": {"campusId": 3, "id": 3, "layer": "campuses"}, "type": "Feature"},
+    //                {"geometry": {"coordinates": [[10.408474110378641, 63.41476577915904], [10.408467429815557, 63.414772262881996]], "type": "LineString"}, "id": 105778540, "properties": {"campusId": 1, "floorId": 160, "id": 105778540, "layer": "doors"}, "type": "Feature"},
+    //                {"geometry": {"coordinates": [[[10.398774147033686, 63.42151069127344], [10.400340557098385, 63.42165470086864], [10.40439605712891, 63.42155869455225], [10.406241416931163, 63.420982649901084], [10.410125255584717, 63.417814197391614], [10.411884784698493, 63.4162586470939], [10.41177749633789, 63.41403079844845], [10.405104160308827, 63.413387378909704], [10.39787292480469, 63.41481824749007], [10.396199226379387, 63.418764769914894], [10.398774147033686, 63.42151069127344]]], "type": "Polygon"}, "id": 1, "properties": {"campusId": 1, "id": 1, "layer": "campuses"}, "type": "Feature"}]
+    // }
 
     corridorJSON = makeGeoJSON(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[2]);
 
@@ -352,7 +364,7 @@ function recievedLocalJSON(data) {
 }
 
 function renderGeoJSON(geoJSON, fillColor, color) {
-	var layer = L.vectorGrid.slicer(corridorJSON, {
+	var layer = L.vectorGrid.slicer(geoJSON, {
         maxZoom: 25,
         vectorTileLayerStyles: {
             sliced: function() {
@@ -370,7 +382,7 @@ function makeGeoJSON (coordinates) {
 
 
 	for (var i = 0; i < coordinates.length; i++) {
-		if (coordinates[i][0][0].constructor === Array) { 
+		if (coordinates[i][0][0].constructor === Array) {
 			for (var j = 0; j < coordinates[i].length; j++) {
 				switchLatLong(coordinates[i][j]);
 			}
@@ -1425,7 +1437,7 @@ function drawFromLocalStorage() {
         }
     }
     setCoordinatesAsOneFloorId(localStorageCoordinates);
-    createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+    // createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
 }
 
 function setCoordinatesAsOneFloorId(localStorageCoordinates) {

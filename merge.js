@@ -1601,8 +1601,12 @@ function mergeCorridors(){
             globalCorridorCoordinates.splice(i, 1);
         }
     }
+    for (var i = 0; i < globalCorridorCoordinates.length; i++) {
+        Maze.popup().setLatLng(getPoint(globalCorridorCoordinates[i])).setContent(i.toString()).addTo(MAP);
+    }
     // globalCorridorCoordinates = removeDuplicatesFromAllRooms(globalCorridorCoordinates);
     var neighborCorridors = getNeighborsCorridors(globalCorridorCoordinates);
+    console.log(deepCopy(neighborCorridors));
     // console.log(neighborCorridors);
     // getCorridorIndices();
     [mergedCorridors, corridorContainer] = mergeAllCorridors(neighborCorridors, globalCorridorCoordinates);

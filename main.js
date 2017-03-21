@@ -65,6 +65,8 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     [globalMergedCorridorCoordinates, corridorContainer] = mergeCorridors();
 	[globalMergedCorridorCoordinates, corridorContainer] = removeDuplicateRooms(globalMergedCorridorCoordinates, corridorContainer);
+    console.log("corridorContainer");
+    console.log(deepCopy(corridorContainer));
     GLOBAL_ALL_COORDINATES[2] = deepCopy(globalMergedCorridorCoordinates);
 
     fillMergedCoordinates(globalMergedCorridorCoordinates);
