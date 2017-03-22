@@ -757,10 +757,16 @@ function getNeighborsCorridors(corridorCoordinates){
         var adjacent = [];
         for (var j = 0; j < corridorCoordinates.length; j++) {
             if (i!=j){
-                result = getDistPolyToPoly(corridorCoordinates[i], corridorCoordinates[j]);
-                // dived by 100 to only get rooms that are almost on top of each other
-                if (result[2] < VERY_IMPORTANCE_DISTANCE/100) {
-                    adjacent.push(j);
+                // result = getDistPolyToPoly(corridorCoordinates[i], corridorCoordinates[j]);
+                // // dived by 100 to only get rooms that are almost on top of each other
+                // if (result[2] < VERY_IMPORTANCE_DISTANCE/100) {
+                //     adjacent.push(j);
+                // }
+                result = getSecondClosestPoints(corridorCoordinates[i], corridorCoordinates[j]);
+                if (result[1] != undefined) {
+                    if (result[2] < VERY_IMPORTANCE_DISTANCE) {
+                        adjacent.push(j);
+                    }
                 }
                 else if (getMinDistPolyToPoly(corridorCoordinates[i], corridorCoordinates[j]) < VERY_IMPORTANCE_DISTANCE) {
                     if (isOnePointNeighbor(corridorCoordinates[i], corridorCoordinates[j])) {
@@ -965,6 +971,30 @@ function getDistPolyToPoly(polygon1, polygon2){
         }
     }
     return [index1, index2, secondMinDist];
+}
+
+
+function getSecondClosestPoints(polygon1, polygon2){
+    var minDist = Infinity;
+    var result;
+    var index1;
+    var index2;
+    for (var i = 0; i < polygon1.length-1; i++) {
+        dist = getMinDistToPoly(polygon1[i], polygon2);
+        if (dist < minDist){
+            minDist = dist;
+            index1 = i;
+        }
+    }
+    minDist = Infinity;
+    for (i = 0; i < polygon1.length-1; i++) {
+        dist = getMinDistToPoly(polygon1[i], polygon2);
+        if (dist < minDist && getDistPoints(polygon1[i], polygon1[index1]) > VERY_IMPORTANCE_DISTANCE){
+            minDist = dist;
+            index2 = i;
+        }
+    }
+    return [index1, index2, minDist];
 }
 
 function getMinDistToPoly(point1, polygon1){
