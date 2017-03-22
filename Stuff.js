@@ -136,7 +136,7 @@ function zoom() {
 
     // contains all kinds of polygons displayed on different levels
     polygonList = [globalOutlinePolygons, globalCorridorPolygons, globalMergedCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons];
-
+    console.log(deepCopy(polygonList));
     // contains all kinds of room names displayed on different levels
     var nameList = [globalRoomNames, globalUnmergedNames, mergedTextLarge, mergedTextMedium, mergedTextSmall];
 
@@ -205,10 +205,10 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
         if (drawings[i] != nowDrawings[i]){
             if (!nowDrawings[i]){
                 if (FLOOR_ID != false) {
-                    drawPolygons([polygonList[i]]);
+                    drawVectorGridSlicedPolygons([polygonList[i]]);
                 }
                 else {
-                    drawPolygons(polygonList[i]);
+                    drawVectorGridSlicedPolygons(polygonList[i]);
                 }
             }
             else if (nowDrawings[i]){
@@ -346,11 +346,11 @@ function recievedLocalJSON(data) {
         // }
     }
     drawFromLocalStorage();
-    // zoom();
+    zoom();
 }
 
 function renderGeoJSON(geoJSON, fillColor, color) {
-	var layer = L.vectorGrid.slicer(geoJSON, {
+	return L.vectorGrid.slicer(geoJSON, {
         maxZoom: 25,
         vectorTileLayerStyles: {
             sliced: function() {
@@ -361,7 +361,7 @@ function renderGeoJSON(geoJSON, fillColor, color) {
                 }
             }
         }
-    }).addTo(MAP);
+    });
 }
 
 function makeGeoJSON (coordinates) {
@@ -624,6 +624,12 @@ function removePolygons(polygonList) {
         }
     }
 }
+
+function drawVectorGridSlicedPolygons(polygonList) {
+    console.log(polygonList);
+    polygonList.addTo(MAP);
+}
+
 
 function makeRoomNames(coordinates, title) {
     var myIcon;
@@ -1460,8 +1466,10 @@ function drawFromLocalStorage() {
 
     mergeCorridorsForMultipleFloors();
     corridorJSON = makeGeoJSON(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[2]);
-    renderGeoJSON(corridorJSON, "green", "blue");
-
+    globalMergedCorridorPolygons = renderGeoJSON(corridorJSON, "green", "blue");
+    // layer.addTo(MAP);
+    // globalMergedCorridorPolygons = deepCopy(layer);
+    // globalMergedCorridorPolygons.addTo(MAP);
     // createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
 }
 
