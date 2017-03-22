@@ -763,10 +763,8 @@ function getNeighborsCorridors(corridorCoordinates){
                 //     adjacent.push(j);
                 // }
                 result = getSecondClosestPoints(corridorCoordinates[i], corridorCoordinates[j]);
-                if (result[1] != undefined) {
-                    if (result[2] < VERY_IMPORTANCE_DISTANCE) {
-                        adjacent.push(j);
-                    }
+                if (result[2] < VERY_IMPORTANCE_DISTANCE) {
+                    adjacent.push(j);
                 }
                 else if (getMinDistPolyToPoly(corridorCoordinates[i], corridorCoordinates[j]) < VERY_IMPORTANCE_DISTANCE) {
                     if (isOnePointNeighbor(corridorCoordinates[i], corridorCoordinates[j])) {
