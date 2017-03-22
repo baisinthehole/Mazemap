@@ -1520,6 +1520,7 @@ function getUnmergedRooms(container, coordinates) {
             if (GLOBAL_ROOM_COORDINATES[i].length > 0){
                 globalUnmergedRoomsSimplified.push(coordinates[i]);
                 globalUnmergedRooms.push(GLOBAL_ROOM_COORDINATES[i]);
+                globalUnmergedNameList.push(GEO_JSON.pois[i].title);
                 globalUnmergedNames.push(makeLocalRoomNames(GLOBAL_ROOM_COORDINATES[i], GEO_JSON.pois[i].title));
             }
         }

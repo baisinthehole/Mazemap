@@ -50,6 +50,11 @@ for (var i = 0; i < 11; i++) {
     GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID.push([]);
 }
 
+var GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID = [];
+for (var i = 0; i < 5; i++) {
+    GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID.push([]);
+}
+
 // all room coordinates
 var GLOBAL_ROOM_COORDINATES;
 
@@ -117,6 +122,11 @@ var globalRoomNameCoordinates = [];
 
 // all room name strings
 var globalNameList = [];
+
+// all unmerged room name strings
+var globalUnmergedNameList = [];
+
+var GLOBAL_ROOM_NAMES = [globalNameList, globalUnmergedNameList];
 
 // all polygons
 var polygonList;
@@ -1434,13 +1444,19 @@ function areaMerge(numSplit, areaList) {
 }
 
 function drawFromLocalStorage() {
+    // Get coordinates and room names from localStorage
     var localStorageCoordinates = [];
+    var localStorageRoomNames = [];
     for (var i = 0; i < FLOOR_IDS.length; i++) {
         if (localStorage.getItem('allCoordinates'+FLOOR_IDS[i]) !== null) {
             localStorageCoordinates.push(JSON.parse(localStorage.getItem('allCoordinates'+FLOOR_IDS[i])));
         }
+        if (localStorage.getItem('allNames'+FLOOR_IDS[i]) !== null) {
+            localStorageRoomNames.push(JSON.parse(localStorage.getItem('allNames'+FLOOR_IDS[i])));
+        }
     }
-    setCoordinatesAsOneFloorId(localStorageCoordinates);
+    setAsOneFloorId(localStorageCoordinates, GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+    setAsOneFloorId(localStorageRoomNames, GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID);
 
     mergeCorridorsForMultipleFloors();
     corridorJSON = makeGeoJSON(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[2]);
@@ -1463,6 +1479,19 @@ function setCoordinatesAsOneFloorId(localStorageCoordinates) {
             for (var k = 0; k < localStorageCoordinates[i][j].length; k++) {
                 if (localStorageCoordinates[i][j][k].length > 0) {
                     GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[j].push(localStorageCoordinates[i][j][k]);
+                }
+            }
+        }
+    }
+}
+
+
+function setAsOneFloorId(localStorage, globalArray) {
+    for (var i = 0; i < localStorage.length; i++) {
+        for (var j = 0; j < localStorage[i].length; j++) {
+            for (var k = 0; k < localStorage[i][j].length; k++) {
+                if (localStorage[i][j][k].length > 0) {
+                    globalArray[j].push(localStorage[i][j][k]);
                 }
             }
         }
@@ -1522,4 +1551,11 @@ function angleFromCoordinate(lat1, long1, lat2, long2) {
     brng = 360 - brng; // count degrees counter-clockwise - remove to make clockwise
 
     return brng;
+}
+
+function storeMergedRoomNames(textZoomLevels) {
+    for (var i = 0; i < textZoomLevels.length; i++) {
+        GLOBAL_ROOM_NAMES.push(textZoomLevels[i]);
+    }
+    localStorage.setItem('allNames'+FLOOR_ID, JSON.stringify(GLOBAL_ROOM_NAMES));
 }
