@@ -136,7 +136,6 @@ function zoom() {
 
     // contains all kinds of polygons displayed on different levels
     polygonList = [globalOutlinePolygons, globalCorridorPolygons, globalMergedCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons];
-    console.log(deepCopy(polygonList));
     // contains all kinds of room names displayed on different levels
     var nameList = [globalRoomNames, globalUnmergedNames, mergedTextLarge, mergedTextMedium, mergedTextSmall];
 
@@ -213,10 +212,10 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
             }
             else if (nowDrawings[i]){
                 if (FLOOR_ID != false) {
-                    removePolygons([polygonList[i]]);
+                    removeVectorGridSlicedPolygons([polygonList[i]]);
                 }
                 else {
-                    removePolygons(polygonList[i]);
+                    removeVectorGridSlicedPolygons(polygonList[i]);
                 }
             }
             nowDrawings[i] = !nowDrawings[i];
@@ -366,42 +365,47 @@ function renderGeoJSON(geoJSON, fillColor, color) {
 
 function makeGeoJSON (coordinates) {
 
-
 	for (var i = 0; i < coordinates.length; i++) {
-		if (coordinates[i][0][0].constructor === Array) {
-			for (var j = 0; j < coordinates[i].length; j++) {
-				switchLatLong(coordinates[i][j]);
-			}
-		}
-		else {
-			switchLatLong(coordinates[i]);
-		}
+        // coordinate is not a point
+        if (coordinates[i][0].constructor === Array) {
+    		if (coordinates[i][0][0].constructor === Array) {
+    			for (var j = 0; j < coordinates[i].length; j++) {
+    				switchLatLong(coordinates[i][j]);
+    			}
+    		}
+    		else {
+    			switchLatLong(coordinates[i]);
+    		}
+        }
 	}
 
 
 	result = {type: "FeatureCollection", features: []};
 
 	for (var i = 0; i < coordinates.length; i++) {
-
-		if (coordinates[i][0][0].constructor === Array) {
-			result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "MultiPolygon"}, "properties": {"layer": "hallways"}});
-			moveBiggestRoomFirst(coordinates[i]);
-			for (var j = 0; j < coordinates[i].length; j++) {
-				if (coordinates[i][j][0] != coordinates[i][j][coordinates[i].length - 1]) {
-					coordinates[i][j].push(coordinates[i][j][0]);
-				}
-			}
-		}
-		else {
-			result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "Polygon"}, "properties": {"layer": "hallways"}});
-			if (coordinates[i][0] != coordinates[i][coordinates.length - 1]) {
-				coordinates[i].push(coordinates[i][0]);
-			}
-		}
+        if (coordinates[i][0].constructor === Array) {
+    		if (coordinates[i][0][0].constructor === Array) {
+    			result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "MultiPolygon"}, "properties": {"layer": "hallways"}});
+    			moveBiggestRoomFirst(coordinates[i]);
+    			for (var j = 0; j < coordinates[i].length; j++) {
+    				if (coordinates[i][j][0] != coordinates[i][j][coordinates[i].length - 1]) {
+    					coordinates[i][j].push(coordinates[i][j][0]);
+    				}
+    			}
+    		}
+    		else {
+    			result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "Polygon"}, "properties": {"layer": "hallways"}});
+    			if (coordinates[i][0] != coordinates[i][coordinates.length - 1]) {
+    				coordinates[i].push(coordinates[i][0]);
+    			}
+    		}
+        }
+        else {
+                result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "Polygon"}, "properties": {"layer": "hallways"}});
+        }
 
 		result.features[i].geometry.coordinates.push(coordinates[i]);
 	}
-	console.log(result);
 	return result;
 }
 
@@ -626,8 +630,11 @@ function removePolygons(polygonList) {
 }
 
 function drawVectorGridSlicedPolygons(polygonList) {
-    console.log(polygonList);
     polygonList.addTo(MAP);
+}
+
+function removeVectorGridSlicedPolygons(polygonList) {
+    polygonList.removeFrom(MAP);
 }
 
 
@@ -1465,12 +1472,31 @@ function drawFromLocalStorage() {
     setAsOneFloorId(localStorageRoomNames, GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID);
 
     mergeCorridorsForMultipleFloors();
-    corridorJSON = makeGeoJSON(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[2]);
-    globalMergedCorridorPolygons = renderGeoJSON(corridorJSON, "green", "blue");
+
+    addGlobalCoordinatesToZoom();
     // layer.addTo(MAP);
     // globalMergedCorridorPolygons = deepCopy(layer);
     // globalMergedCorridorPolygons.addTo(MAP);
     // createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+}
+
+function addGlobalCoordinatesToZoom() {
+    globalOutlinePolygons = makeGeoJSONPolygon(0, "white", "black");
+    globalCorridorPolygons = makeGeoJSONPolygon(1, "red", "gray");
+    globalMergedCorridorPolygons = makeGeoJSONPolygon(2, "green", "gray");
+    mergedLarge = makeGeoJSONPolygon(3, "yellow", "gray");
+    mergedMedium = makeGeoJSONPolygon(4, "yellow", "gray");
+    mergedSmall = makeGeoJSONPolygon(5, "yellow", "gray");
+    globalRoomPolygons = makeGeoJSONPolygon(6, "white", "gray");
+    globalDoorPolygons = makeGeoJSONPolygon(7, "white", "green");
+    globalStairPolygons = makeGeoJSONPolygon(8, "white", "blue");
+    globalUnmergedPolygonsSimplified = makeGeoJSONPolygon(9, "white", "blue");
+    globalUnmergedPolygons = makeGeoJSONPolygon(10, "white", "blue");
+}
+
+function makeGeoJSONPolygon(index, fillColor, color) {
+    var JSON = makeGeoJSON(deepCopy(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[index]));
+    return renderGeoJSON(JSON, fillColor, color);
 }
 
 function mergeCorridorsForMultipleFloors() {
@@ -1509,7 +1535,6 @@ function setAsOneFloorId(localStorage, globalArray) {
 
 
 function createPolygonsFromAllCoordinatesAsOneFloorId(coordinates) {
-    console.log(coordinates);
     globalOutlinePolygons = fillAllPolygons(coordinates[0],"black", "white", "polygon");
     globalCorridorPolygons = fillAllPolygons(coordinates[1], "blue", "red", "polygon");
     globalMergedCorridorPolygons = fillAllPolygons(coordinates[2], "blue", "red","polygon");
