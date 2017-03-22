@@ -136,6 +136,9 @@ function zoom() {
 
     // contains all kinds of polygons displayed on different levels
     polygonList = [globalOutlinePolygons, globalCorridorPolygons, globalMergedCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons];
+    console.log(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+    console.log(polygonList);
+
     // contains all kinds of room names displayed on different levels
     var nameList = [globalRoomNames, globalUnmergedNames, mergedTextLarge, mergedTextMedium, mergedTextSmall];
 
@@ -186,12 +189,12 @@ function zoom() {
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 21){
-            drawings = [true, true, false, false, false, false, true, false, false, false, false];
+            drawings = [true, true, false, false, false, false, true, true, true, false, false];
             names = [true, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else {
-            drawings = [true, true, false, false, false, false, true, false, false, false, false];
+            drawings = [true, true, false, false, false, false, true, true, true, false, false];
             names = [true, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
@@ -363,8 +366,9 @@ function renderGeoJSON(geoJSON, fillColor, color) {
     });
 }
 
-function makeGeoJSON (coordinates) {
-
+function makeGeoJSON (coordinates, type) {
+    console.log(type);
+    console.log(deepCopy(coordinates));
 	for (var i = 0; i < coordinates.length; i++) {
         // coordinate is not a point
         if (coordinates[i][0].constructor === Array) {
@@ -373,15 +377,14 @@ function makeGeoJSON (coordinates) {
     				switchLatLong(coordinates[i][j]);
     			}
     		}
-    		else {
+    		else { // if (type != "LineString") {
     			switchLatLong(coordinates[i]);
     		}
         }
 	}
-
+    console.log(deepCopy(coordinates));
 
 	result = {type: "FeatureCollection", features: []};
-
 	for (var i = 0; i < coordinates.length; i++) {
         if (coordinates[i][0].constructor === Array) {
     		if (coordinates[i][0][0].constructor === Array) {
@@ -394,14 +397,14 @@ function makeGeoJSON (coordinates) {
     			}
     		}
     		else {
-    			result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "Polygon"}, "properties": {"layer": "hallways"}});
-    			if (coordinates[i][0] != coordinates[i][coordinates.length - 1]) {
+    			result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": type}, "properties": {"layer": "hallways"}});
+    			if (coordinates[i][0] != coordinates[i][coordinates.length - 1] && type == "Polygon") {
     				coordinates[i].push(coordinates[i][0]);
     			}
     		}
         }
         else {
-                result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "Polygon"}, "properties": {"layer": "hallways"}});
+                result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": type}, "properties": {"layer": "hallways"}});
         }
 
 		result.features[i].geometry.coordinates.push(coordinates[i]);
@@ -1481,21 +1484,21 @@ function drawFromLocalStorage() {
 }
 
 function addGlobalCoordinatesToZoom() {
-    globalOutlinePolygons = makeGeoJSONPolygon(0, "white", "black");
-    globalCorridorPolygons = makeGeoJSONPolygon(1, "red", "gray");
-    globalMergedCorridorPolygons = makeGeoJSONPolygon(2, "green", "gray");
-    mergedLarge = makeGeoJSONPolygon(3, "yellow", "gray");
-    mergedMedium = makeGeoJSONPolygon(4, "yellow", "gray");
-    mergedSmall = makeGeoJSONPolygon(5, "yellow", "gray");
-    globalRoomPolygons = makeGeoJSONPolygon(6, "white", "gray");
-    globalDoorPolygons = makeGeoJSONPolygon(7, "white", "green");
-    globalStairPolygons = makeGeoJSONPolygon(8, "white", "blue");
-    globalUnmergedPolygonsSimplified = makeGeoJSONPolygon(9, "white", "blue");
-    globalUnmergedPolygons = makeGeoJSONPolygon(10, "white", "blue");
+    globalOutlinePolygons = makeGeoJSONPolygon(0, "white", "black", "Polygon");
+    globalCorridorPolygons = makeGeoJSONPolygon(1, "red", "gray", "Polygon");
+    globalMergedCorridorPolygons = makeGeoJSONPolygon(2, "red", "gray", "Polygon");
+    mergedLarge = makeGeoJSONPolygon(3, "yellow", "gray", "Polygon");
+    mergedMedium = makeGeoJSONPolygon(4, "yellow", "gray", "Polygon");
+    mergedSmall = makeGeoJSONPolygon(5, "yellow", "gray", "Polygon");
+    globalRoomPolygons = makeGeoJSONPolygon(6, "white", "gray", "Polygon");
+    globalDoorPolygons = makeGeoJSONPolygon(7, "white", "green", "MultiLineString");
+    globalStairPolygons = makeGeoJSONPolygon(8, "white", "blue", "Polygon");
+    globalUnmergedPolygonsSimplified = makeGeoJSONPolygon(9, "white", "gray", "Polygon");
+    globalUnmergedPolygons = makeGeoJSONPolygon(10, "white", "gray", "Polygon");
 }
 
-function makeGeoJSONPolygon(index, fillColor, color) {
-    var JSON = makeGeoJSON(deepCopy(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[index]));
+function makeGeoJSONPolygon(index, fillColor, color, type) {
+    var JSON = makeGeoJSON(deepCopy(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[index]), type);
     return renderGeoJSON(JSON, fillColor, color);
 }
 
