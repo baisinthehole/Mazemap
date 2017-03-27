@@ -367,8 +367,6 @@ function renderGeoJSON(geoJSON, fillColor, color) {
 }
 
 function makeGeoJSON (coordinates, type) {
-    console.log(type);
-    console.log(deepCopy(coordinates));
 	for (var i = 0; i < coordinates.length; i++) {
         // coordinate is not a point
         if (coordinates[i][0].constructor === Array) {
@@ -382,7 +380,6 @@ function makeGeoJSON (coordinates, type) {
     		}
         }
 	}
-    console.log(deepCopy(coordinates));
 
 	result = {type: "FeatureCollection", features: []};
 	for (var i = 0; i < coordinates.length; i++) {
@@ -1471,14 +1468,24 @@ function drawFromLocalStorage() {
     }
     setAsOneFloorId(localStorageCoordinates, GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
     setAsOneFloorId(localStorageRoomNames, GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID);
-
+    removeEmptyRoomsOrNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[6], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[0]);
     mergeCorridorsForMultipleFloors();
 
     addGlobalCoordinatesToZoom();
+    addGlobalNamesToZoom();
     // layer.addTo(MAP);
     // globalMergedCorridorPolygons = deepCopy(layer);
     // globalMergedCorridorPolygons.addTo(MAP);
     // createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+}
+
+function removeEmptyRoomsOrNames(coordinates, names) {
+    for (var i = coordinates.length - 1; i >= 0; i--) {
+        if (coordinates[i].length == 0 || names[i].length == 0) {
+            coordinates.splice(i, 1);
+            names.splice(i, 1);
+        }
+    }
 }
 
 function addGlobalCoordinatesToZoom() {
@@ -1495,9 +1502,40 @@ function addGlobalCoordinatesToZoom() {
     globalUnmergedPolygons = makeGeoJSONPolygon(10, "white", "gray", "Polygon");
 }
 
+function addGlobalNamesToZoom() {
+    globalRoomNames = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[6], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[0]);
+    globalUnmergedNames = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[10], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[1]);
+    mergedTextLarge = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[3], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2]);
+    mergedTextMedium = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[4], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[3]);
+    mergedTextSmall = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[5], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[4]);
+    // console.log(globalUnmergedNames);
+    // console.log(deepCopy(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[3]));
+    // console.log(deepCopy(GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2]));
+    // console.log(mergedTextLarge);
+}
+
 function makeGeoJSONPolygon(index, fillColor, color, type) {
     var JSON = makeGeoJSON(deepCopy(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[index]), type);
     return renderGeoJSON(JSON, fillColor, color);
+}
+
+function makeAllRoomNames(coordinates, names) {
+    var nameMarkers = [];
+    for (var i = coordinates.length - 1; i >= 0; i--) {
+        // check if coordinate is point
+        if (coordinates[i][0].constructor !== Array) {
+            nameMarkers.push(makeLocalRoomNames((coordinates[i]), names[i]));
+        }
+        // check if coordinate consist of one room
+        else if (coordinates[i][0][0].constructor !== Array) {
+            nameMarkers.push(makeLocalRoomNames((coordinates[i]), names[i]));
+        }
+        // check if coordinate contains holes
+        else {
+            nameMarkers.push(makeLocalRoomNames(coordinates[i][getBiggestRoom(coordinates[i])], names[i]));
+        }
+    }
+    return nameMarkers;
 }
 
 function mergeCorridorsForMultipleFloors() {
@@ -1525,9 +1563,9 @@ function setAsOneFloorId(localStorage, globalArray) {
     for (var i = 0; i < localStorage.length; i++) {
         for (var j = 0; j < localStorage[i].length; j++) {
             for (var k = 0; k < localStorage[i][j].length; k++) {
-                if (localStorage[i][j][k].length > 0) {
+                // if (localStorage[i][j][k].length > 0) {
                     globalArray[j].push(localStorage[i][j][k]);
-                }
+                // }
             }
         }
     }

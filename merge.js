@@ -807,8 +807,6 @@ function rotateRooms(room1, room2, caseNr) {
             room1[closestRoomIndex1] = makeClockWise(room1[closestRoomIndex1]);
         }
         else {
-            console.log("Rotate rooms");
-            console.log(caseNr);
             room1[closestRoomIndex1] = makeCounterClockWise(room1[closestRoomIndex1]);
         }
         biggestRoomIndex2 = getBiggestRoom(room2);
@@ -817,8 +815,6 @@ function rotateRooms(room1, room2, caseNr) {
             room2[closestRoomIndex2] = makeClockWise(room2[closestRoomIndex2]);
         }
         else {
-            console.log("Rotate rooms");
-            console.log(caseNr);
             room2[closestRoomIndex2] = makeCounterClockWise(room2[closestRoomIndex2]);
         }
     }
@@ -830,8 +826,6 @@ function rotateRooms(room1, room2, caseNr) {
             room1[closestRoomIndex1] = makeClockWise(room1[closestRoomIndex1]);
         }
         else {
-            console.log("Rotate rooms");
-            console.log(caseNr);
             room1[closestRoomIndex1] = makeCounterClockWise(room1[closestRoomIndex1]);
         }
     }
@@ -905,7 +899,6 @@ function getBiggestRoom(room1) {
             index = i;
         }
     }
-    console.log(deepCopy(index));
     return index;
 }
 // function getBiggestRoom(room1) {
