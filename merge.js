@@ -807,8 +807,6 @@ function rotateRooms(room1, room2, caseNr) {
             room1[closestRoomIndex1] = makeClockWise(room1[closestRoomIndex1]);
         }
         else {
-            console.log("Rotate rooms");
-            console.log(caseNr);
             room1[closestRoomIndex1] = makeCounterClockWise(room1[closestRoomIndex1]);
         }
         biggestRoomIndex2 = getBiggestRoom(room2);
@@ -817,8 +815,6 @@ function rotateRooms(room1, room2, caseNr) {
             room2[closestRoomIndex2] = makeClockWise(room2[closestRoomIndex2]);
         }
         else {
-            console.log("Rotate rooms");
-            console.log(caseNr);
             room2[closestRoomIndex2] = makeCounterClockWise(room2[closestRoomIndex2]);
         }
     }
@@ -830,8 +826,6 @@ function rotateRooms(room1, room2, caseNr) {
             room1[closestRoomIndex1] = makeClockWise(room1[closestRoomIndex1]);
         }
         else {
-            console.log("Rotate rooms");
-            console.log(caseNr);
             room1[closestRoomIndex1] = makeCounterClockWise(room1[closestRoomIndex1]);
         }
     }
@@ -905,7 +899,6 @@ function getBiggestRoom(room1) {
             index = i;
         }
     }
-    console.log(deepCopy(index));
     return index;
 }
 // function getBiggestRoom(room1) {
@@ -1221,24 +1214,18 @@ function findOrderOfRooms(oldNeighbors, container) {
 		orderedRooms.push([]);
 		usedIndices.push([]);
 
-		[maxIndex1, maxIndex2] = findFarthestRooms(container[i]);
+        // just in case rooms go in a circle
+        currentIndex = container[i][0];
 
-		if (oldNeighbors[maxIndex1].length > 1) {
+        for (var j = 0; j < container[i].length; j++) {
+            if (oldNeighbors[container[i][j]].length == 1) {
+                orderedRooms[i].push(container[i][j]);
+                usedIndices[i].push(container[i][j]);
+                currentIndex = container[i][j];
+                break;
+            }
+        }
 
-			orderedRooms[i].push(maxIndex2);
-
-			usedIndices[i].push(maxIndex2);
-
-			currentIndex = maxIndex2;
-		}
-		else {
-
-			orderedRooms[i].push(maxIndex1);
-
-			usedIndices[i].push(maxIndex1);
-
-			currentIndex = maxIndex1;
-		}
 		for (var j = 0; j < container[i].length; j++) {
 			if (contains(oldNeighbors[currentIndex], container[i][j])) {
 				if (!contains(usedIndices[i], container[i][j])) {
@@ -1520,6 +1507,7 @@ function getUnmergedRooms(container, coordinates) {
             if (GLOBAL_ROOM_COORDINATES[i].length > 0){
                 globalUnmergedRoomsSimplified.push(coordinates[i]);
                 globalUnmergedRooms.push(GLOBAL_ROOM_COORDINATES[i]);
+                globalUnmergedNameList.push(GEO_JSON.pois[i].title);
                 globalUnmergedNames.push(makeLocalRoomNames(GLOBAL_ROOM_COORDINATES[i], GEO_JSON.pois[i].title));
             }
         }

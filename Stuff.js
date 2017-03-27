@@ -50,6 +50,11 @@ for (var i = 0; i < 11; i++) {
     GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID.push([]);
 }
 
+var GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID = [];
+for (var i = 0; i < 5; i++) {
+    GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID.push([]);
+}
+
 // all room coordinates
 var GLOBAL_ROOM_COORDINATES;
 
@@ -118,6 +123,11 @@ var globalRoomNameCoordinates = [];
 // all room name strings
 var globalNameList = [];
 
+// all unmerged room name strings
+var globalUnmergedNameList = [];
+
+var GLOBAL_ROOM_NAMES = [globalNameList, globalUnmergedNameList];
+
 // all polygons
 var polygonList;
 
@@ -126,6 +136,8 @@ function zoom() {
 
     // contains all kinds of polygons displayed on different levels
     polygonList = [globalOutlinePolygons, globalCorridorPolygons, globalMergedCorridorPolygons, mergedLarge, mergedMedium, mergedSmall, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons];
+    console.log(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+    console.log(polygonList);
 
     // contains all kinds of room names displayed on different levels
     var nameList = [globalRoomNames, globalUnmergedNames, mergedTextLarge, mergedTextMedium, mergedTextSmall];
@@ -177,12 +189,12 @@ function zoom() {
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 21){
-            drawings = [true, true, false, false, false, false, true, false, false, false, false];
+            drawings = [true, true, false, false, false, false, true, true, true, false, false];
             names = [true, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else {
-            drawings = [true, true, false, false, false, false, true, false, false, false, false];
+            drawings = [true, true, false, false, false, false, true, true, true, false, false];
             names = [true, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
@@ -198,7 +210,7 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
                     drawPolygons([polygonList[i]]);
                 }
                 else {
-                    drawPolygons(polygonList[i]);
+                    drawVectorGridSlicedPolygons(polygonList[i]);
                 }
             }
             else if (nowDrawings[i]){
@@ -206,7 +218,7 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
                     removePolygons([polygonList[i]]);
                 }
                 else {
-                    removePolygons(polygonList[i]);
+                    removeVectorGridSlicedPolygons(polygonList[i]);
                 }
             }
             nowDrawings[i] = !nowDrawings[i];
@@ -336,11 +348,11 @@ function recievedLocalJSON(data) {
         // }
     }
     drawFromLocalStorage();
-    // zoom();
+    zoom();
 }
 
 function renderGeoJSON(geoJSON, fillColor, color) {
-	var layer = L.vectorGrid.slicer(geoJSON, {
+	return L.vectorGrid.slicer(geoJSON, {
         maxZoom: 25,
         vectorTileLayerStyles: {
             sliced: function() {
@@ -351,47 +363,49 @@ function renderGeoJSON(geoJSON, fillColor, color) {
                 }
             }
         }
-    }).addTo(MAP);
+    });
 }
 
-function makeGeoJSON (coordinates) {
-
-
+function makeGeoJSON (coordinates, type) {
 	for (var i = 0; i < coordinates.length; i++) {
-		if (coordinates[i][0][0].constructor === Array) {
-			for (var j = 0; j < coordinates[i].length; j++) {
-				switchLatLong(coordinates[i][j]);
-			}
-		}
-		else {
-			switchLatLong(coordinates[i]);
-		}
+        // coordinate is not a point
+        if (coordinates[i][0].constructor === Array) {
+    		if (coordinates[i][0][0].constructor === Array) {
+    			for (var j = 0; j < coordinates[i].length; j++) {
+    				switchLatLong(coordinates[i][j]);
+    			}
+    		}
+    		else { // if (type != "LineString") {
+    			switchLatLong(coordinates[i]);
+    		}
+        }
 	}
 
-
 	result = {type: "FeatureCollection", features: []};
-
 	for (var i = 0; i < coordinates.length; i++) {
-
-		if (coordinates[i][0][0].constructor === Array) {
-			result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "MultiPolygon"}, "properties": {"layer": "hallways"}});
-			moveBiggestRoomFirst(coordinates[i]);
-			for (var j = 0; j < coordinates[i].length; j++) {
-				if (coordinates[i][j][0] != coordinates[i][j][coordinates[i].length - 1]) {
-					coordinates[i][j].push(coordinates[i][j][0]);
-				}
-			}
-		}
-		else {
-			result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "Polygon"}, "properties": {"layer": "hallways"}});
-			if (coordinates[i][0] != coordinates[i][coordinates.length - 1]) {
-				coordinates[i].push(coordinates[i][0]);
-			}
-		}
+        if (coordinates[i][0].constructor === Array) {
+    		if (coordinates[i][0][0].constructor === Array) {
+    			result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "MultiPolygon"}, "properties": {"layer": "hallways"}});
+    			moveBiggestRoomFirst(coordinates[i]);
+    			for (var j = 0; j < coordinates[i].length; j++) {
+    				if (coordinates[i][j][0] != coordinates[i][j][coordinates[i].length - 1]) {
+    					coordinates[i][j].push(coordinates[i][j][0]);
+    				}
+    			}
+    		}
+    		else {
+    			result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": type}, "properties": {"layer": "hallways"}});
+    			if (coordinates[i][0] != coordinates[i][coordinates.length - 1] && type == "Polygon") {
+    				coordinates[i].push(coordinates[i][0]);
+    			}
+    		}
+        }
+        else {
+                result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": type}, "properties": {"layer": "hallways"}});
+        }
 
 		result.features[i].geometry.coordinates.push(coordinates[i]);
 	}
-	console.log(result);
 	return result;
 }
 
@@ -612,6 +626,15 @@ function removePolygons(polygonList) {
         }
     }
 }
+
+function drawVectorGridSlicedPolygons(polygonList) {
+    polygonList.addTo(MAP);
+}
+
+function removeVectorGridSlicedPolygons(polygonList) {
+    polygonList.removeFrom(MAP);
+}
+
 
 function makeRoomNames(coordinates, title) {
     var myIcon;
@@ -1432,19 +1455,87 @@ function areaMerge(numSplit, areaList) {
 }
 
 function drawFromLocalStorage() {
+    // Get coordinates and room names from localStorage
     var localStorageCoordinates = [];
+    var localStorageRoomNames = [];
     for (var i = 0; i < FLOOR_IDS.length; i++) {
         if (localStorage.getItem('allCoordinates'+FLOOR_IDS[i]) !== null) {
             localStorageCoordinates.push(JSON.parse(localStorage.getItem('allCoordinates'+FLOOR_IDS[i])));
         }
+        if (localStorage.getItem('allNames'+FLOOR_IDS[i]) !== null) {
+            localStorageRoomNames.push(JSON.parse(localStorage.getItem('allNames'+FLOOR_IDS[i])));
+        }
     }
-    setCoordinatesAsOneFloorId(localStorageCoordinates);
-
+    setAsOneFloorId(localStorageCoordinates, GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+    setAsOneFloorId(localStorageRoomNames, GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID);
+    removeEmptyRoomsOrNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[6], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[0]);
     mergeCorridorsForMultipleFloors();
-    corridorJSON = makeGeoJSON(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[2]);
-    renderGeoJSON(corridorJSON, "green", "blue");
 
+    addGlobalCoordinatesToZoom();
+    addGlobalNamesToZoom();
+    // layer.addTo(MAP);
+    // globalMergedCorridorPolygons = deepCopy(layer);
+    // globalMergedCorridorPolygons.addTo(MAP);
     // createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+}
+
+function removeEmptyRoomsOrNames(coordinates, names) {
+    for (var i = coordinates.length - 1; i >= 0; i--) {
+        if (coordinates[i].length == 0 || names[i].length == 0) {
+            coordinates.splice(i, 1);
+            names.splice(i, 1);
+        }
+    }
+}
+
+function addGlobalCoordinatesToZoom() {
+    globalOutlinePolygons = makeGeoJSONPolygon(0, "white", "black", "Polygon");
+    globalCorridorPolygons = makeGeoJSONPolygon(1, "red", "gray", "Polygon");
+    globalMergedCorridorPolygons = makeGeoJSONPolygon(2, "red", "gray", "Polygon");
+    mergedLarge = makeGeoJSONPolygon(3, "yellow", "gray", "Polygon");
+    mergedMedium = makeGeoJSONPolygon(4, "yellow", "gray", "Polygon");
+    mergedSmall = makeGeoJSONPolygon(5, "yellow", "gray", "Polygon");
+    globalRoomPolygons = makeGeoJSONPolygon(6, "white", "gray", "Polygon");
+    globalDoorPolygons = makeGeoJSONPolygon(7, "white", "green", "MultiLineString");
+    globalStairPolygons = makeGeoJSONPolygon(8, "white", "blue", "Polygon");
+    globalUnmergedPolygonsSimplified = makeGeoJSONPolygon(9, "white", "gray", "Polygon");
+    globalUnmergedPolygons = makeGeoJSONPolygon(10, "white", "gray", "Polygon");
+}
+
+function addGlobalNamesToZoom() {
+    globalRoomNames = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[6], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[0]);
+    globalUnmergedNames = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[10], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[1]);
+    mergedTextLarge = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[3], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2]);
+    mergedTextMedium = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[4], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[3]);
+    mergedTextSmall = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[5], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[4]);
+    // console.log(globalUnmergedNames);
+    // console.log(deepCopy(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[3]));
+    // console.log(deepCopy(GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2]));
+    // console.log(mergedTextLarge);
+}
+
+function makeGeoJSONPolygon(index, fillColor, color, type) {
+    var JSON = makeGeoJSON(deepCopy(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[index]), type);
+    return renderGeoJSON(JSON, fillColor, color);
+}
+
+function makeAllRoomNames(coordinates, names) {
+    var nameMarkers = [];
+    for (var i = coordinates.length - 1; i >= 0; i--) {
+        // check if coordinate is point
+        if (coordinates[i][0].constructor !== Array) {
+            nameMarkers.push(makeLocalRoomNames((coordinates[i]), names[i]));
+        }
+        // check if coordinate consist of one room
+        else if (coordinates[i][0][0].constructor !== Array) {
+            nameMarkers.push(makeLocalRoomNames((coordinates[i]), names[i]));
+        }
+        // check if coordinate contains holes
+        else {
+            nameMarkers.push(makeLocalRoomNames(coordinates[i][getBiggestRoom(coordinates[i])], names[i]));
+        }
+    }
+    return nameMarkers;
 }
 
 function mergeCorridorsForMultipleFloors() {
@@ -1468,9 +1559,21 @@ function setCoordinatesAsOneFloorId(localStorageCoordinates) {
 }
 
 
+function setAsOneFloorId(localStorage, globalArray) {
+    for (var i = 0; i < localStorage.length; i++) {
+        for (var j = 0; j < localStorage[i].length; j++) {
+            for (var k = 0; k < localStorage[i][j].length; k++) {
+                // if (localStorage[i][j][k].length > 0) {
+                    globalArray[j].push(localStorage[i][j][k]);
+                // }
+            }
+        }
+    }
+}
+
+
 
 function createPolygonsFromAllCoordinatesAsOneFloorId(coordinates) {
-    console.log(coordinates);
     globalOutlinePolygons = fillAllPolygons(coordinates[0],"black", "white", "polygon");
     globalCorridorPolygons = fillAllPolygons(coordinates[1], "blue", "red", "polygon");
     globalMergedCorridorPolygons = fillAllPolygons(coordinates[2], "blue", "red","polygon");
@@ -1520,4 +1623,11 @@ function angleFromCoordinate(lat1, long1, lat2, long2) {
     brng = 360 - brng; // count degrees counter-clockwise - remove to make clockwise
 
     return brng;
+}
+
+function storeMergedRoomNames(textZoomLevels) {
+    for (var i = 0; i < textZoomLevels.length; i++) {
+        GLOBAL_ROOM_NAMES.push(textZoomLevels[i]);
+    }
+    localStorage.setItem('allNames'+FLOOR_ID, JSON.stringify(GLOBAL_ROOM_NAMES));
 }
