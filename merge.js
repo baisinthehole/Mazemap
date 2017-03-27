@@ -1221,6 +1221,17 @@ function findOrderOfRooms(oldNeighbors, container) {
 		orderedRooms.push([]);
 		usedIndices.push([]);
 
+        // check how many end rooms there are. Should always be two
+        var numberOfEndRooms = 0;
+        for (var j = 0; j < container[i].length; j++) {
+            if (oldNeighbors[container[i][j]].length == 1) {
+                numberOfEndRooms++;
+            }
+        }
+        if (numberOfEndRooms > 2) {
+            console.log("more than two end rooms!");
+        }
+
         // just in case rooms go in a circle
         currentIndex = container[i][0];
 
