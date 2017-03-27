@@ -1221,30 +1221,15 @@ function findOrderOfRooms(oldNeighbors, container) {
 		orderedRooms.push([]);
 		usedIndices.push([]);
 
-		// [maxIndex1, maxIndex2] = findFarthestRooms(container[i]);
-
-		// if (oldNeighbors[maxIndex1].length > 1) {
-
-		// 	orderedRooms[i].push(maxIndex2);
-
-		// 	usedIndices[i].push(maxIndex2);
-
-		// 	currentIndex = maxIndex2;
-		// }
-		// else {
-
-		// 	orderedRooms[i].push(maxIndex1);
-
-		// 	usedIndices[i].push(maxIndex1);
-
-		// 	currentIndex = maxIndex1;
-		// }
+        // just in case rooms go in a circle
+        currentIndex = container[i][0];
 
         for (var j = 0; j < container[i].length; j++) {
             if (oldNeighbors[container[i][j]].length == 1) {
                 orderedRooms[i].push(container[i][j]);
                 usedIndices[i].push(container[i][j]);
                 currentIndex = container[i][j];
+                break;
             }
         }
 
