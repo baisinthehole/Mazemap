@@ -472,27 +472,25 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
             makeRoomNames([0,0], "");
         }
         else{
-            for (var j = 0; j < data.pois[i].infos.length; j++) {
-                if (data.pois[i].infos[j].poiTypeId == coordinateType) {
-                    if (data.pois[i].geometry.coordinates[0].constructor === Array){
-                        coordinates.push(deepCopy(data.pois[i].geometry.coordinates[0]));
-                        // if (coordinates[coordinates.length - 1][0][0] < 30){
-                            for (k = 0; k < coordinates[coordinates.length - 1].length; k++) {
-                                temp = coordinates[coordinates.length - 1][k][0];
-                                coordinates[coordinates.length - 1][k][0] = coordinates[coordinates.length - 1][k][1];
-                                coordinates[coordinates.length - 1][k][1] = temp;
-                            }
-                        // }
-                    }
-                    else {
-                        coordinates.push(deepCopy(data.pois[i].geometry.coordinates));
-                        temp = coordinates[coordinates.length - 1][0];
-                        coordinates[coordinates.length - 1][0] = coordinates[coordinates.length - 1][1];
-                        coordinates[coordinates.length - 1][1] = temp;
-                    }
-                    if (coordinateType == ROOM_TYPE.ROOM){
-                        makeRoomNames(coordinates[coordinates.length-1], data.pois[i].title);
-                    }
+            if (checkPoiType(data.pois[i].infos, coordinateType)) {
+                if (data.pois[i].geometry.coordinates[0].constructor === Array){
+                    coordinates.push(deepCopy(data.pois[i].geometry.coordinates[0]));
+                    // if (coordinates[coordinates.length - 1][0][0] < 30){
+                        for (k = 0; k < coordinates[coordinates.length - 1].length; k++) {
+                            temp = coordinates[coordinates.length - 1][k][0];
+                            coordinates[coordinates.length - 1][k][0] = coordinates[coordinates.length - 1][k][1];
+                            coordinates[coordinates.length - 1][k][1] = temp;
+                        }
+                    // }
+                }
+                else {
+                    coordinates.push(deepCopy(data.pois[i].geometry.coordinates));
+                    temp = coordinates[coordinates.length - 1][0];
+                    coordinates[coordinates.length - 1][0] = coordinates[coordinates.length - 1][1];
+                    coordinates[coordinates.length - 1][1] = temp;
+                }
+                if (coordinateType == ROOM_TYPE.ROOM){
+                    makeRoomNames(coordinates[coordinates.length-1], data.pois[i].title);
                 }
             }
         }
