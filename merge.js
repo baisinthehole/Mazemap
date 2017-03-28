@@ -623,8 +623,8 @@ function superDuperMerge(room1, room2, test = false) {
     var connectedPoints;
     if (room1[0][0].constructor === Array && room2[0][0].constructor === Array){
         rotateRooms(room1, room2, 0);
-        var closestRoomIndex1 = getClosestRoom(room1, room2);
-        var closestRoomIndex2 = getClosestRoom(room2, room1);
+        var closestRoomIndex1 = getClosestRoom(room1, room2[getBiggestRoom(room2)]);
+        var closestRoomIndex2 = getClosestRoom(room2, room1[getBiggestRoom(room1)]);
         addedPoints = addPointsForTwoPolygon(room1[closestRoomIndex1], room2[closestRoomIndex2]);
         room1[closestRoomIndex1] = addedPoints[0];
         room2[closestRoomIndex2] = addedPoints[1];
@@ -918,10 +918,12 @@ function getClosestRoom(room1, room2) {
     var dist;
     var index;
     for (var i = 0; i < room1.length; i++) {
-        dist = getMinDistToPoly(room2[0], room1[i]);
-        if (dist < shortestDist){
-            shortestDist = dist;
-            index = i;
+        for (var j = 0; j < room2.length; j++) {
+            dist = getMinDistToPoly(room2[j], room1[i]);
+            if (dist < shortestDist){
+                shortestDist = dist;
+                index = i;
+            }
         }
     }
     return index;
@@ -949,6 +951,7 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
         // If a result room is complete
         if (resultRoom.length > 1 && roomNr == 0){
             if (resultRoom[0] == polygon1[index]){
+                resultRoom.push(polygon1[index]);
                 resultRooms.push(resultRoom);
                 // console.log("End");
                 // console.log(deepCopy(points1));
