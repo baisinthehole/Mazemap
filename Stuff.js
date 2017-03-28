@@ -948,6 +948,13 @@ function poiTypeOffice(infos1, infos2, roomNumber){
     return nrOffice>=2;
 }
 
+function poiTypeNotCorridor(infos1, infos2) {
+    if (checkPoiType(infos1, ROOM_TYPE.CORRIDOR) || checkPoiType(infos2, ROOM_TYPE.CORRIDOR)) {
+        return false;
+    }
+    return true;
+}
+
 function checkPoiType(infos, poiType){
     var same = false;
     for (var i = 0; i < infos.length; i++) {
