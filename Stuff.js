@@ -759,7 +759,7 @@ function getNeighbors(data, simplified){
             if (i!=j){
                 result = getDistPolyToPoly(simplified[i], simplified[j]);
                 if (result[2] < VERY_IMPORTANCE_DISTANCE) {
-                    if (samePoiTypeNotCorridors(data.pois[i].infos, data.pois[j].infos, i)){
+                    if (poiTypeNotCorridor(data.pois[i].infos, data.pois[j].infos, i)){
                         adjacent.push(j);
                     }
                 }
