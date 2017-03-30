@@ -47,36 +47,42 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container);
 
-    var orderedRooms = findOrderOfRooms(oldNeighbors, container);
+    console.log(container);
+    var rootNode = createTree(deepCopy(container[1]), oldNeighbors);
+    console.log(rootNode);
+    getAreaNode(rootNode);
+    console.log(rootNode);
 
-    dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms, GLOBAL_ROOM_COORDINATES);
+ //    var orderedRooms = findOrderOfRooms(oldNeighbors, container);
 
-    var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
+ //    dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms, GLOBAL_ROOM_COORDINATES);
 
-    fillZoomLevelPolygons(zoomLevelsCoordinates);
+ //    var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
 
-    roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
+ //    fillZoomLevelPolygons(zoomLevelsCoordinates);
 
-    fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
+ //    roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
-    var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
+ //    fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
 
-    convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
+ //    var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
 
-    [globalMergedCorridorCoordinates, corridorContainer] = mergeCorridors();
-	[globalMergedCorridorCoordinates, corridorContainer] = removeDuplicateRooms(globalMergedCorridorCoordinates, corridorContainer);
-    GLOBAL_ALL_COORDINATES[2] = deepCopy(globalMergedCorridorCoordinates);
+ //    convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
 
-    fillMergedCoordinates(globalMergedCorridorCoordinates);
+ //    [globalMergedCorridorCoordinates, corridorContainer] = mergeCorridors();
+	// [globalMergedCorridorCoordinates, corridorContainer] = removeDuplicateRooms(globalMergedCorridorCoordinates, corridorContainer);
+ //    GLOBAL_ALL_COORDINATES[2] = deepCopy(globalMergedCorridorCoordinates);
 
-    // var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
+ //    fillMergedCoordinates(globalMergedCorridorCoordinates);
 
-    // convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
+ //    // var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
 
-    // Store coordinates in localStorage if it is not there already
-    // if (localStorage.getItem('allCoordinates'+FLOOR_ID) === null) {
-        localStorage.setItem('allCoordinates'+FLOOR_ID, JSON.stringify(GLOBAL_ALL_COORDINATES));
-        storeMergedRoomNames(textZoomLevels);
+ //    // convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
+
+ //    // Store coordinates in localStorage if it is not there already
+ //    // if (localStorage.getItem('allCoordinates'+FLOOR_ID) === null) {
+ //        localStorage.setItem('allCoordinates'+FLOOR_ID, JSON.stringify(GLOBAL_ALL_COORDINATES));
+ //        storeMergedRoomNames(textZoomLevels);
     // }
 }
 

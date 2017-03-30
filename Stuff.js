@@ -1638,3 +1638,53 @@ function storeMergedRoomNames(textZoomLevels) {
     }
     localStorage.setItem('allNames'+FLOOR_ID, JSON.stringify(GLOBAL_ROOM_NAMES));
 }
+
+function Node(index, parent) {
+    this.area = getArea(GLOBAL_ROOM_COORDINATES[index]);
+    this.index = index;
+    this.parent = parent;
+    this.children = [];
+}
+
+function findRoomWithLeastNeighbors(rooms, oldNeighbors) {
+    var leastNeighbors = Infinity;
+    var roomWithLeastNeighbors;
+    for (var i = 0; i < rooms.length; i++) {
+        if (oldNeighbors[rooms[i]].length < leastNeighbors) {
+            leastNeighbors = oldNeighbors[rooms[i]].length;
+            roomWithLeastNeighbors = rooms[i];
+        }
+    }
+    console.log("leastNeighbors");
+    console.log(leastNeighbors);
+    return roomWithLeastNeighbors;
+}
+
+function createTree(rooms, oldNeighbors) {
+    var startIndex = findRoomWithLeastNeighbors(rooms, oldNeighbors);
+    var node = new Node(startIndex, null);
+    var rootNode = node;
+    var roomsInTree = [startIndex];
+    var toBeVisited = [node];
+    while (rooms.length > 0) {
+        // set node to next unvisited node
+        node = toBeVisited.splice(0, 1)[0];
+        rooms.splice(rooms.indexOf(node.index), 1);
+        for (var i = 0; i < oldNeighbors[node.index].length; i++) {
+            if (!contains(roomsInTree, oldNeighbors[node.index][i])) {
+                var child = new Node(oldNeighbors[node.index][i], node);
+                node.children.push(child);
+                toBeVisited.push(child);
+                roomsInTree.push(oldNeighbors[node.index][i]);
+            }
+        }
+    }
+    return rootNode;
+}
+
+function getAreaNode(node) {
+    for (var i = 0; i < node.children.length; i++) {
+        node.area += getAreaNode(node.children[i]);
+    }
+    return node.area;
+}
