@@ -1673,6 +1673,8 @@ function createTree(rooms, oldNeighbors) {
         for (var i = 0; i < oldNeighbors[node.index].length; i++) {
             if (!contains(roomsInTree, oldNeighbors[node.index][i])) {
                 var child = new Node(oldNeighbors[node.index][i], node);
+                console.log(child.index);
+                console.log(child.area);
                 node.children.push(child);
                 toBeVisited.push(child);
                 roomsInTree.push(oldNeighbors[node.index][i]);
@@ -1682,6 +1684,7 @@ function createTree(rooms, oldNeighbors) {
     return rootNode;
 }
 
+// add total area of subtree to a root node
 function getAreaNode(node) {
     for (var i = 0; i < node.children.length; i++) {
         node.area += getAreaNode(node.children[i]);
@@ -1689,14 +1692,15 @@ function getAreaNode(node) {
     return node.area;
 }
 
-function getNodesClosestToHalf(node) {
-    var targetArea = node.area/2;
+// return split node of first part if tree is divided in k parts
+function getNodesClosestFractialArea(node, k) {
+    var targetArea = node.area*(1-(1/k));
     var toBeVisited = [];
     while (true) {
         for (var i = 0; i < node.children.length; i++) {
             toBeVisited.push(node.children[i]);
         }
-        if (node.area < targetArea) {
+        if (node.area < targetArea || node.children.length == 0) {
             var done = true;
             for (var i = 0; i < toBeVisited.length; i++) {
                 if (toBeVisited[i].area >= targetArea) {
@@ -1710,17 +1714,23 @@ function getNodesClosestToHalf(node) {
         }
         node = toBeVisited.splice(-1, 1)[0];
     }
+    return getSplitNode(node, targetArea);
+}
+
+// get node with closest area to target area
+function getSplitNode(node, targetArea) {
     var splitNode = node;
     closestArea = Math.abs(node.area - targetArea);
     for (var i = 0; i < node.children.length; i++) {
-        if (Math.abs(node.children.area - targetArea) < closestArea) {
-            splitNode = node;
-            closestArea = Math.abs(node.children.area - targetArea);
+        if (Math.abs(node.children[i].area - targetArea) < closestArea) {
+            splitNode = node.children[i];
+            closestArea = Math.abs(node.children[i].area - targetArea);
         }
     }
     return splitNode;
 }
 
+// split tree into two trees with splitnode as new root
 function splitTree(rootNode, splitNode) {
     splitNode.parent.children.splice(splitNode.parent.children.indexOf(splitNode), 1);
     splitNode.parent = null;
@@ -1729,9 +1739,12 @@ function splitTree(rootNode, splitNode) {
 function createZoomLevelTree(container, oldNeighbors) {
     var rootNode = createTree(deepCopy(container[1]), oldNeighbors);
     getAreaNode(rootNode);
-    var splitNode = getNodesClosestToHalf(rootNode);
+    var splitNode = getNodesClosestFractialArea(rootNode, 3);
     splitTree(rootNode, splitNode);
+    var splitNode2 = getNodesClosestFractialArea(splitNode, 2);
+    splitTree(splitNode, splitNode2);
     console.log("Nodes");
     console.log(rootNode);
     console.log(splitNode);
+    console.log(splitNode2);
 }
