@@ -47,11 +47,7 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container);
 
-    console.log(container);
-    var rootNode = createTree(deepCopy(container[1]), oldNeighbors);
-    console.log(rootNode);
-    getAreaNode(rootNode);
-    console.log(rootNode);
+    createZoomLevelTree(container, oldNeighbors);
 
  //    var orderedRooms = findOrderOfRooms(oldNeighbors, container);
 

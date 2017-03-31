@@ -1688,3 +1688,50 @@ function getAreaNode(node) {
     }
     return node.area;
 }
+
+function getNodesClosestToHalf(node) {
+    var targetArea = node.area/2;
+    var toBeVisited = [];
+    while (true) {
+        for (var i = 0; i < node.children.length; i++) {
+            toBeVisited.push(node.children[i]);
+        }
+        if (node.area < targetArea) {
+            var done = true;
+            for (var i = 0; i < toBeVisited.length; i++) {
+                if (toBeVisited[i].area >= targetArea) {
+                    done = false;
+                }
+            }
+            if (done) {
+                node = node.parent;
+                break;
+            }
+        }
+        node = toBeVisited.splice(-1, 1)[0];
+    }
+    var splitNode = node;
+    closestArea = Math.abs(node.area - targetArea);
+    for (var i = 0; i < node.children.length; i++) {
+        if (Math.abs(node.children.area - targetArea) < closestArea) {
+            splitNode = node;
+            closestArea = Math.abs(node.children.area - targetArea);
+        }
+    }
+    return splitNode;
+}
+
+function splitTree(rootNode, splitNode) {
+    splitNode.parent.children.splice(splitNode.parent.children.indexOf(splitNode), 1);
+    splitNode.parent = null;
+}
+
+function createZoomLevelTree(container, oldNeighbors) {
+    var rootNode = createTree(deepCopy(container[1]), oldNeighbors);
+    getAreaNode(rootNode);
+    var splitNode = getNodesClosestToHalf(rootNode);
+    splitTree(rootNode, splitNode);
+    console.log("Nodes");
+    console.log(rootNode);
+    console.log(splitNode);
+}
