@@ -283,10 +283,10 @@ function recievedJSONfromServer() {
     GLOBAL_ALL_COORDINATES[1] = deepCopy(GLOBAL_CORRIDOR_COORDINATES);
 
     removedDuplicatePoints = removeDuplicatesFromAllRooms(globalRoomCoordinates);
-    var simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);
+    // var simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);
 
     // This function is defined in main.js
-    createglobalMergedPolygons(geoJSON, simplifiedRoomCoordinates);
+    createglobalMergedPolygons(geoJSON, removedDuplicatePoints);
     if (localStorage.getItem('everything'+FLOOR_ID) === null) {
         localStorage.setItem('everything'+FLOOR_ID, JSON.stringify(polygonList));
     }
@@ -1727,9 +1727,11 @@ function getSplitNode(node, targetArea) {
 }
 
 // split tree into two trees with splitnode as new root
-function splitTree(rootNode, splitNode) {
-    splitNode.parent.children.splice(splitNode.parent.children.indexOf(splitNode), 1);
-    splitNode.parent = null;
+function splitTree(splitNodes) {
+    for (var i = 1; i < splitNodes.length; i++) {
+        splitNodes[i].parent.children.splice(splitNodes[i].parent.children.indexOf(splitNodes[i]), 1);
+        splitNodes[i].parent = null;
+    }
 }
 
 function splitIntoKTrees(rootNode, k) {
@@ -1765,22 +1767,72 @@ function isEven(areas, totalArea) {
     return even;
 }
 
-function choose2or3split(areas2, areas3){}
+function choose2split(areas2, areas3, totalArea){
+    var greatesDifferent2 = 0;
+    var greatesDifferent3 = 0;
+    for (var i = 0; i < areas2.length; i++) {
+        if (Math.abs(areas2[i]-totalArea/2) > greatesDifferent2) {
+            greatesDifferent2 = Math.abs(areas2[i]-totalArea/2);
+        }
+    }
+    for (i = 0; i < areas3.length; i++) {
+        if (Math.abs(areas3[i]-totalArea/3) > greatesDifferent3) {
+            greatesDifferent3 = Math.abs(areas3[i]-totalArea/3);
+        }
+    }
+    return greatesDifferent2 < greatesDifferent3;
+}
+
+function getIndicesInGroup(rootNode) {
+    var indices = [];
+    var node;
+    toBeVisited = [rootNode];
+    while (toBeVisited.length > 0) {
+        node = toBeVisited.splice(0, 1)[0];
+        indices.push(node.index);
+        for (var i = 0; i < node.children.length; i++) {
+            toBeVisited.push(node.children[i]);
+        }
+    }
+    return indices;
+}
+
+function getRootsOfSubtree(rootNode) {
+    var split2 = splitIntoKTrees(rootNode, 2);
+    var areas2 = getSubTreeArea(split2);
+    var split3 = splitIntoKTrees(rootNode, 3);
+    var areas3 = getSubTreeArea(split3);
+    var split;
+    if (choose2split(areas2, areas3, rootNode.area)) {
+        split = split2;
+    }
+    else {
+        split = split3;
+    }
+    return split;
+}
 
 function createZoomLevelTree(container, oldNeighbors) {
-    // container.length
-    console.log(container);
+    var zoomLevels = [];
     for (var i = 0; i < container.length; i++) {
+        zoomLevel = [];
         if (container[i].length > 1) {
             var rootNode = createTree(deepCopy(container[i]), oldNeighbors);
             getAreaNode(rootNode);
-            var split2 = splitIntoKTrees(rootNode, 2);
-            var areas2 = getSubTreeArea(split2);
-            if(isEven(areas2, rootNode.area)) {
-                var split3 = splitIntoKTrees(rootNode, 3);
-                var areas3 = getSubTreeArea(split3);
-                console.log(isEven(areas3, rootNode.area));
+            zoomLevel.push([getIndicesInGroup(rootNode)]);
+            var split = getRootsOfSubtree(rootNode);
+            splitTree(split);
+            console.log("indices");
+            var zoomLevelGroup = [];
+            for (j = 0; j < split.length; j++) {
+                zoomLevelGroup.push(getIndicesInGroup(split[j]));
             }
+            zoomLevel.push(zoomLevelGroup);
         }
+        else {
+            zoomLevel.push([[]]);
+        }
+        zoomLevels.push(zoomLevel);
     }
+    return zoomLevels;
 }

@@ -47,33 +47,33 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container);
 
-    createZoomLevelTree(container, oldNeighbors);
+    dynamicMergedRooms = createZoomLevelTree(container, oldNeighbors);
 
  //    var orderedRooms = findOrderOfRooms(oldNeighbors, container);
 
  //    dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms, GLOBAL_ROOM_COORDINATES);
 
- //    var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
+    var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
 
- //    fillZoomLevelPolygons(zoomLevelsCoordinates);
+    fillZoomLevelPolygons(zoomLevelsCoordinates);
 
- //    roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
+    roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
- //    fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
+    fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
 
- //    var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
+    var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
 
- //    convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
+    convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
 
- //    [globalMergedCorridorCoordinates, corridorContainer] = mergeCorridors();
-	// [globalMergedCorridorCoordinates, corridorContainer] = removeDuplicateRooms(globalMergedCorridorCoordinates, corridorContainer);
- //    GLOBAL_ALL_COORDINATES[2] = deepCopy(globalMergedCorridorCoordinates);
+    [globalMergedCorridorCoordinates, corridorContainer] = mergeCorridors();
+	[globalMergedCorridorCoordinates, corridorContainer] = removeDuplicateRooms(globalMergedCorridorCoordinates, corridorContainer);
+    GLOBAL_ALL_COORDINATES[2] = deepCopy(globalMergedCorridorCoordinates);
 
- //    fillMergedCoordinates(globalMergedCorridorCoordinates);
+    fillMergedCoordinates(globalMergedCorridorCoordinates);
 
- //    // var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
+    // var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
 
- //    // convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
+    // convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
 
  //    // Store coordinates in localStorage if it is not there already
  //    // if (localStorage.getItem('allCoordinates'+FLOOR_ID) === null) {

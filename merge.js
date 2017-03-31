@@ -1482,7 +1482,7 @@ function fillZoomLevels(dynamicMergedRooms, oldRooms){
     var globalZoomLevels = [[],[],[]];
     var index;
     var lastPolygon;
-
+    console.log(dynamicMergedRooms);
     for (var i = 0; i < dynamicMergedRooms.length; i++) {
         if (dynamicMergedRooms[i][0][0].length > 1){
             for (var j = 0; j < 3; j++) {
