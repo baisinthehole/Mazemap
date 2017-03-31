@@ -1655,8 +1655,6 @@ function findRoomWithLeastNeighbors(rooms, oldNeighbors) {
             roomWithLeastNeighbors = rooms[i];
         }
     }
-    console.log("leastNeighbors");
-    console.log(leastNeighbors);
     return roomWithLeastNeighbors;
 }
 
@@ -1673,8 +1671,6 @@ function createTree(rooms, oldNeighbors) {
         for (var i = 0; i < oldNeighbors[node.index].length; i++) {
             if (!contains(roomsInTree, oldNeighbors[node.index][i])) {
                 var child = new Node(oldNeighbors[node.index][i], node);
-                console.log(child.index);
-                console.log(child.area);
                 node.children.push(child);
                 toBeVisited.push(child);
                 roomsInTree.push(oldNeighbors[node.index][i]);
@@ -1736,15 +1732,55 @@ function splitTree(rootNode, splitNode) {
     splitNode.parent = null;
 }
 
+function splitIntoKTrees(rootNode, k) {
+    var splitNodes = [rootNode];
+    while (k > 1) {
+        var splitNode = getNodesClosestFractialArea(rootNode, k);
+        // splitTree(rootNode, splitNode);
+        splitNodes.push(splitNode);
+        rootNode = splitNode;
+        k -= 1;
+    }
+    return splitNodes;
+}
+
+function getSubTreeArea(splitNodes) {
+    var areas = [];
+    for (var i = 0; i < splitNodes.length-1; i++) {
+        areas.push(splitNodes[i].area-splitNodes[i+1].area);
+    }
+    areas.push(splitNodes[splitNodes.length-1].area);
+    return areas;
+}
+
+function isEven(areas, totalArea) {
+    var even = true;
+    var amount = areas.length;
+    var targetArea = totalArea/amount;
+    for (var i = 0; i < amount; i++) {
+        if (Math.abs(areas[i] - targetArea)/totalArea > 0.1) {
+            even = false;
+        }
+    }
+    return even;
+}
+
+function choose2or3split(areas2, areas3){}
+
 function createZoomLevelTree(container, oldNeighbors) {
-    var rootNode = createTree(deepCopy(container[1]), oldNeighbors);
-    getAreaNode(rootNode);
-    var splitNode = getNodesClosestFractialArea(rootNode, 3);
-    splitTree(rootNode, splitNode);
-    var splitNode2 = getNodesClosestFractialArea(splitNode, 2);
-    splitTree(splitNode, splitNode2);
-    console.log("Nodes");
-    console.log(rootNode);
-    console.log(splitNode);
-    console.log(splitNode2);
+    // container.length
+    console.log(container);
+    for (var i = 0; i < container.length; i++) {
+        if (container[i].length > 1) {
+            var rootNode = createTree(deepCopy(container[i]), oldNeighbors);
+            getAreaNode(rootNode);
+            var split2 = splitIntoKTrees(rootNode, 2);
+            var areas2 = getSubTreeArea(split2);
+            if(isEven(areas2, rootNode.area)) {
+                var split3 = splitIntoKTrees(rootNode, 3);
+                var areas3 = getSubTreeArea(split3);
+                console.log(isEven(areas3, rootNode.area));
+            }
+        }
+    }
 }
