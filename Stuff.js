@@ -1812,19 +1812,71 @@ function getRootsOfSubtree(rootNode) {
     return split;
 }
 
-function splitGroup(container, oldNeighbors) {
-    zoomLevel = [];
+function roomTooBig(container, areaThreshold) {
+    area = 0;
+    for (var i = 0; i < container.length; i++) {
+        area += getArea(GLOBAL_ROOM_COORDINATES[container[i]]);
+    }
+    return (area > areaThreshold);
+}
+
+// function splitGroup(container, oldNeighbors, areaThresholds) {
+//     zoomLevel = [];
+//     if (container.length > 1 && roomTooBig(container, areaThresholds[0])) {
+//         var rootNode = createTree(deepCopy(container), oldNeighbors);
+//         getAreaNode(rootNode);
+//         zoomLevel.push([getIndicesInGroup(rootNode)]);
+//         var split = getRootsOfSubtree(rootNode);
+//         splitTree(split);
+//         var zoomLevelGroup = [];
+//         for (j = 0; j < split.length; j++) {
+//             zoomLevelGroup.push(getIndicesInGroup(split[j]));
+//         }
+//         zoomLevel.push(zoomLevelGroup);
+//     }
+//     else {
+//         zoomLevel.push([[]]);
+//     }
+//     console.log(zoomLevel);
+//     return zoomLevel;
+// }
+
+// split a group of room into different zoom levels
+function splitGroup(container, oldNeighbors, areaThresholds) {
+    var zoomLevel = [];
+    var test = 0;
+    // check if group consists of more than one room
     if (container.length > 1) {
+        var containers = [deepCopy(container)];
         var rootNode = createTree(deepCopy(container), oldNeighbors);
         getAreaNode(rootNode);
-        zoomLevel.push([getIndicesInGroup(rootNode)]);
-        var split = getRootsOfSubtree(rootNode);
-        splitTree(split);
-        var zoomLevelGroup = [];
-        for (j = 0; j < split.length; j++) {
-            zoomLevelGroup.push(getIndicesInGroup(split[j]));
+        var rootNodes = [rootNode];
+        for (var i = 0; i < areaThresholds.length; i++) {
+            var zoomLevelGroup = [];
+            var finalRootNodes = [];
+            while (containers.length > 0) {
+                test++;
+                container = containers.shift();
+                rootNode = rootNodes.shift();
+                if (roomTooBig(container, areaThresholds[i]) && container.length > 1) {
+                    var split = getRootsOfSubtree(rootNode);
+                    splitTree(split);
+                    for (j = 0; j < split.length; j++) {
+                        containers.push(getIndicesInGroup(split[j]));
+                        rootNodes.push(split[j]);
+                    }
+                }
+                else {
+                    zoomLevelGroup.push(getIndicesInGroup(rootNode));
+                    finalRootNodes.push(rootNode);
+                }
+            }
+            for (var j = 0; j < zoomLevelGroup.length; j++) {
+                containers.push(zoomLevelGroup[j]);
+                rootNodes.push(finalRootNodes[j]);
+            }
+            zoomLevel.push(zoomLevelGroup);
         }
-        zoomLevel.push(zoomLevelGroup);
     }
     else {
         zoomLevel.push([[]]);
@@ -1835,7 +1887,7 @@ function splitGroup(container, oldNeighbors) {
 function createZoomLevelTree(container, oldNeighbors) {
     var zoomLevels = [];
     for (var i = 0; i < container.length; i++) {
-        var zoomLevel = splitGroup(container[i], oldNeighbors);
+        var zoomLevel = splitGroup(container[i], oldNeighbors, [0.0000005, 0.000000089, 0.00000003]);
         zoomLevels.push(zoomLevel);
     }
     return zoomLevels;
