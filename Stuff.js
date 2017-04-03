@@ -269,7 +269,7 @@ function recievedJSONfromServer() {
     }
 
     // edits JSON file
-    geoJSON = alterJSONfile(geoJSON, FLOOR_ID);
+    geoJSON = alterJSONfile(geoJSON, FLOOR_ID, 1);
     console.log(geoJSON);
 
     GEO_JSON = geoJSON;
