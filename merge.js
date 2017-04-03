@@ -1548,7 +1548,13 @@ function makeMergedNameStrings(mergedRooms, nameList) {
                             lastText = nameList[dynamicMergedRooms[i][index][k][0]] + " - " + getDiffRoomNames(nameList[dynamicMergedRooms[i][index][k][0]], nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]]);
                         }
                         else {
-                            lastText = nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]] + " - " + getDiffRoomNames(nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]], nameList[dynamicMergedRooms[i][index][k][0]]);
+                            // If name is equal, only write one of the names
+                            if (nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]] === nameList[dynamicMergedRooms[i][index][k][0]]) {
+                                lastText = nameList[dynamicMergedRooms[i][index][k][0]];
+                            }
+                            else {
+                                lastText = nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]] + " - " + getDiffRoomNames(nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]], nameList[dynamicMergedRooms[i][index][k][0]]);
+                            }
                         }
                         textZoomLevels[2-j].push(lastText);
                     }
