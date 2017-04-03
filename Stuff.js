@@ -1812,26 +1812,30 @@ function getRootsOfSubtree(rootNode) {
     return split;
 }
 
+function splitGroup(container, oldNeighbors) {
+    zoomLevel = [];
+    if (container.length > 1) {
+        var rootNode = createTree(deepCopy(container), oldNeighbors);
+        getAreaNode(rootNode);
+        zoomLevel.push([getIndicesInGroup(rootNode)]);
+        var split = getRootsOfSubtree(rootNode);
+        splitTree(split);
+        var zoomLevelGroup = [];
+        for (j = 0; j < split.length; j++) {
+            zoomLevelGroup.push(getIndicesInGroup(split[j]));
+        }
+        zoomLevel.push(zoomLevelGroup);
+    }
+    else {
+        zoomLevel.push([[]]);
+    }
+    return zoomLevel;
+}
+
 function createZoomLevelTree(container, oldNeighbors) {
     var zoomLevels = [];
     for (var i = 0; i < container.length; i++) {
-        zoomLevel = [];
-        if (container[i].length > 1) {
-            var rootNode = createTree(deepCopy(container[i]), oldNeighbors);
-            getAreaNode(rootNode);
-            zoomLevel.push([getIndicesInGroup(rootNode)]);
-            var split = getRootsOfSubtree(rootNode);
-            splitTree(split);
-            console.log("indices");
-            var zoomLevelGroup = [];
-            for (j = 0; j < split.length; j++) {
-                zoomLevelGroup.push(getIndicesInGroup(split[j]));
-            }
-            zoomLevel.push(zoomLevelGroup);
-        }
-        else {
-            zoomLevel.push([[]]);
-        }
+        var zoomLevel = splitGroup(container[i], oldNeighbors);
         zoomLevels.push(zoomLevel);
     }
     return zoomLevels;
