@@ -195,7 +195,7 @@ function mergeAllCorridors(neighbors, roomCoordinates){
                     // console.log("To be merged");
                     // console.log(i);
                     // console.log(j);
-                    // if (i == 13 && j == 27){
+                    // if (i == 4 && j == 59){
                     // // if (false){
                     //     drawPolygonFromOnlyCoordinates(roomCoordinates[i], "white", "red");
                     //     drawPolygonFromOnlyCoordinates(roomCoordinates[j], "white", "blue");
@@ -476,7 +476,6 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
     minIndex = 0;
     indexesConnected = [];
 
-
     var currentAngle;
     var currentDistance;
     var index;
@@ -544,28 +543,29 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
     pointIndexes1 = sortPairs(pointIndexes1, room1.length);
     pointIndexes2 = sortPairs(pointIndexes2, room2.length);
     for (var i = 0; i < pointIndexes1.length; i+=2) {
-        var minDist = 12345654;
-        for (var j = 0; j < pointIndexes2.length; j++) {
-            var dist = getDistPoints(room1[pointIndexes1[i]], room2[pointIndexes2[j]]);
-            if (dist < minDist && !contains(usedIndexes2, j)){
-                minDist = dist;
-                index = j;
-            }
-        }
-        if (mod(index, 2) == 1) {
-            index1 = index-1;
-            index2 = index;
-        }
-        else {
-            index1 = index;
-            index2 = index+1;
-        }
+        [index1, index2] = getClosestPairToPair(pointIndexes1, pointIndexes2, i, room1, room2);
         usedIndexes2.push(index1);
         usedIndexes2.push(index2);
         indexesConnected.push([pointIndexes1[i], pointIndexes2[index2]]);
         indexesConnected.push([pointIndexes1[i+1], pointIndexes2[index1]]);
     }
     return indexesConnected;
+}
+
+function getClosestPairToPair(pointIndexes1, pointIndexes2, index, room1, room2){
+    var minDistPairs = Infinity;
+    var indexPI2 = 0;
+    for (var i = 0; i < pointIndexes2.length; i+=2) {
+        if (getDistBetweenTwoPairOfPoints(pointIndexes1, pointIndexes2, index, i, room1, room2) < minDistPairs) {
+            minDistPairs = getDistBetweenTwoPairOfPoints(pointIndexes1, pointIndexes2, index, i, room1, room2);
+            indexPI2 = i;
+        }
+    }
+    return [indexPI2, indexPI2+1];
+}
+
+function getDistBetweenTwoPairOfPoints(pair1, pair2, i, j, room1, room2){
+    return getDistPoints(room1[pair1[i]], room2[pair2[j+1]]) + getDistPoints(room1[pair1[i+1]], room2[pair2[j]]);
 }
 
 function sortPairs(pairs, length) {
