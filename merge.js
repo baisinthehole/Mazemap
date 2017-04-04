@@ -1484,7 +1484,7 @@ function fillZoomLevels(dynamicMergedRooms, oldRooms){
     var lastPolygon;
     console.log(dynamicMergedRooms);
     for (var i = 0; i < dynamicMergedRooms.length; i++) {
-        if (dynamicMergedRooms[i][0][0].length > 1){
+        if (dynamicMergedRooms[i][0][0].length > 0){
             for (var j = 0; j < 3; j++) {
                 index = dynamicMergedRooms[i].length-1-j;
                 if (index >= 0){
@@ -1539,7 +1539,7 @@ function makeMergedNameStrings(mergedRooms, nameList) {
     var lastText;
 
     for (var i = 0; i < dynamicMergedRooms.length; i++) {
-        if (dynamicMergedRooms[i][0][0].length > 1){
+        if (dynamicMergedRooms[i][0][0].length > 0){
             for (var j = 0; j < 3; j++) {
                 index = dynamicMergedRooms[i].length-1-j;
                 if (index >= 0){
