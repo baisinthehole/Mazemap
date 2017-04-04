@@ -206,7 +206,9 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
     for (var i = 0; i < drawings.length; i++) {
         if (drawings[i] != nowDrawings[i]){
             if (!nowDrawings[i]){
-                if (FLOOR_ID != false) {
+                if (FLOOR_ID != false || contains([2,3,4,5,6,9,10], i)) {
+                    console.log("polygonList");
+                    console.log(polygonList);
                     drawPolygons([polygonList[i]]);
                 }
                 else {
@@ -214,7 +216,7 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
                 }
             }
             else if (nowDrawings[i]){
-                if (FLOOR_ID != false) {
+                if (FLOOR_ID != false || contains([2,3,4,5,6,9,10], i)) {
                     removePolygons([polygonList[i]]);
                 }
                 else {
@@ -600,6 +602,9 @@ function getRoomCircumference(singleRoomCoordinates) {
 }
 
 function drawPolygons(polygonList) {
+    console.log(polygonList);
+    console.log(polygonList[0]);
+    console.log(polygonList[0][0]);
     for (var i = 0; i < polygonList.length; i++) {
         for (var j = 0; j < polygonList[i].length; j++) {
             if (polygonList[i][j]._latlngs.length > 1) {
@@ -1483,7 +1488,7 @@ function drawFromLocalStorage() {
     // layer.addTo(MAP);
     // globalMergedCorridorPolygons = deepCopy(layer);
     // globalMergedCorridorPolygons.addTo(MAP);
-    // createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+    createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
 }
 
 function removeEmptyRoomsOrNames(coordinates, names) {
@@ -1498,7 +1503,7 @@ function removeEmptyRoomsOrNames(coordinates, names) {
 function addGlobalCoordinatesToZoom() {
     globalOutlinePolygons = makeGeoJSONPolygon(0, "white", "black", "Polygon");
     globalCorridorPolygons = makeGeoJSONPolygon(1, "red", "gray", "Polygon");
-    globalMergedCorridorPolygons = makeGeoJSONPolygon(2, "red", "gray", "Polygon");
+    // globalMergedCorridorPolygons = makeGeoJSONPolygon(2, "red", "gray", "Polygon");
     mergedLarge = makeGeoJSONPolygon(3, "yellow", "gray", "Polygon");
     mergedMedium = makeGeoJSONPolygon(4, "yellow", "gray", "Polygon");
     mergedSmall = makeGeoJSONPolygon(5, "yellow", "gray", "Polygon");
@@ -1581,15 +1586,15 @@ function setAsOneFloorId(localStorage, globalArray) {
 
 
 function createPolygonsFromAllCoordinatesAsOneFloorId(coordinates) {
-    globalOutlinePolygons = fillAllPolygons(coordinates[0],"black", "white", "polygon");
+    // globalOutlinePolygons = fillAllPolygons(coordinates[0],"black", "white", "polygon");
     globalCorridorPolygons = fillAllPolygons(coordinates[1], "blue", "red", "polygon");
     globalMergedCorridorPolygons = fillAllPolygons(coordinates[2], "blue", "red","polygon");
     mergedLarge = fillAllPolygons(coordinates[3], "gray", "lemonchiffon", "polygon");
     mergedMedium = fillAllPolygons(coordinates[4], "gray", "lemonchiffon", "polygon");
     mergedSmall = fillAllPolygons(coordinates[5], "gray", "lemonchiffon", "polygon");
     globalRoomPolygons = fillAllPolygons(coordinates[6], "gray", "white", "line");
-    globalDoorPolygons = fillAllPolygons(coordinates[7], "gray", "white", "line");
-    globalStairPolygons = fillAllPolygons(coordinates[8], "gray", "white", "line");
+    // globalDoorPolygons = fillAllPolygons(coordinates[7], "gray", "white", "line");
+    // globalStairPolygons = fillAllPolygons(coordinates[8], "gray", "white", "line");
     globalUnmergedPolygonsSimplified = fillAllPolygons(coordinates[9], "gray", "white", "line");
     globalUnmergedPolygons = fillAllPolygons(coordinates[10], "gray", "white", "line");
 }
@@ -1608,7 +1613,7 @@ function createPolygonsFromAllCoordinates(localStorageCoordinates) {
 function fillAllPolygons(coordinates, color, fillColor, lineOrPolygon) {
     var polygons = [];
     fillPolygons(coordinates, polygons, color, fillColor, lineOrPolygon);
-    return [polygons];
+    return polygons;
 }
 
 function angleFromCoordinate(lat1, long1, lat2, long2) {
