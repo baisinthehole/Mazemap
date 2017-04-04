@@ -184,17 +184,17 @@ function zoom() {
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 20){
-            drawings = [true, true, false, false, false, true, false, false, false, false, true];
+            drawings = [true, false, true, false, false, true, false, false, false, false, true];
             names = [false, true, false, false, true];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 21){
-            drawings = [true, true, false, false, false, false, true, true, true, false, false];
+            drawings = [true, false, true, false, false, false, true, true, true, false, false];
             names = [true, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else {
-            drawings = [true, true, false, false, false, false, true, true, true, false, false];
+            drawings = [true, false, true, false, false, false, true, true, true, false, false];
             names = [true, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
@@ -269,7 +269,7 @@ function recievedJSONfromServer() {
     }
 
     // edits JSON file
-    geoJSON = alterJSONfile(geoJSON, FLOOR_ID);
+    geoJSON = alterJSONfile(geoJSON, FLOOR_ID, 1);
     console.log(geoJSON);
 
     GEO_JSON = geoJSON;
@@ -283,10 +283,10 @@ function recievedJSONfromServer() {
     GLOBAL_ALL_COORDINATES[1] = deepCopy(GLOBAL_CORRIDOR_COORDINATES);
 
     removedDuplicatePoints = removeDuplicatesFromAllRooms(globalRoomCoordinates);
-    var simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);
+    // var simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);
 
     // This function is defined in main.js
-    createglobalMergedPolygons(geoJSON, simplifiedRoomCoordinates);
+    createglobalMergedPolygons(geoJSON, removedDuplicatePoints);
     if (localStorage.getItem('everything'+FLOOR_ID) === null) {
         localStorage.setItem('everything'+FLOOR_ID, JSON.stringify(polygonList));
     }
@@ -1637,4 +1637,313 @@ function storeMergedRoomNames(textZoomLevels) {
         GLOBAL_ROOM_NAMES.push(textZoomLevels[i]);
     }
     localStorage.setItem('allNames'+FLOOR_ID, JSON.stringify(GLOBAL_ROOM_NAMES));
+}
+
+function Node(index, parent) {
+    this.area = getArea(GLOBAL_ROOM_COORDINATES[index]);
+    this.index = index;
+    this.parent = parent;
+    this.children = [];
+}
+
+function findRoomWithLeastNeighbors(rooms, oldNeighbors) {
+    var leastNeighbors = Infinity;
+    var roomWithLeastNeighbors;
+    for (var i = 0; i < rooms.length; i++) {
+        if (oldNeighbors[rooms[i]].length < leastNeighbors) {
+            leastNeighbors = oldNeighbors[rooms[i]].length;
+            roomWithLeastNeighbors = rooms[i];
+        }
+    }
+    return roomWithLeastNeighbors;
+}
+
+function createTree(rooms, oldNeighbors) {
+    var startIndex = findRoomWithLeastNeighbors(rooms, oldNeighbors);
+    var node = new Node(startIndex, null);
+    var rootNode = node;
+    var roomsInTree = [startIndex];
+    var toBeVisited = [node];
+    while (rooms.length > 0) {
+        // set node to next unvisited node
+        node = toBeVisited.splice(0, 1)[0];
+        rooms.splice(rooms.indexOf(node.index), 1);
+        for (var i = 0; i < oldNeighbors[node.index].length; i++) {
+            if (!contains(roomsInTree, oldNeighbors[node.index][i])) {
+                var child = new Node(oldNeighbors[node.index][i], node);
+                node.children.push(child);
+                toBeVisited.push(child);
+                roomsInTree.push(oldNeighbors[node.index][i]);
+            }
+        }
+    }
+    return rootNode;
+}
+
+// add total area of subtree to a root node
+function getAreaNode(node) {
+    node.area = getArea(GLOBAL_ROOM_COORDINATES[node.index]);
+    for (var i = 0; i < node.children.length; i++) {
+        node.area += getAreaNode(node.children[i]);
+    }
+    return node.area;
+}
+
+// return split node of first part if tree is divided in k parts
+function getNodesClosestFractialArea(node, k) {
+    var targetArea = node.area*(1-(1/k));
+    var toBeVisited = [];
+    while (true) {
+        for (var i = 0; i < node.children.length; i++) {
+            toBeVisited.push(node.children[i]);
+        }
+        if (node.area < targetArea || node.children.length == 0) {
+            var done = true;
+            for (var i = 0; i < toBeVisited.length; i++) {
+                if (toBeVisited[i].area >= targetArea) {
+                    done = false;
+                }
+            }
+            if (done) {
+                node = node.parent;
+                break;
+            }
+        }
+        node = toBeVisited.splice(-1, 1)[0];
+    }
+    return getSplitNode(node, targetArea);
+}
+
+// get node with closest area to target area
+function getSplitNode(node, targetArea) {
+    var splitNode = node;
+    closestArea = Math.abs(node.area - targetArea);
+    for (var i = 0; i < node.children.length; i++) {
+        if (Math.abs(node.children[i].area - targetArea) < closestArea) {
+            splitNode = node.children[i];
+            closestArea = Math.abs(node.children[i].area - targetArea);
+        }
+    }
+    return splitNode;
+}
+
+// split tree into two trees with splitnode as new root
+function splitTree(splitNodes) {
+    for (var i = 1; i < splitNodes.length; i++) {
+        splitNodes[i].parent.children.splice(splitNodes[i].parent.children.indexOf(splitNodes[i]), 1);
+        splitNodes[i].parent = null;
+    }
+}
+
+function splitIntoKTrees(rootNode, k) {
+    var splitNodes = [rootNode];
+    while (k > 1) {
+        var splitNode = getNodesClosestFractialArea(rootNode, k);
+        // splitTree(rootNode, splitNode);
+        splitNodes.push(splitNode);
+        rootNode = splitNode;
+        k -= 1;
+    }
+    return splitNodes;
+}
+
+function getSubTreeArea(splitNodes) {
+    var areas = [];
+    for (var i = 0; i < splitNodes.length-1; i++) {
+        areas.push(splitNodes[i].area-splitNodes[i+1].area);
+    }
+    areas.push(splitNodes[splitNodes.length-1].area);
+    return areas;
+}
+
+function isEven(areas, totalArea) {
+    var even = true;
+    var amount = areas.length;
+    var targetArea = totalArea/amount;
+    for (var i = 0; i < amount; i++) {
+        if (Math.abs(areas[i] - targetArea)/totalArea > 0.1) {
+            even = false;
+        }
+    }
+    return even;
+}
+
+function choose2split(areas2, areas3, totalArea){
+    var greatesDifferent2 = 0;
+    var greatesDifferent3 = 0;
+    for (var i = 0; i < areas2.length; i++) {
+        if (Math.abs(areas2[i]-totalArea/2) > greatesDifferent2) {
+            greatesDifferent2 = Math.abs(areas2[i]-totalArea/2);
+        }
+    }
+    for (i = 0; i < areas3.length; i++) {
+        if (Math.abs(areas3[i]-totalArea/3) > greatesDifferent3) {
+            greatesDifferent3 = Math.abs(areas3[i]-totalArea/3);
+        }
+    }
+    return greatesDifferent2 < greatesDifferent3;
+}
+
+function getIndicesInGroup(rootNode) {
+    var indices = [];
+    var node;
+    toBeVisited = [rootNode];
+    while (toBeVisited.length > 0) {
+        node = toBeVisited.splice(0, 1)[0];
+        indices.push(node.index);
+        for (var i = 0; i < node.children.length; i++) {
+            toBeVisited.push(node.children[i]);
+        }
+    }
+    return indices;
+}
+
+function getRootsOfSubtree(rootNode) {
+    var split2 = splitIntoKTrees(rootNode, 2);
+    var areas2 = getSubTreeArea(split2);
+    var split3 = splitIntoKTrees(rootNode, 3);
+    var areas3 = getSubTreeArea(split3);
+    var split;
+    if (choose2split(areas2, areas3, rootNode.area)) {
+        split = split2;
+    }
+    else {
+        split = split3;
+    }
+    return split;
+}
+
+function roomTooBig(container, areaThreshold) {
+    area = 0;
+    for (var i = 0; i < container.length; i++) {
+        area += getArea(GLOBAL_ROOM_COORDINATES[container[i]]);
+    }
+    return (area > areaThreshold);
+}
+
+// function splitGroup(container, oldNeighbors, areaThresholds) {
+//     zoomLevel = [];
+//     if (container.length > 1) {
+//         var rootNode = createTree(deepCopy(container), oldNeighbors);
+//         getAreaNode(rootNode);
+//         zoomLevel.push([getIndicesInGroup(rootNode)]);
+//         var split = getRootsOfSubtree(rootNode);
+//         splitTree(split);
+//         var zoomLevelGroup = [];
+//         for (j = 0; j < split.length; j++) {
+//             zoomLevelGroup.push(getIndicesInGroup(split[j]));
+//         }
+//         zoomLevel.push(zoomLevelGroup);
+//     }
+//     else {
+//         zoomLevel.push([[]]);
+//     }
+//     console.log(zoomLevel);
+//     return zoomLevel;
+// }
+
+// split a group of room into different zoom levels
+function splitGroup(container, oldNeighbors, areaThresholds) {
+    var zoomLevel = [];
+    // check if group consists of more than one room
+    if (container.length > 1) {
+        var containers = [deepCopy(container)];
+        var rootNode = createTree(deepCopy(container), oldNeighbors);
+        getAreaNode(rootNode);
+        areaThresholds = [rootNode.area/2, rootNode.area/3, rootNode.area/4];
+        var rootNodes = [rootNode];
+        for (var i = 0; i < areaThresholds.length; i++) {
+            var zoomLevelGroup = [];
+            var finalRootNodes = [];
+            while (containers.length > 0) {
+                container = containers.shift();
+                rootNode = rootNodes.shift();
+                getAreaNode(rootNode);
+                if (roomTooBig(container, areaThresholds[i]) && container.length > 1) {
+                    var split = getRootsOfSubtree(rootNode);
+                    splitTree(split);
+                    for (j = 0; j < split.length; j++) {
+                        containers.push(getIndicesInGroup(split[j]));
+                        rootNodes.push(split[j]);
+                    }
+                }
+                else {
+                    zoomLevelGroup.push(getIndicesInGroup(rootNode));
+                    finalRootNodes.push(rootNode);
+                }
+            }
+            for (var j = 0; j < zoomLevelGroup.length; j++) {
+                containers.push(zoomLevelGroup[j]);
+                rootNodes.push(finalRootNodes[j]);
+            }
+            zoomLevel.push(zoomLevelGroup);
+        }
+    }
+    else {
+        zoomLevel.push([[]]);
+    }
+    return zoomLevel;
+}
+
+// function splitGroup(container, oldNeighbors, areaThresholds) {
+//     var zoomLevel = [];
+
+//     var minArea = 0.00000004;
+
+//     // check if group consists of more than one room
+//     if (container.length > 1) {
+//         var containers = [deepCopy(container)];
+//         var rootNode = createTree(deepCopy(container), oldNeighbors);
+//         currentArea = getAreaNode(rootNode);
+//         var rootNodes = [rootNode];
+
+//         var zoomLevel = [getIndicesInGroup(rootNode)];
+
+//         while (currentArea > minArea) {
+
+
+//         	while (rootNodes.length > 0) {
+//                 var zoomLevelGroup = [];
+
+//         		rootNode = rootNodes.shift();
+//         		if (rootNode.children.length > 0) {
+// 	        		//console.log(eval(uneval(rootNode)));
+// 		        	var split = getRootsOfSubtree(rootNode);
+// 		            splitTree(split);
+
+// 		            var minArea = Infinity;
+// 		            for (var i = 0; i < split.length; i++) {
+// 		            	tempArea = getAreaNode(split[i]);
+// 		            	if (tempArea < minArea) {
+// 		            		minArea = tempArea;
+// 		            	}
+// 		            	zoomLevelGroup.push(getIndicesInGroup(split[i]));
+// 		            	rootNodes.push(split[i]);
+// 		            }
+
+// 		            currentArea = minArea;
+// 		        }
+// 		        else {
+// 		        	zoomLevelGroup = [rootNode.index];
+// 		        	currentArea = rootNode.area;
+// 		        }
+//                 console.log(zoomLevelGroup);
+//                 zoomLevel.push(zoomLevelGroup);
+// 	        }
+//         }
+//     }
+//     else {
+//         zoomLevel.push([[]]);
+//     }
+//     console.log(zoomLevel);
+//     return zoomLevel;
+// }
+
+function createZoomLevelTree(container, oldNeighbors) {
+    var zoomLevels = [];
+    for (var i = 0; i < container.length; i++) {
+        var zoomLevel = splitGroup(container[i], oldNeighbors, [0.0000005, 0.000000089, 0.00000003]);
+        zoomLevels.push(zoomLevel);
+    }
+    return zoomLevels;
 }

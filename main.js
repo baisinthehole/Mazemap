@@ -47,9 +47,11 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     [roomCoordinates, container] = removeDuplicateRooms(roomCoordinates, container);
 
-    var orderedRooms = findOrderOfRooms(oldNeighbors, container);
+    dynamicMergedRooms = createZoomLevelTree(container, oldNeighbors);
 
-    dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms, GLOBAL_ROOM_COORDINATES);
+ //    var orderedRooms = findOrderOfRooms(oldNeighbors, container);
+
+ //    dynamicMergedRooms = dynamicMergeAllRooms(orderedRooms, GLOBAL_ROOM_COORDINATES);
 
     var zoomLevelsCoordinates = fillZoomLevels(dynamicMergedRooms, oldRooms);
 
@@ -73,10 +75,10 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     // convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
 
-    // Store coordinates in localStorage if it is not there already
-    // if (localStorage.getItem('allCoordinates'+FLOOR_ID) === null) {
-        localStorage.setItem('allCoordinates'+FLOOR_ID, JSON.stringify(GLOBAL_ALL_COORDINATES));
-        storeMergedRoomNames(textZoomLevels);
+ //    // Store coordinates in localStorage if it is not there already
+ //    // if (localStorage.getItem('allCoordinates'+FLOOR_ID) === null) {
+ //        localStorage.setItem('allCoordinates'+FLOOR_ID, JSON.stringify(GLOBAL_ALL_COORDINATES));
+ //        storeMergedRoomNames(textZoomLevels);
     // }
 }
 
