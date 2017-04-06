@@ -77,7 +77,7 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
  //    // Store coordinates in localStorage if it is not there already
     // if (localStorage.getItem('allCoordinates'+FLOOR_ID) === null) {
-        // localStorage.setItem('allCoordinates'+FLOOR_ID, JSON.stringify(GLOBAL_ALL_COORDINATES));
+        localStorage.setItem('allCoordinates'+FLOOR_ID, JSON.stringify(GLOBAL_ALL_COORDINATES));
         // storeMergedRoomNames(textZoomLevels);
     // }
 }
