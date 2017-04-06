@@ -175,12 +175,12 @@ function zoom() {
         }
         else if (MAP.getZoom() < 18){
             drawings = [true, false, true, true, false, false, false, false, false, false, true];
-            names = [false, false, true, false, false];
+            names = [false, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 19){
             drawings = [true, false, true, false, true, false, false, false, false, false, true];
-            names = [false, false, false, true, false];
+            names = [false, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 20){
@@ -189,12 +189,12 @@ function zoom() {
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 21){
-            drawings = [true, false, true, false, false, false, true, true, true, false, false];
+            drawings = [true, true, false, false, false, false, true, true, true, false, false];
             names = [true, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else {
-            drawings = [true, false, true, false, false, false, true, true, true, false, false];
+            drawings = [true, true, false, false, false, false, true, true, true, false, false];
             names = [true, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
@@ -1850,7 +1850,7 @@ function splitGroup(container, oldNeighbors, areaThresholds) {
         var containers = [deepCopy(container)];
         var rootNode = createTree(deepCopy(container), oldNeighbors);
         getAreaNode(rootNode);
-        areaThresholds = [rootNode.area/2, rootNode.area/3, rootNode.area/4];
+        areaThresholds = [rootNode.area/(container.length / 10), rootNode.area/(1.1 + container.length / 10), rootNode.area/(2 + container.length / 10)];
         var rootNodes = [rootNode];
         for (var i = 0; i < areaThresholds.length; i++) {
             var zoomLevelGroup = [];
