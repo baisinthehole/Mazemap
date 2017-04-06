@@ -186,7 +186,6 @@ function mergeAllCorridors(neighbors, roomCoordinates){
         container.push([i]);
     }
 
-    var colors = ["blue", "red"];
     for (var i = 0; i < roomCoordinates.length; i++) {
         for (var j = 0; j < roomCoordinates.length; j++) {
             if (contains(neighbors[i], j)) {
@@ -633,7 +632,7 @@ function superDuperMerge(room1, room2, test = false) {
         // pairs2 = findPairsOfPoints(room2[closestRoomIndex2], room1[closestRoomIndex1]);
         connectedPoints = connectCirclePoints(room1[closestRoomIndex1], room2[closestRoomIndex2], pairs1, pairs2);
         if (test) {
-            console.log("Room1 contains holes");
+            console.log("Both rooms contain holes");
             console.log(deepCopy(pairs1));
             console.log(deepCopy(pairs2));
             console.log(isClockwise(room1[closestRoomIndex1]));
@@ -1506,13 +1505,13 @@ function fillZoomLevelPolygons(coordinates){
     GLOBAL_ALL_COORDINATES[3] = deepCopy(coordinates[0]);
     GLOBAL_ALL_COORDINATES[4] = deepCopy(coordinates[1]);
     GLOBAL_ALL_COORDINATES[5] = deepCopy(coordinates[2]);
-    fillPolygons(coordinates[0], mergedLarge, "gray", "yellow", "polygon", 0.2);
-    fillPolygons(coordinates[1], mergedMedium, "gray", "yellow", "polygon", 0.2);
-    fillPolygons(coordinates[2], mergedSmall, "gray", "yellow", "polygon", 0.2);
+    fillPolygons(coordinates[0], mergedLarge, roomOutlineColor, mergedRoomColor, "polygon", 1);
+    fillPolygons(coordinates[1], mergedMedium, roomOutlineColor, mergedRoomColor, "polygon", 1);
+    fillPolygons(coordinates[2], mergedSmall, roomOutlineColor, mergedRoomColor, "polygon", 1);
 }
 
 function fillMergedCoordinates(coordinates) {
-    fillPolygons(coordinates, globalMergedCorridorPolygons, "gray", "red", "polygon", 0.2);
+    fillPolygons(coordinates, globalMergedCorridorPolygons, roomOutlineColor, mergedCorridorColor, "polygon", 1);
 }
 
 function getUnmergedRooms(container, coordinates) {
@@ -1528,8 +1527,8 @@ function getUnmergedRooms(container, coordinates) {
     }
     GLOBAL_ALL_COORDINATES[9] = deepCopy(globalUnmergedRoomsSimplified);
     GLOBAL_ALL_COORDINATES[10] = deepCopy(globalUnmergedRooms);
-    fillPolygons(globalUnmergedRoomsSimplified, globalUnmergedPolygonsSimplified, "gray", "white", "line", 1);
-    fillPolygons(globalUnmergedRooms, globalUnmergedPolygons, "gray", "white", "line", 1);
+    fillPolygons(globalUnmergedRoomsSimplified, globalUnmergedPolygonsSimplified, roomOutlineColor, roomColor, "line", 1);
+    fillPolygons(globalUnmergedRooms, globalUnmergedPolygons, roomOutlineColor, roomColor, "line", 1);
 
 }
 
