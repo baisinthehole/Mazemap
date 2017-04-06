@@ -132,7 +132,7 @@ var GLOBAL_ROOM_NAMES = [globalNameList, globalUnmergedNameList];
 var polygonList;
 
 // indices in polygonList drawn without vectorGridSlicer
-var withoutVectorGridSlicer = [2,3,4,5,6,9,10];
+var withoutVectorGridSlicer = [1,2,3,4,5,6,9,10];
 
 // contains all the data that are displayed on different zoom levels and updates display accordingly
 function zoom() {
@@ -178,12 +178,12 @@ function zoom() {
         }
         else if (MAP.getZoom() < 18){
             drawings = [true, false, true, true, false, false, false, false, false, false, true];
-            names = [false, false, true, false, false];
+            names = [false, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 19){
             drawings = [true, false, true, false, true, false, false, false, false, false, true];
-            names = [false, false, false, true, false];
+            names = [false, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 20){
@@ -192,12 +192,12 @@ function zoom() {
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 21){
-            drawings = [true, false, true, false, false, false, true, true, true, false, false];
+            drawings = [true, true, false, false, false, false, true, true, true, false, false];
             names = [true, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else {
-            drawings = [true, false, true, false, false, false, true, true, true, false, false];
+            drawings = [true, true, false, false, false, false, true, true, true, false, false];
             names = [true, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
@@ -282,10 +282,8 @@ function recievedJSONfromServer() {
     console.log(geoJSON);
 
     GEO_JSON = geoJSON;
-    var color = "gray";
-    var fillColor = "red";
-    fillCoordinateTypeServer(geoJSON, globalCorridorCoordinates, globalCorridorPolygons, ROOM_TYPE.CORRIDOR, color, fillColor, 0.2, "polygon");
-    fillCoordinateTypeServer(geoJSON, globalRoomCoordinates, globalRoomPolygons, ROOM_TYPE.ROOM, color, 'white', 0.2, "line");
+    fillCoordinateTypeServer(geoJSON, globalCorridorCoordinates, globalCorridorPolygons, ROOM_TYPE.CORRIDOR, roomOutlineColor, mergedCorridorColor, 1, "polygon");
+    fillCoordinateTypeServer(geoJSON, globalRoomCoordinates, globalRoomPolygons, ROOM_TYPE.ROOM, roomOutlineColor, roomColor, 1, "line");
     GLOBAL_ROOM_COORDINATES = deepCopy(globalRoomCoordinates);
     GLOBAL_ALL_COORDINATES[6] = deepCopy(globalRoomCoordinates);
     GLOBAL_CORRIDOR_COORDINATES = deepCopy(globalCorridorCoordinates);
@@ -335,9 +333,6 @@ function getLocalJSON(filename) {
 function recievedLocalJSON(data) {
     var color = ['blue', 'gray', 'green', 'black'];
     // Fill the coordinate arrays for each type of polygon and draw to map
-    // fillCoordinateTypeLocal(data, globalStairPolygons, 'stairsfull', 'black', "line");
-    // fillCoordinateTypeLocal(data, globalDoorPolygons, 'doors', color[2], "line");
-    // fillCoordinateTypeLocal(data, globalOutlinePolygons, 'outlines', 'black', "polygon");
     for (var i = 0; i < data.features.length; i++) {
         // if (data.features[i].geometry.coordinates.length == 1){
             if (data.features[i].properties.campusId == 1){
@@ -454,31 +449,6 @@ function fillStairCoordinates(data, coordinates, polygonList, coordinateType, co
     }
 }
 
-function fillCoordinateTypeLocal(data, polygonList, coordinateType, color, lineOrPolygon) {
-    var coordinates = [];
-	// stairsfull is organized a little different from the others
-	if (coordinateType == 'stairsfull') {
-		fillStairCoordinates(data, coordinates, polygonList, coordinateType, color, lineOrPolygon);
-	}
-	// This applies for the rest of the type of coordinates
-	else {
-		for (var i = 0; i < data[coordinateType].features.length; i++) {
-	        coordinates.push(data[coordinateType].features[i].geometry.coordinates[0]);
-	        for (var j = 0; j < coordinates[i].length; j++) {
-	            temp = coordinates[i][j][0];
-	            coordinates[i][j][0] = coordinates[i][j][1];
-	            coordinates[i][j][1] = temp;
-	        }
-	        if (lineOrPolygon == "line") {
-	            polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: LOCAL_WEIGHT}));
-	        }
-	        else {
-	            polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: "white", fillOpacity: 1, weight: LOCAL_WEIGHT}));
-	        }
-	    }
-	}
-}
-
 function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType, color, fillColor, fillOpacity, lineOrPolygon) {
     for (var i = 0; i < data.pois.length; i++) {
         // Add empty room coordinates with empty name if the room is a corridor
@@ -558,22 +528,7 @@ function fillPolygons(coordinates, polygonList, color, fillColor, lineOrPolygon,
             polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, fillOpacity: fillOpacity, weight: SERVER_WEIGHT}));
         }
     }
-}
-
-function fillglobalMergedPolygons(coordinates, polygonList, container) {
-    mergedRoomCoordinates = deepCopy(coordinates);
-    for (var i = 0; i < coordinates.length; i++) {
-        if (coordinates[i].length > 0){
-            if (coordinates[i][0].constructor == Array){
-                if (container[i].length == 1) {
-                    polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "white", fillOpacity: 1, weight: SERVER_WEIGHT}));
-                }
-                else {
-                    polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "#F1F1F1", fillOpacity: 1, weight: SERVER_WEIGHT}));
-                }
-            }
-        }
-    }
+    console.log(fillOpacity);
 }
 
   // Function for loading local JSON object
@@ -1505,15 +1460,15 @@ function removeEmptyRoomsOrNames(coordinates, names) {
 }
 
 function addGlobalCoordinatesToZoom() {
-    globalOutlinePolygons = makeGeoJSONPolygon(0, "white", "black", "Polygon");
+    globalOutlinePolygons = makeGeoJSONPolygon(0, roomColor, roomOutlineColor, "Polygon");
     // globalCorridorPolygons = makeGeoJSONPolygon(1, "red", "gray", "Polygon");
     // globalMergedCorridorPolygons = makeGeoJSONPolygon(2, "red", "gray", "Polygon");
     // mergedLarge = makeGeoJSONPolygon(3, "yellow", "gray", "Polygon");
     // mergedMedium = makeGeoJSONPolygon(4, "yellow", "gray", "Polygon");
     // mergedSmall = makeGeoJSONPolygon(5, "yellow", "gray", "Polygon");
     // globalRoomPolygons = makeGeoJSONPolygon(6, "white", "gray", "Polygon");
-    globalDoorPolygons = makeGeoJSONPolygon(7, "white", "green", "MultiLineString");
-    globalStairPolygons = makeGeoJSONPolygon(8, "white", "blue", "Polygon");
+    globalDoorPolygons = makeGeoJSONPolygon(7, roomColor, doorColor, "MultiLineString");
+    globalStairPolygons = makeGeoJSONPolygon(8, roomColor, stairColor, "Polygon");
     // globalUnmergedPolygonsSimplified = makeGeoJSONPolygon(9, "white", "gray", "Polygon");
     // globalUnmergedPolygons = makeGeoJSONPolygon(10, "white", "gray", "Polygon");
 }
@@ -1587,32 +1542,21 @@ function setAsOneFloorId(localStorage, globalArray) {
 
 function createPolygonsFromAllCoordinatesAsOneFloorId(coordinates) {
     // globalOutlinePolygons = fillAllPolygons(coordinates[0],"black", "white", "polygon");
-    globalCorridorPolygons = fillAllPolygons(coordinates[1], "blue", "red", "polygon");
-    globalMergedCorridorPolygons = fillAllPolygons(coordinates[2], "blue", "red","polygon");
-    mergedLarge = fillAllPolygons(coordinates[3], "gray", "lemonchiffon", "polygon");
-    mergedMedium = fillAllPolygons(coordinates[4], "gray", "lemonchiffon", "polygon");
-    mergedSmall = fillAllPolygons(coordinates[5], "gray", "lemonchiffon", "polygon");
-    globalRoomPolygons = fillAllPolygons(coordinates[6], "gray", "white", "line");
+    globalCorridorPolygons = fillAllPolygons(coordinates[1], roomOutlineColor, mergedCorridorColor, "polygon");
+    globalMergedCorridorPolygons = fillAllPolygons(coordinates[2], roomOutlineColor, mergedCorridorColor,"polygon");
+    mergedLarge = fillAllPolygons(coordinates[3], roomOutlineColor, mergedRoomColor, "polygon");
+    mergedMedium = fillAllPolygons(coordinates[4], roomOutlineColor, mergedRoomColor, "polygon");
+    mergedSmall = fillAllPolygons(coordinates[5], roomOutlineColor, mergedRoomColor, "polygon");
+    globalRoomPolygons = fillAllPolygons(coordinates[6], roomOutlineColor, roomColor, "line");
     // globalDoorPolygons = fillAllPolygons(coordinates[7], "gray", "white", "line");
     // globalStairPolygons = fillAllPolygons(coordinates[8], "gray", "white", "line");
-    globalUnmergedPolygonsSimplified = fillAllPolygons(coordinates[9], "gray", "white", "line");
-    globalUnmergedPolygons = fillAllPolygons(coordinates[10], "gray", "white", "line");
-}
-
-
-function createPolygonsFromAllCoordinates(localStorageCoordinates) {
-    globalCorridorPolygons = fillAllPolygons(localStorageCoordinates, 1, "blue", "red", "polygon");
-    mergedLarge = fillAllPolygons(localStorageCoordinates, 2, "gray", "lemonchiffon", "polygon");
-    mergedMedium = fillAllPolygons(localStorageCoordinates, 3, "gray", "lemonchiffon", "polygon");
-    mergedSmall = fillAllPolygons(localStorageCoordinates, 4, "gray", "lemonchiffon", "polygon");
-    globalRoomPolygons = fillAllPolygons(localStorageCoordinates, 5, "gray", "white", "polygon");
-    globalUnmergedPolygonsSimplified = fillAllPolygons(localStorageCoordinates, 6, "blue", "white", "polygon");
-    globalUnmergedPolygons = fillAllPolygons(localStorageCoordinates, 7, "blue", "white", "polygon");
+    globalUnmergedPolygonsSimplified = fillAllPolygons(coordinates[9], roomOutlineColor, roomColor, "line");
+    globalUnmergedPolygons = fillAllPolygons(coordinates[10], roomOutlineColor, roomColor, "line");
 }
 
 function fillAllPolygons(coordinates, color, fillColor, lineOrPolygon) {
     var polygons = [];
-    fillPolygons(coordinates, polygons, color, fillColor, lineOrPolygon);
+    fillPolygons(coordinates, polygons, color, fillColor, lineOrPolygon, 1);
     return [polygons];
 }
 
@@ -1855,7 +1799,7 @@ function splitGroup(container, oldNeighbors, areaThresholds) {
         var containers = [deepCopy(container)];
         var rootNode = createTree(deepCopy(container), oldNeighbors);
         getAreaNode(rootNode);
-        areaThresholds = [rootNode.area/2, rootNode.area/3, rootNode.area/4];
+        areaThresholds = [rootNode.area/(container.length / 10), rootNode.area/(1.1 + container.length / 10), rootNode.area/(2 + container.length / 10)];
         var rootNodes = [rootNode];
         for (var i = 0; i < areaThresholds.length; i++) {
             var zoomLevelGroup = [];
