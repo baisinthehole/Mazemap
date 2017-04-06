@@ -131,6 +131,9 @@ var GLOBAL_ROOM_NAMES = [globalNameList, globalUnmergedNameList];
 // all polygons
 var polygonList;
 
+// indices in polygonList drawn without vectorGridSlicer
+var withoutVectorGridSlicer = [2,3,4,5,6,9,10];
+
 // contains all the data that are displayed on different zoom levels and updates display accordingly
 function zoom() {
 
@@ -209,6 +212,9 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
                 if (FLOOR_ID != false) {
                     drawPolygons([polygonList[i]]);
                 }
+                else if (contains(withoutVectorGridSlicer, i)) {
+                    drawPolygons(polygonList[i]);
+                }
                 else {
                     drawVectorGridSlicedPolygons(polygonList[i]);
                 }
@@ -216,6 +222,9 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
             else if (nowDrawings[i]){
                 if (FLOOR_ID != false) {
                     removePolygons([polygonList[i]]);
+                }
+                else if (contains(withoutVectorGridSlicer, i)) {
+                    removePolygons(polygonList[i]);
                 }
                 else {
                     removeVectorGridSlicedPolygons(polygonList[i]);
@@ -1483,7 +1492,7 @@ function drawFromLocalStorage() {
     // layer.addTo(MAP);
     // globalMergedCorridorPolygons = deepCopy(layer);
     // globalMergedCorridorPolygons.addTo(MAP);
-    // createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+    createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
 }
 
 function removeEmptyRoomsOrNames(coordinates, names) {
@@ -1497,16 +1506,16 @@ function removeEmptyRoomsOrNames(coordinates, names) {
 
 function addGlobalCoordinatesToZoom() {
     globalOutlinePolygons = makeGeoJSONPolygon(0, "white", "black", "Polygon");
-    globalCorridorPolygons = makeGeoJSONPolygon(1, "red", "gray", "Polygon");
-    globalMergedCorridorPolygons = makeGeoJSONPolygon(2, "red", "gray", "Polygon");
-    mergedLarge = makeGeoJSONPolygon(3, "yellow", "gray", "Polygon");
-    mergedMedium = makeGeoJSONPolygon(4, "yellow", "gray", "Polygon");
-    mergedSmall = makeGeoJSONPolygon(5, "yellow", "gray", "Polygon");
-    globalRoomPolygons = makeGeoJSONPolygon(6, "white", "gray", "Polygon");
+    // globalCorridorPolygons = makeGeoJSONPolygon(1, "red", "gray", "Polygon");
+    // globalMergedCorridorPolygons = makeGeoJSONPolygon(2, "red", "gray", "Polygon");
+    // mergedLarge = makeGeoJSONPolygon(3, "yellow", "gray", "Polygon");
+    // mergedMedium = makeGeoJSONPolygon(4, "yellow", "gray", "Polygon");
+    // mergedSmall = makeGeoJSONPolygon(5, "yellow", "gray", "Polygon");
+    // globalRoomPolygons = makeGeoJSONPolygon(6, "white", "gray", "Polygon");
     globalDoorPolygons = makeGeoJSONPolygon(7, "white", "green", "MultiLineString");
     globalStairPolygons = makeGeoJSONPolygon(8, "white", "blue", "Polygon");
-    globalUnmergedPolygonsSimplified = makeGeoJSONPolygon(9, "white", "gray", "Polygon");
-    globalUnmergedPolygons = makeGeoJSONPolygon(10, "white", "gray", "Polygon");
+    // globalUnmergedPolygonsSimplified = makeGeoJSONPolygon(9, "white", "gray", "Polygon");
+    // globalUnmergedPolygons = makeGeoJSONPolygon(10, "white", "gray", "Polygon");
 }
 
 function addGlobalNamesToZoom() {
@@ -1515,10 +1524,6 @@ function addGlobalNamesToZoom() {
     mergedTextLarge = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[3], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2]);
     mergedTextMedium = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[4], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[3]);
     mergedTextSmall = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[5], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[4]);
-    // console.log(globalUnmergedNames);
-    // console.log(deepCopy(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[3]));
-    // console.log(deepCopy(GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2]));
-    // console.log(mergedTextLarge);
 }
 
 function makeGeoJSONPolygon(index, fillColor, color, type) {
@@ -1581,15 +1586,15 @@ function setAsOneFloorId(localStorage, globalArray) {
 
 
 function createPolygonsFromAllCoordinatesAsOneFloorId(coordinates) {
-    globalOutlinePolygons = fillAllPolygons(coordinates[0],"black", "white", "polygon");
+    // globalOutlinePolygons = fillAllPolygons(coordinates[0],"black", "white", "polygon");
     globalCorridorPolygons = fillAllPolygons(coordinates[1], "blue", "red", "polygon");
     globalMergedCorridorPolygons = fillAllPolygons(coordinates[2], "blue", "red","polygon");
     mergedLarge = fillAllPolygons(coordinates[3], "gray", "lemonchiffon", "polygon");
     mergedMedium = fillAllPolygons(coordinates[4], "gray", "lemonchiffon", "polygon");
     mergedSmall = fillAllPolygons(coordinates[5], "gray", "lemonchiffon", "polygon");
     globalRoomPolygons = fillAllPolygons(coordinates[6], "gray", "white", "line");
-    globalDoorPolygons = fillAllPolygons(coordinates[7], "gray", "white", "line");
-    globalStairPolygons = fillAllPolygons(coordinates[8], "gray", "white", "line");
+    // globalDoorPolygons = fillAllPolygons(coordinates[7], "gray", "white", "line");
+    // globalStairPolygons = fillAllPolygons(coordinates[8], "gray", "white", "line");
     globalUnmergedPolygonsSimplified = fillAllPolygons(coordinates[9], "gray", "white", "line");
     globalUnmergedPolygons = fillAllPolygons(coordinates[10], "gray", "white", "line");
 }
