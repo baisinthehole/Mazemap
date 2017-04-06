@@ -131,6 +131,9 @@ var GLOBAL_ROOM_NAMES = [globalNameList, globalUnmergedNameList];
 // all polygons
 var polygonList;
 
+// indices in polygonList drawn without vectorGridSlicer
+var withoutVectorGridSlicer = [2,3,4,5,6,9,10];
+
 // contains all the data that are displayed on different zoom levels and updates display accordingly
 function zoom() {
 
@@ -206,18 +209,22 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
     for (var i = 0; i < drawings.length; i++) {
         if (drawings[i] != nowDrawings[i]){
             if (!nowDrawings[i]){
-                if (FLOOR_ID != false || contains([2,3,4,5,6,9,10], i)) {
-                    console.log("polygonList");
-                    console.log(polygonList);
+                if (FLOOR_ID != false) {
                     drawPolygons([polygonList[i]]);
+                }
+                else if (contains(withoutVectorGridSlicer, i)) {
+                    drawPolygons(polygonList[i]);
                 }
                 else {
                     drawVectorGridSlicedPolygons(polygonList[i]);
                 }
             }
             else if (nowDrawings[i]){
-                if (FLOOR_ID != false || contains([2,3,4,5,6,9,10], i)) {
+                if (FLOOR_ID != false) {
                     removePolygons([polygonList[i]]);
+                }
+                else if (contains(withoutVectorGridSlicer, i)) {
+                    removePolygons(polygonList[i]);
                 }
                 else {
                     removeVectorGridSlicedPolygons(polygonList[i]);
@@ -602,9 +609,6 @@ function getRoomCircumference(singleRoomCoordinates) {
 }
 
 function drawPolygons(polygonList) {
-    console.log(polygonList);
-    console.log(polygonList[0]);
-    console.log(polygonList[0][0]);
     for (var i = 0; i < polygonList.length; i++) {
         for (var j = 0; j < polygonList[i].length; j++) {
             if (polygonList[i][j]._latlngs.length > 1) {
@@ -1613,7 +1617,7 @@ function createPolygonsFromAllCoordinates(localStorageCoordinates) {
 function fillAllPolygons(coordinates, color, fillColor, lineOrPolygon) {
     var polygons = [];
     fillPolygons(coordinates, polygons, color, fillColor, lineOrPolygon);
-    return polygons;
+    return [polygons];
 }
 
 function angleFromCoordinate(lat1, long1, lat2, long2) {
