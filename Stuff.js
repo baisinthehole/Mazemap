@@ -929,6 +929,22 @@ function checkPoiType(infos, poiType){
     return same;
 }
 
+function fillglobalMergedPolygons(coordinates, polygonList, container) {
+    mergedRoomCoordinates = deepCopy(coordinates);
+    for (var i = 0; i < coordinates.length; i++) {
+        if (coordinates[i].length > 0){
+            if (coordinates[i][0].constructor == Array){
+                if (container[i].length == 1) {
+                    polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "white", fillOpacity: 1, weight: SERVER_WEIGHT}));
+                }
+                else {
+                    polygonList.push(Maze.polygon(coordinates[i], {color: "black", fillColor: "#F1F1F1", fillOpacity: 1, weight: SERVER_WEIGHT}));
+                }
+            }
+        }
+    }
+}
+
 function getMinDistPolyToPoly(polygon1, polygon2){
     var minDist = Infinity;
     var dist;
