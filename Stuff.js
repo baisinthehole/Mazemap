@@ -606,7 +606,7 @@ function makeRoomNames(coordinates, title) {
     if (coordinates.length == 2) {
         myIcon = Maze.divIcon({
             className: "labelClass",
-            iconSize: new Maze.Point(30, 20),
+            iconSize: new Maze.Point(title.length * 6.5, 20),
             html: title
         });
         globalRoomNames.push(Maze.marker(coordinates, {icon: myIcon}));
@@ -616,7 +616,7 @@ function makeRoomNames(coordinates, title) {
             point = getPoint(coordinates);
             myIcon = Maze.divIcon({
                 className: "labelClass",
-                iconSize: new Maze.Point(30, 20),
+                iconSize: new Maze.Point(title.length * 6.5, 20),
                 html: title
             });
             globalRoomNames.push(Maze.marker(point, {icon: myIcon}));
@@ -630,7 +630,7 @@ function makeLocalRoomNames(coordinates, title) {
     if (coordinates.length == 2) {
         myIcon = Maze.divIcon({
             className: "labelClass",
-            iconSize: new Maze.Point(30, 20),
+            iconSize: new Maze.Point(title.length * 6.5, 20),
             html: title
         });
         nameMarker = (Maze.marker(coordinates, {icon: myIcon}));
@@ -640,7 +640,7 @@ function makeLocalRoomNames(coordinates, title) {
             point = getPoint(coordinates);
             myIcon = Maze.divIcon({
                 className: "labelClass",
-                iconSize: new Maze.Point(30, 20),
+                iconSize: new Maze.Point(title.length * 6.5, 20),
                 html: title
             });
             nameMarker = (Maze.marker(point, {icon: myIcon}));
