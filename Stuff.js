@@ -359,14 +359,27 @@ function renderGeoJSON(geoJSON, fillColor, color) {
 	return L.vectorGrid.slicer(geoJSON, {
         maxZoom: 25,
         vectorTileLayerStyles: {
-            sliced: function() {
-                return {
-                    fillColor: fillColor,
-                    color: color,
-                    fill: true
-                }
+            sliced: {   
+                "fillColor": fillColor,
+                "color": color,
+                "fill": true,
             }
         }
+    });
+}
+
+function renderGeoJSONTop(geoJSON, fillColor, color) {
+    return L.vectorGrid.slicer(geoJSON, {
+        maxZoom: 25,
+        vectorTileLayerStyles: {
+            sliced: {   
+                "fillColor": fillColor,
+                "color": color,
+                "fill": true,
+            }
+        },
+        // render in a different pane with a higher z-index
+        pane: "topMAP"
     });
 }
 
@@ -527,8 +540,8 @@ function fillPolygons(coordinates, polygonList, color, fillColor, lineOrPolygon,
         else {
             polygonList.push(Maze.polygon(coordinates[i], {color: color, fillColor: fillColor, fillOpacity: fillOpacity, weight: SERVER_WEIGHT}));
         }
+        //console.log(polygonList[i]);
     }
-    console.log(fillOpacity);
 }
 
   // Function for loading local JSON object
@@ -597,6 +610,20 @@ function drawVectorGridSlicedPolygons(polygonList) {
 
 function removeVectorGridSlicedPolygons(polygonList) {
     polygonList.removeFrom(MAP);
+}
+
+function drawVectorGridSlicedDoors(doors) {
+    L.polyline(doors, {
+        pane: "doorMAP"
+    }).addTo(MAP);
+
+    console.log(MAP.getPane("doorMAP"));
+}
+
+function removeVectorGridSlicedDoors(doors) {
+    L.polyline(doors, {
+        pane: "doorMAP"
+    }).removeFrom(MAP);
 }
 
 
@@ -1483,8 +1510,8 @@ function addGlobalCoordinatesToZoom() {
     // mergedMedium = makeGeoJSONPolygon(4, "yellow", "gray", "Polygon");
     // mergedSmall = makeGeoJSONPolygon(5, "yellow", "gray", "Polygon");
     // globalRoomPolygons = makeGeoJSONPolygon(6, "white", "gray", "Polygon");
-    globalDoorPolygons = makeGeoJSONPolygon(7, roomColor, doorColor, "MultiLineString");
-    globalStairPolygons = makeGeoJSONPolygon(8, roomColor, stairColor, "Polygon");
+    globalDoorPolygons = makeGeoJSONTop(7, roomColor, doorColor, "MultiLineString");
+    globalStairPolygons = makeGeoJSONTop(8, roomColor, stairColor, "Polygon");
     // globalUnmergedPolygonsSimplified = makeGeoJSONPolygon(9, "white", "gray", "Polygon");
     // globalUnmergedPolygons = makeGeoJSONPolygon(10, "white", "gray", "Polygon");
 }
@@ -1498,8 +1525,13 @@ function addGlobalNamesToZoom() {
 }
 
 function makeGeoJSONPolygon(index, fillColor, color, type) {
-    var JSON = makeGeoJSON(deepCopy(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[index]), type);
-    return renderGeoJSON(JSON, fillColor, color);
+    var geoJSON = makeGeoJSON(deepCopy(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[index]), type);
+    return renderGeoJSON(geoJSON, fillColor, color);
+}
+
+function makeGeoJSONTop(index, fillColor, color, type) {
+    var geoJSON = makeGeoJSON(deepCopy(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[index]), type);
+    return renderGeoJSONTop(geoJSON, fillColor, color);
 }
 
 function makeAllRoomNames(coordinates, names) {
