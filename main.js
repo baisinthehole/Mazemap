@@ -62,8 +62,6 @@ function createglobalMergedPolygons(data, roomCoordinates){
 
     roomCoordinates = simplifyRoomsMadeBySomeDude(roomCoordinates);
 
-    fillglobalMergedPolygons(roomCoordinates, globalMergedPolygons, container);
-
     var textZoomLevels = makeMergedNameStrings(dynamicMergedRooms, globalNameList);
 
     convertMergedTextIntoPOIs(textZoomLevels, zoomLevelsCoordinates);
@@ -81,7 +79,7 @@ function createglobalMergedPolygons(data, roomCoordinates){
  //    // Store coordinates in localStorage if it is not there already
     // if (localStorage.getItem('allCoordinates'+FLOOR_ID) === null) {
         localStorage.setItem('allCoordinates'+FLOOR_ID, JSON.stringify(GLOBAL_ALL_COORDINATES));
-        // storeMergedRoomNames(textZoomLevels);
+        storeMergedRoomNames(textZoomLevels);
     // }
 }
 
