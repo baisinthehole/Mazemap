@@ -9,6 +9,7 @@ Maze.Map = Maze.Map.extend({
         });
     }
 });
+
 var globalMergedCorridorsCoordinates = [];
 // enum for all room types
 var ROOM_TYPE = {"OFFICE": 1, "CORRIDOR": 2, "STAIRS": 3, "COMPUTER_LAB": 4, "MEETING_ROOM": 5, "LECTURE_HALL": 6, "STUDY_ROOM": 7, "NOT_AVAILABLE": 8, "TOILETS": 9, "STORAGE_ROOM": 10, "LAB": 11, "COPY_ROOM": 12, "TECHNICAL": 13, "WARDROBE": 14, "SHOWER": 15, "GROUP_ROOM": 16, "INSTITUTE": 17, "FRAT": 18, "DRAWING_ROOM": 19, "LIBRARY": 20, "TEACHING_ROOM": 21, "STORE": 22, "CANTEEN": 23, "SIT": 24, "BUS_STOP": 27, "PARKING_LOT": 28, "WORKSHOP": 29, "ROOM":91};
@@ -131,8 +132,52 @@ var GLOBAL_ROOM_NAMES = [globalNameList, globalUnmergedNameList];
 // all polygons
 var polygonList;
 
+// all stair icons
+var globalStairIcons = [];
+
+// all stair icons
+var globalToiletIcons = [];
+
 // indices in polygonList drawn without vectorGridSlicer
 var withoutVectorGridSlicer = [1,2,3,4,5,6,9,10];
+
+
+// Create stair icons
+Maze.Instancer.getPoisByCategoryAndCampusId(ROOM_TYPE.STAIRS, 1).then( function (pois) {
+    for (var i = pois.length-1; i >= 0; i--) {
+        if (pois[i].options.zLevel == 1) {
+            var stairPoint = [pois[i]._latlng.lat, pois[i]._latlng.lng];
+            var marker = Maze.marker(stairPoint, {
+                icon: Maze.icon.bubble({
+                    // color: 'teal',
+                    glyph: 'stairs',
+                    // glyphColor: 'teal'
+                })
+            });
+            globalStairIcons.push(marker);
+        }
+    }
+    console.log(pois);
+});
+
+// Create toilet icons
+Maze.Instancer.getPoisByCategoryAndCampusId(ROOM_TYPE.TOILETS, 1).then( function (pois) {
+    for (var i = pois.length-1; i >= 0; i--) {
+        if (pois[i].options.zLevel == 1) {
+            var toiletPoint = [pois[i]._latlng.lat, pois[i]._latlng.lng];
+            var marker = Maze.marker(toiletPoint, {
+                icon: Maze.icon.chub({
+                    color: 'blue',
+                    glyph: 'human-male-female',
+                    glyphColor: 'white',
+                })
+            });
+            globalToiletIcons.push(marker);
+        }
+    }
+    console.log(pois);
+});
+
 
 // contains all the data that are displayed on different zoom levels and updates display accordingly
 function zoom() {
@@ -143,7 +188,7 @@ function zoom() {
     console.log(polygonList);
 
     // contains all kinds of room names displayed on different levels
-    var nameList = [globalRoomNames, globalUnmergedNames, mergedTextLarge, mergedTextMedium, mergedTextSmall];
+    var nameList = [globalRoomNames, globalUnmergedNames, mergedTextLarge, mergedTextMedium, mergedTextSmall, globalStairIcons, globalToiletIcons];
 
     // contains all polygons that are currently displayed
     var nowDrawings = [];
@@ -168,37 +213,37 @@ function zoom() {
         console.log(MAP.getZoom());
         if (MAP.getZoom() < 16){
             drawings = [false, false, false, false, false, false, false, false, false, false, false];
-            names = [false, false, false, false, false];
+            names = [false, false, false, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 17){
             drawings = [true, false, false, false, false, false, false, false, false, false, false];
-            names = [false, false, false, false, false];
+            names = [false, false, false, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 18){
             drawings = [true, false, true, true, false, false, false, false, false, false, true];
-            names = [false, false, false, false, false];
+            names = [false, false, false, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 19){
             drawings = [true, false, true, false, true, false, false, false, false, false, true];
-            names = [false, false, false, false, false];
+            names = [false, false, false, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 20){
             drawings = [true, false, true, false, false, true, false, false, false, false, true];
-            names = [false, true, false, false, true];
+            names = [false, true, false, false, true, true, true];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 21){
             drawings = [true, true, false, false, false, false, true, true, true, false, false];
-            names = [true, false, false, false, false];
+            names = [true, false, false, false, false, true, true];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else {
             drawings = [true, true, false, false, false, false, true, true, true, false, false];
-            names = [true, false, false, false, false];
+            names = [true, false, false, false, false, true, true];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
     });
@@ -359,10 +404,13 @@ function renderGeoJSON(geoJSON, fillColor, color) {
 	return L.vectorGrid.slicer(geoJSON, {
         maxZoom: 25,
         vectorTileLayerStyles: {
-            sliced: {   
-                "fillColor": fillColor,
-                "color": color,
-                "fill": true,
+            sliced: function() {
+                return {
+                    fillColor: fillColor,
+                    color: color,
+                    fill: true,
+                    fillOpacity: 1
+                }
             }
         }
     });
