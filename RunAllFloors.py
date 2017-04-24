@@ -11,10 +11,12 @@ NUM_FLOORS = 20
 
 START_FLOOR = 401
 
-# delay in seconds
-DELAY = 5
+FLOORS = [1672, 246, 351, 70, 349, 59, 168, 155, 197, 374, 326, 94, 241, 220, 81, 408, 380, 295, 352, 311, 148, 300, 343, 142, 247, 141, 354, 85, 378, 65, 96, 178, 160, 236, 358, 234, 260, 355, 98, 100, 254, 200, 9, 353, 62]
 
-def updateID(ID):
+# delay in seconds
+DELAY = 60
+
+def writeInfoToFile(ID):
 
 	#clear file of content
 	#file = open("floorID.js", "w").close()
@@ -29,19 +31,15 @@ def updateID(ID):
 
 	file.close()
 
-	return ID + 1
-
 def setBrowser(browserName, path):
 	webbrowser.register(browserName, None, webbrowser.BackgroundBrowser(path))
 
 def runAllFloors():
-	ID = START_FLOOR
-
 	setBrowser('firefox', PATH_FIREFOX)
 
-	for i in range(NUM_FLOORS):
+	for i in range(len(FLOORS)):
 
-		ID = updateID(ID)
+		writeInfoToFile(FLOORS[i])
 
 		openInNewTab = 2
 
