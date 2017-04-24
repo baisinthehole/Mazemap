@@ -1511,7 +1511,7 @@ function addGlobalCoordinatesToZoom() {
     // mergedSmall = makeGeoJSONPolygon(5, "yellow", "gray", "Polygon");
     // globalRoomPolygons = makeGeoJSONPolygon(6, "white", "gray", "Polygon");
     globalDoorPolygons = makeGeoJSONTop(7, roomColor, doorColor, "MultiLineString");
-    globalStairPolygons = makeGeoJSONTop(8, roomColor, stairColor, "Polygon");
+    globalStairPolygons = makeGeoJSONTop(8, roomColor, stairColor, "MultiLineString");
     // globalUnmergedPolygonsSimplified = makeGeoJSONPolygon(9, "white", "gray", "Polygon");
     // globalUnmergedPolygons = makeGeoJSONPolygon(10, "white", "gray", "Polygon");
 }
