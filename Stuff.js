@@ -148,11 +148,13 @@ Maze.Instancer.getPoisByCategoryAndCampusId(ROOM_TYPE.STAIRS, 1).then( function 
         if (pois[i].options.zLevel == 1) {
             var stairPoint = [pois[i]._latlng.lat, pois[i]._latlng.lng];
             var marker = Maze.marker(stairPoint, {
-                icon: Maze.icon.bubble({
+                icon: Maze.icon.chub({
                     // color: 'teal',
                     glyph: 'stairs',
                     // glyphColor: 'teal'
-                })
+
+                }),
+                pane: "iconMAP"
             });
             globalStairIcons.push(marker);
         }
@@ -170,7 +172,8 @@ Maze.Instancer.getPoisByCategoryAndCampusId(ROOM_TYPE.TOILETS, 1).then( function
                     color: 'blue',
                     glyph: 'human-male-female',
                     glyphColor: 'white',
-                })
+                }),
+                pane: "iconMAP"
             });
             globalToiletIcons.push(marker);
         }
@@ -424,6 +427,7 @@ function renderGeoJSONTop(geoJSON, fillColor, color) {
                 "fillColor": fillColor,
                 "color": color,
                 "fill": true,
+                "weight": 1
             }
         },
         // render in a different pane with a higher z-index
