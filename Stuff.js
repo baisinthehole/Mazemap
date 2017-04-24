@@ -408,7 +408,8 @@ function renderGeoJSON(geoJSON, fillColor, color) {
                 return {
                     fillColor: fillColor,
                     color: color,
-                    fill: true
+                    fill: true,
+                    fillOpacity: 1
                 }
             }
         }
@@ -1528,7 +1529,7 @@ function addGlobalCoordinatesToZoom() {
     // mergedSmall = makeGeoJSONPolygon(5, "yellow", "gray", "Polygon");
     // globalRoomPolygons = makeGeoJSONPolygon(6, "white", "gray", "Polygon");
     globalDoorPolygons = makeGeoJSONPolygon(7, roomColor, doorColor, "MultiLineString");
-    globalStairPolygons = makeGeoJSONPolygon(8, roomColor, stairColor, "Polygon");
+    globalStairPolygons = makeGeoJSONPolygon(8, roomColor, stairColor, "MultiLineString");
     // globalUnmergedPolygonsSimplified = makeGeoJSONPolygon(9, "white", "gray", "Polygon");
     // globalUnmergedPolygons = makeGeoJSONPolygon(10, "white", "gray", "Polygon");
 }
