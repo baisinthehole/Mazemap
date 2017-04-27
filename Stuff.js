@@ -425,7 +425,8 @@ function renderGeoJSON(geoJSON, fillColor, color) {
                     fillColor: fillColor,
                     color: color,
                     fill: true,
-                    fillOpacity: 1
+                    fillOpacity: 1,
+                    weight: 1
                 }
             }
         }
@@ -483,7 +484,7 @@ function makeGeoJSON (coordinates, type) {
     for (var i = 0; i < coordinates.length; i++) {
         if (coordinates[i][0].constructor === Array) {
             if (coordinates[i][0][0].constructor === Array) {
-                result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "MultiPolygon"}, "properties": {"layer": "hallways"}});
+                result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "MultiPolygon"}});
                 moveBiggestRoomFirst(coordinates[i]);
                 for (var j = 0; j < coordinates[i].length; j++) {
                     if (coordinates[i][j][0] != coordinates[i][j][coordinates[i].length - 1]) {
@@ -492,14 +493,14 @@ function makeGeoJSON (coordinates, type) {
                 }
             }
             else {
-                result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": type}, "properties": {"layer": "hallways"}});
+                result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": type}});
                 if (coordinates[i][0] != coordinates[i][coordinates.length - 1] && type == "Polygon") {
                     coordinates[i].push(coordinates[i][0]);
                 }
             }
         }
         else {
-                result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": type}, "properties": {"layer": "hallways"}});
+                result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": type}});
         }
 
         result.features[i].geometry.coordinates.push(coordinates[i]);
