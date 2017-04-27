@@ -137,3 +137,24 @@ function removePointsTwoShort(coordinates, index) {
     }
     return simplifiedCoordinates;
 }
+
+function generalSimplify(corridorCoordinates) {
+
+    coordinates = deepCopy(corridorCoordinates);
+
+    for (var i = 0; i < coordinates.length; i++) {
+        if (coordinates[i][0][0].constructor === Array) {
+            for (var j = 0; j < coordinates[i].length; j++) {
+                if (getArea(coordinates[i][j]) < 0.00000001) {
+                    coordinates[i].splice(j, 1);
+                    j--;
+                }
+            }
+            coordinates[i] = simplifyRoomsMadeBySomeDude(coordinates[i]);
+        }
+        else {
+            coordinates[i] = simplify(coordinates[i], VERY_IMPORTANCE_DISTANCE);
+        }
+    }
+    return coordinates;
+}
