@@ -877,24 +877,12 @@ function isClockwise(poly) {
 
 // is meant for rooms that consist of several polygons (rooms with holes in them), and finds the largest room (the outer part)
 function getBiggestRoom(room1) {
-    var index = -1;
-    var outsideRoom;
+    var index;
+    var maxArea = 0;
     for (var i = 0; i < room1.length; i++) {
-        outsideRoom = true;
-        for (var j = 0; j < room1.length; j++) {
-            if (i != j) {
-                // made two inside tests to decrease chances of getting points that are on the lines of both polygons
-                if (inside(room1[i][0], room1[j]) || inside(room1[i][Math.floor(room1[i].length / 2)], room1[j])){
-                    outsideRoom = false;
-                }
-            }
-        }
-        if (outsideRoom && index != -1) {
-            drawPolygonFromOnlyCoordinates(room1[i], "white", "red");
-            drawPolygonFromOnlyCoordinates(room1[index], "white", "blue");
-            console.log("This should not happen");
-        }
-        if (outsideRoom) {
+        var area = getArea(room1[i]);
+        if (area > maxArea) {
+            maxArea = area;
             index = i;
         }
     }
