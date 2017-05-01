@@ -338,7 +338,7 @@ function recievedJSONfromServer() {
     }
 
     // edits JSON file
-    geoJSON = alterJSONfile(geoJSON, FLOOR_ID, 1);
+    geoJSON = alterJSONfile(geoJSON, FLOOR_ID, 2);
     console.log(geoJSON);
 
     GEO_JSON = geoJSON;
@@ -438,7 +438,7 @@ function renderGeoJSONTop(geoJSON, fillColor, color) {
         updateWhenZooming: false,
         maxZoom: 25,
         vectorTileLayerStyles: {
-            sliced: {   
+            sliced: {
                 "fillColor": fillColor,
                 "color": color,
                 "fill": true,
@@ -461,7 +461,7 @@ function renderGeoJSONText(geoJSON, textColor) {
         pane: "iconMAP",
         pointToLayer: function (feature) {
             return L.Marker(feature.geometry.coordinates).bindLabel(feature.properties.name, {noHide:true});
-        }  
+        }
     });
 }
 
