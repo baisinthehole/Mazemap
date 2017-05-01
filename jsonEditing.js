@@ -238,5 +238,118 @@ function alterJSONfile(JSON, ID, caseNr) {
             JSON.pois[28].infos.push({poiTypeId: 2}); // Gang/Trapp
         }
     }
+    else if (caseNr == 2) {
+        if (ID == "81") { // Stripa
+            JSON.pois[1].infos.push({poiTypeId: 2});
+            JSON.pois[3].infos.push({poiTypeId: 2});
+            JSON.pois[9].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[15].infos.push({poiTypeId: 2});
+            JSON.pois[22].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[26].infos.push({poiTypeId: 2});
+
+        }
+        if (ID == "94") { // IT-syd
+            JSON.pois[0].infos.push({poiTypeId: 2});
+            JSON.pois[2].infos.push({poiTypeId: 2}); // Drivhuset
+            JSON.pois[3].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[14].infos.push({poiTypeId: 2});
+            JSON.pois[18].infos.push({poiTypeId: 2}); // Trapp
+        }
+        if (ID == "96") { // Kjemiblokk
+            JSON.pois[5].infos.push({poiTypeId: 2}); // Gang/Trapp
+            JSON.pois[11].infos.push({poiTypeId: 2});
+            JSON.pois[12].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[23].infos.push({poiTypeId: 2});
+            JSON.pois[30].infos.push({poiTypeId: 2});
+
+        }
+        if (ID == "141") { // Kjemiblokk
+            JSON.pois[0].infos.push({poiTypeId: 2}); // Maybe this is fixed by dividing with 100 in getNeighborsCorridors
+            JSON.pois[17].infos.push({poiTypeId: 2});
+        }
+        if (ID == "148") { // Kjemiblokk
+            JSON.pois[1].infos.push({poiTypeId: 2}); // Gang/Trapp
+            JSON.pois[2].infos.push({poiTypeId: 2});
+            JSON.pois[17].infos.push({poiTypeId: 2}); // Gang/Trapp
+            JSON.pois[25].infos.push({poiTypeId: 2});
+        }
+        if (ID == "220") { // Gamle fysikk
+            JSON.pois[1].infos.push({poiTypeId: 2});
+            JSON.pois[2].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[3].infos.push({poiTypeId: 2});
+            JSON.pois[31].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[32].infos.push({poiTypeId: 2});
+        }
+        if (ID == "241") { // Stripa
+            // JSON.pois[1].infos.push({poiTypeId: 2}); // Maybe corridor
+            // JSON.pois[4].infos.push({poiTypeId: 2}); // Maybe corridor
+            JSON.pois[6].infos.push({poiTypeId: 2});
+            JSON.pois[8].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[43].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[37].infos.push({poiTypeId: 2});
+        }
+        if (ID == "260") { // Kjemiblokk
+            JSON.pois[6].infos.push({poiTypeId: 2}); // Gang/Trapp
+            JSON.pois[11].infos.push({poiTypeId: 2});
+            JSON.pois[13].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[17].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[29].infos.push({poiTypeId: 2}); // Gang/Trapp
+        }
+        if (ID == "300") { // Realfagsbygget
+            JSON.pois[4].infos.push({poiTypeId: 2});
+            JSON.pois[5].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[6].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[7].infos.push({poiTypeId: 2});
+            JSON.pois[30].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[31].infos.push({poiTypeId: 2});
+            JSON.pois[32].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[34].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[45].infos.push({poiTypeId: 2});
+            JSON.pois[78].infos.push({poiTypeId: 2}); // Mergelig tegnet trapp
+            JSON.pois[79].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[80].infos.push({poiTypeId: 2}); // Maybe this is fixed by removeTooClosePointsFromResultingPoints
+            JSON.pois[137].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[139].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[144].infos.push({poiTypeId: 2});
+            JSON.pois[150].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[156].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[171].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[212].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[225].infos.push({poiTypeId: 2}); // Trapp
+        }
+        if (ID == "311") { // Stripa
+            JSON.pois[6].infos.push({poiTypeId: 2});
+            JSON.pois[7].infos.push({poiTypeId: 2});
+            JSON.pois[9].infos.push({poiTypeId: 2});
+            JSON.pois[14].infos.push({poiTypeId: 2}); // Hangaren
+            JSON.pois[17].infos.push({poiTypeId: 2});
+        }
+        if (ID == "326") { // IT-vest
+            JSON.pois[4].infos.push({poiTypeId: 2});
+            JSON.pois[6].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[1].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[11].infos.push({poiTypeId: 2});
+        }
+        if (ID == "354") { // Kjemiblokk
+            JSON.pois[0].infos.push({poiTypeId: 2}); // Gang/Trapp
+            JSON.pois[1].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[9].infos.push({poiTypeId: 2});
+            JSON.pois[24].infos.push({poiTypeId: 2});
+        }
+        if (ID == "358") { // Kjemiblokk
+            JSON.pois[4].infos.push({poiTypeId: 2}); // Gang/Trapp
+            JSON.pois[8].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[23].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[13].infos.push({poiTypeId: 2});
+            JSON.pois[28].infos.push({poiTypeId: 2});
+            JSON.pois[37].infos.push({poiTypeId: 2});
+
+        }
+        if (ID == "380") { // Kjemiblokk
+            JSON.pois[0].infos.push({poiTypeId: 2});
+            JSON.pois[25].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[28].infos.push({poiTypeId: 2}); // Gang/Trapp
+        }
+    }
     return JSON;
 }
