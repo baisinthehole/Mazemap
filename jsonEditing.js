@@ -256,7 +256,7 @@ function alterJSONfile(JSON, ID, caseNr) {
             JSON.pois[18].infos.push({poiTypeId: 2}); // Trapp
         }
         if (ID == "96") { // Kjemiblokk
-            JSON.pois[5].infos.push({poiTypeId: 2}); // Gang/Trapp
+            JSON.pois[4].infos.push({poiTypeId: 2}); // Gang/Trapp
             JSON.pois[11].infos.push({poiTypeId: 2});
             JSON.pois[12].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[23].infos.push({poiTypeId: 2});
@@ -264,8 +264,7 @@ function alterJSONfile(JSON, ID, caseNr) {
 
         }
         if (ID == "141") { // Kjemiblokk
-            JSON.pois[0].infos.push({poiTypeId: 2}); // Maybe this is fixed by dividing with 100 in getNeighborsCorridors
-            JSON.pois[17].infos.push({poiTypeId: 2});
+            JSON.pois[2].infos.push({poiTypeId: 2}); // Maybe this is fixed by dividing with 100 in getNeighborsCorridors
         }
         if (ID == "148") { // Kjemiblokk
             JSON.pois[1].infos.push({poiTypeId: 2}); // Gang/Trapp
@@ -332,12 +331,12 @@ function alterJSONfile(JSON, ID, caseNr) {
         }
         if (ID == "354") { // Kjemiblokk
             JSON.pois[0].infos.push({poiTypeId: 2}); // Gang/Trapp
-            JSON.pois[1].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[5].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[9].infos.push({poiTypeId: 2});
             JSON.pois[24].infos.push({poiTypeId: 2});
         }
         if (ID == "358") { // Kjemiblokk
-            JSON.pois[4].infos.push({poiTypeId: 2}); // Gang/Trapp
+            JSON.pois[3].infos.push({poiTypeId: 2}); // Gang/Trapp
             JSON.pois[8].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[23].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[13].infos.push({poiTypeId: 2});
@@ -346,7 +345,7 @@ function alterJSONfile(JSON, ID, caseNr) {
 
         }
         if (ID == "380") { // Kjemiblokk
-            JSON.pois[0].infos.push({poiTypeId: 2});
+            JSON.pois[6].infos.push({poiTypeId: 2});
             JSON.pois[25].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[28].infos.push({poiTypeId: 2}); // Gang/Trapp
         }
