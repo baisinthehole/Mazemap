@@ -265,6 +265,7 @@ function alterJSONfile(JSON, ID, caseNr) {
         }
         if (ID == "141") { // Kjemiblokk
             JSON.pois[2].infos.push({poiTypeId: 2}); // Maybe this is fixed by dividing with 100 in getNeighborsCorridors
+            JSON.pois[17].infos.push({poiTypeId: 2});
         }
         if (ID == "148") { // Kjemiblokk
             JSON.pois[1].infos.push({poiTypeId: 2}); // Gang/Trapp
@@ -345,7 +346,7 @@ function alterJSONfile(JSON, ID, caseNr) {
 
         }
         if (ID == "380") { // Kjemiblokk
-            JSON.pois[6].infos.push({poiTypeId: 2});
+            JSON.pois[2].infos.push({poiTypeId: 2});
             JSON.pois[25].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[28].infos.push({poiTypeId: 2}); // Gang/Trapp
         }
