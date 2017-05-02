@@ -347,7 +347,7 @@ function recievedJSONfromServer() {
 
     GEO_JSON = geoJSON;
     fillCoordinateTypeServer(geoJSON, globalCorridorCoordinates, globalCorridorPolygons, ROOM_TYPE.CORRIDOR, roomOutlineColor, mergedCorridorColor, 1, "polygon");
-    fillCoordinateTypeServer(geoJSON, globalRoomCoordinates, globalRoomPolygons, ROOM_TYPE.ROOM, roomOutlineColor, roomColor, 1, "line");
+    fillCoordinateTypeServer(geoJSON, globalRoomCoordinates, globalRoomPolygons, ROOM_TYPE.ROOM, roomOutlineColor, roomColor, 1, "polygon");
     GLOBAL_ROOM_COORDINATES = deepCopy(globalRoomCoordinates);
     GLOBAL_ALL_COORDINATES[6] = deepCopy(globalRoomCoordinates);
     GLOBAL_CORRIDOR_COORDINATES = deepCopy(globalCorridorCoordinates);
@@ -634,7 +634,7 @@ function fillZoomlevelPolygons(coordinates, polygonList, nameList, color, fillCo
     var baseColor = fillColor;
     for (var i = 0; i < coordinates.length; i++) {
         if (!nameList[i].includes(' - ')) {
-            fillColor = "white";
+            fillColor = roomColor;
         }
         if (lineOrPolygon == "line") {
             polygonList.push(Maze.polyline(coordinates[i], {color: color, weight: SERVER_WEIGHT}));
@@ -1589,7 +1589,7 @@ function removeEmptyRoomsOrNames(coordinates, names) {
 }
 
 function addGlobalCoordinatesToZoom() {
-    globalOutlinePolygons = makeGeoJSONPolygon(0, roomColor, roomOutlineColor, "Polygon");
+    globalOutlinePolygons = makeGeoJSONPolygon(0, buildingBackgroundColor, roomOutlineColor, "Polygon");
     // globalCorridorPolygons = makeGeoJSONPolygon(1, "red", "gray", "Polygon");
     // globalMergedCorridorPolygons = makeGeoJSONPolygon(2, "red", "gray", "Polygon");
     // mergedLarge = makeGeoJSONPolygon(3, "yellow", "gray", "Polygon");
@@ -1787,14 +1787,14 @@ function createPolygonsFromAllCoordinatesAsOneFloorId(coordinates) {
     mergedLarge = fillAllZoomlevelPolygons(coordinates[3], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2], roomOutlineColor, mergedRoomColor, "polygon");
     mergedMedium = fillAllZoomlevelPolygons(coordinates[4], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[3], roomOutlineColor, mergedRoomColor, "polygon");
     mergedSmall = fillAllZoomlevelPolygons(coordinates[5], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[4], roomOutlineColor, mergedRoomColor, "polygon");
-    globalRoomPolygons = fillAllPolygons(coordinates[6], roomOutlineColor, roomColor, "line");
+    globalRoomPolygons = fillAllPolygons(coordinates[6], roomOutlineColor, roomColor, "polygon");
 
     simplifiedMergedLarge = fillAllZoomlevelPolygons(generalSimplify(coordinates[3]), GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2], roomOutlineColor, mergedRoomColor, "polygons");
     // globalDoorPolygons = fillAllPolygons(coordinates[7], "gray", "white", "line");
     // globalStairPolygons = fillAllPolygons(coordinates[8], "gray", "white", "line");
-    globalUnmergedPolygonsSimplified = fillAllPolygons(coordinates[9], roomOutlineColor, roomColor, "line");
-    globalUnmergedPolygons = fillAllPolygons(coordinates[10], roomOutlineColor, roomColor, "line");
-    globalUnmergedLargePolygons = fillAllPolygons(filterOutSmallRooms(coordinates[10]), roomOutlineColor, roomColor, "line");
+    globalUnmergedPolygonsSimplified = fillAllPolygons(coordinates[9], roomOutlineColor, roomColor, "polygon");
+    globalUnmergedPolygons = fillAllPolygons(coordinates[10], roomOutlineColor, roomColor, "polygon");
+    globalUnmergedLargePolygons = fillAllPolygons(filterOutSmallRooms(coordinates[10]), roomOutlineColor, roomColor, "polygon");
 }
 
 function fillAllPolygons(coordinates, color, fillColor, lineOrPolygon) {
