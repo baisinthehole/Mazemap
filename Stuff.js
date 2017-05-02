@@ -150,6 +150,14 @@ var globalStairIcons = [];
 // all stair icons
 var globalToiletIcons = [];
 
+// collision group layers for names
+var globalRoomNamesGroup;
+var globalUnmergedNamesGroup;
+var mergedTextLargeGroup;
+var mergedTextMediumGroup;
+var mergedTextSmallGroup;
+var globalLargeRoomNamesGroup;
+
 // indices in polygonList drawn without vectorGridSlicer
 var withoutVectorGridSlicer = [1,2,3,4,5,6,7,8,11,12,13];
 
@@ -203,7 +211,7 @@ function zoom() {
     //console.log(polygonList);
 
     // contains all kinds of room names displayed on different levels
-    var nameList = [globalRoomNames, globalUnmergedNames, mergedTextLarge, mergedTextMedium, mergedTextSmall, globalLargeRoomNames, globalStairIcons, globalToiletIcons];
+    var nameList = [globalRoomNamesGroup, globalUnmergedNamesGroup, mergedTextLargeGroup, mergedTextMediumGroup, mergedTextSmallGroup, globalLargeRoomNamesGroup, globalStairIcons, globalToiletIcons];
 
     // contains all polygons that are currently displayed
     var nowDrawings = [];
@@ -296,14 +304,10 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
     for (var i = 0; i < names.length; i++) {
         if (names[i] != nowNames[i]){
             if (!nowNames[i]){
-                for (var j = 0; j < nameList[i].length; j++) {
-                    MAP.addLayer(nameList[i][j]);
-                }
+                nameList[i].addTo(MAP);
             }
             else if (nowNames[i]){
-                for (var j = 0; j < nameList[i].length; j++) {
-                    MAP.removeLayer(nameList[i][j]);
-                }
+                nameList[i].removeFrom(MAP);
             }
             nowNames[i] = !nowNames[i];
         }
@@ -731,7 +735,7 @@ function makeRoomNames(coordinates, title) {
     if (coordinates.length == 2) {
         myIcon = Maze.divIcon({
             className: "labelClass",
-            iconSize: new Maze.Point(title.length * 6.5, 20),
+            iconSize: new Maze.Point(title.length * 7.5, 20),
             html: title
         });
         globalRoomNames.push(Maze.marker(coordinates, {icon: myIcon}));
@@ -741,7 +745,7 @@ function makeRoomNames(coordinates, title) {
             point = getPoint(coordinates);
             myIcon = Maze.divIcon({
                 className: "labelClass",
-                iconSize: new Maze.Point(title.length * 6.5, 20),
+                iconSize: new Maze.Point(title.length * 7.5, 20),
                 html: title
             });
             globalRoomNames.push(Maze.marker(point, {icon: myIcon}));
@@ -755,7 +759,7 @@ function makeLocalRoomNames(coordinates, title) {
     if (coordinates.length == 2) {
         myIcon = Maze.divIcon({
             className: "labelClass",
-            iconSize: new Maze.Point(title.length * 6.5, 20),
+            iconSize: new Maze.Point(title.length * 7.5, 20),
             html: title
         });
         nameMarker = (Maze.marker(coordinates, {icon: myIcon}));
@@ -765,7 +769,7 @@ function makeLocalRoomNames(coordinates, title) {
             point = getPoint(coordinates);
             myIcon = Maze.divIcon({
                 className: "labelClass",
-                iconSize: new Maze.Point(title.length * 6.5, 20),
+                iconSize: new Maze.Point(title.length * 7.5, 20),
                 html: title
             });
             nameMarker = (Maze.marker(point, {icon: myIcon}));
@@ -1612,7 +1616,48 @@ function addGlobalNamesToZoom() {
 
     globalLargeRoomNames = makeAllRoomNames(largeCoordinates, largeNames);
 
+    addGlobalNamesToCollisionGroup();
+
     //globalRoomNames = makeGeoJSONText(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[6], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[0], "blue");
+}
+
+function addGlobalNamesToCollisionGroup() {
+    globalRoomNamesGroup = L.LayerGroup.collision({
+        margin: 100
+    });
+    for (var i = 0; i < globalRoomNames.length; i++) {
+        globalRoomNamesGroup.addLayer(globalRoomNames[i]);
+    }
+    globalUnmergedNamesGroup = L.LayerGroup.collision({
+        margin: 100
+    });
+    for (var i = 0; i < globalUnmergedNames.length; i++) {
+        globalUnmergedNamesGroup.addLayer(globalUnmergedNames[i]);
+    }
+    mergedTextLargeGroup = L.LayerGroup.collision({
+        margin: 100
+    });
+    for (var i = 0; i < mergedTextLarge.length; i++) {
+        mergedTextLargeGroup.addLayer(mergedTextLarge[i]);
+    }
+    mergedTextMediumGroup = L.LayerGroup.collision({
+        margin: 100
+    });
+    for (var i = 0; i < mergedTextMedium.length; i++) {
+        mergedTextMediumGroup.addLayer(mergedTextMedium[i]);
+    }
+    mergedTextSmallGroup = L.LayerGroup.collision({
+        margin: 100
+    });
+    for (var i = 0; i < mergedTextSmall.length; i++) {
+        mergedTextSmallGroup.addLayer(mergedTextSmall[i]);
+    }
+    globalLargeRoomNamesGroup = L.LayerGroup.collision({
+        margin: 100
+    });
+    for (var i = 0; i < globalLargeRoomNames.length; i++) {
+        globalLargeRoomNamesGroup.addLayer(globalLargeRoomNames[i]);
+    }
 }
 
 function makeGeoJSONPolygon(index, fillColor, color, type) {
