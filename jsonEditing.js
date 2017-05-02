@@ -300,11 +300,13 @@ function alterJSONfile(JSON, ID, caseNr) {
             JSON.pois[5].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[6].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[7].infos.push({poiTypeId: 2});
+            JSON.pois[28].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[30].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[31].infos.push({poiTypeId: 2});
             JSON.pois[32].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[34].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[45].infos.push({poiTypeId: 2});
+            JSON.pois[64].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[78].infos.push({poiTypeId: 2}); // Mergelig tegnet trapp
             JSON.pois[79].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[80].infos.push({poiTypeId: 2}); // Maybe this is fixed by removeTooClosePointsFromResultingPoints
@@ -313,6 +315,7 @@ function alterJSONfile(JSON, ID, caseNr) {
             JSON.pois[144].infos.push({poiTypeId: 2});
             JSON.pois[150].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[156].infos.push({poiTypeId: 2}); // Trapp
+            JSON.pois[161].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[171].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[212].infos.push({poiTypeId: 2}); // Trapp
             JSON.pois[225].infos.push({poiTypeId: 2}); // Trapp
