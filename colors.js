@@ -1,6 +1,7 @@
 roomOutlineColor = "black";
-mergedRoomColor = "lemonchiffon";
-mergedCorridorColor = "salmon";
+mergedRoomColor = "lemonchiffon";//"white";
+mergedCorridorColor = "salmon";//"#DDDDDD";
 roomColor = "white";
 doorColor = "green";
 stairColor = "blue";
+buildingBackgroundColor = "#EEEEEE";
