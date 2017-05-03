@@ -1623,37 +1623,37 @@ function addGlobalNamesToZoom() {
 }
 
 function addGlobalNamesToCollisionGroup() {
-    globalRoomNamesGroup = L.LayerGroup.collision({
+    globalRoomNamesGroup = Maze.LayerGroup.collision({
         margin: 0
     });
     for (var i = 0; i < globalRoomNames.length; i++) {
         globalRoomNamesGroup.addLayer(globalRoomNames[i]);
     }
-    globalUnmergedNamesGroup = L.LayerGroup.collision({
+    globalUnmergedNamesGroup = Maze.LayerGroup.collision({
         margin: 0
     });
     for (var i = 0; i < globalUnmergedNames.length; i++) {
         globalUnmergedNamesGroup.addLayer(globalUnmergedNames[i]);
     }
-    mergedTextLargeGroup = L.LayerGroup.collision({
+    mergedTextLargeGroup = Maze.LayerGroup.collision({
         margin: 0
     });
     for (var i = 0; i < mergedTextLarge.length; i++) {
         mergedTextLargeGroup.addLayer(mergedTextLarge[i]);
     }
-    mergedTextMediumGroup = L.LayerGroup.collision({
+    mergedTextMediumGroup = Maze.LayerGroup.collision({
         margin: 0
     });
     for (var i = 0; i < mergedTextMedium.length; i++) {
         mergedTextMediumGroup.addLayer(mergedTextMedium[i]);
     }
-    mergedTextSmallGroup = L.LayerGroup.collision({
+    mergedTextSmallGroup = Maze.LayerGroup.collision({
         margin: 0
     });
     for (var i = 0; i < mergedTextSmall.length; i++) {
         mergedTextSmallGroup.addLayer(mergedTextSmall[i]);
     }
-    globalLargeRoomNamesGroup = L.LayerGroup.collision({
+    globalLargeRoomNamesGroup = Maze.LayerGroup.collision({
         margin: 0
     });
     for (var i = 0; i < globalLargeRoomNames.length; i++) {
