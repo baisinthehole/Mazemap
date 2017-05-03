@@ -260,7 +260,7 @@ function zoom() {
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 21){
-            drawings = [true, true, false, false, false, false, false, false, true, false, true, false, false, false];
+            drawings = [true, false, true, false, false, false, false, false, true, false, true, false, false, false];
             names = [true, false, false, false, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
@@ -436,10 +436,12 @@ function renderGeoJSON(geoJSON, fillColor, color) {
                     color: color,
                     fill: true,
                     fillOpacity: 1,
-                    weight: 1
+                    weight: 0.5
                 }
             }
-        }
+        },
+        updateWhenZooming: false,
+        updateWhenIdle: false
     });
 }
 
@@ -452,11 +454,13 @@ function renderGeoJSONTop(geoJSON, fillColor, color) {
                 "fillColor": fillColor,
                 "color": color,
                 "fill": true,
-                "weight": 1
+                "weight": 0.5
             }
         },
         // render in a different pane with a higher z-index
-        pane: "topMAP"
+        pane: "topMAP",
+        updateWhenZooming: false,
+        updateWhenIdle: false
     });
 }
 
