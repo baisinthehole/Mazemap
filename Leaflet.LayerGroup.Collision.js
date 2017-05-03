@@ -10,7 +10,7 @@ function extensions(parentClass) { return {
 		this._visibleLayers = [];
 		this._staticLayers = [];
 		this._rbush = [];
-		this._cachedRelativeBoxes = [];		
+		this._cachedRelativeBoxes = [];
 		this._margin = options.margin || 0;
 		this._rbush = null;
 	},
@@ -110,7 +110,7 @@ function extensions(parentClass) { return {
 	},
 
 
-	// Returns a plain array with the relative dimensions of a L.Icon, based
+	// Returns a plain array with the relative dimensions of a Maze.Icon, based
 	//   on the computed values from iconSize and iconAnchor.
 	_getIconBox: function (el) {
 
@@ -205,33 +205,33 @@ function extensions(parentClass) { return {
 }};
 
 
-L.LayerGroup.Collision   = L.LayerGroup.extend(extensions( L.LayerGroup ));
-L.FeatureGroup.Collision = L.FeatureGroup.extend(extensions( L.FeatureGroup ));
-L.GeoJSON.Collision      = L.GeoJSON.extend(extensions( L.GeoJSON ));
+Maze.LayerGroup.Collision   = Maze.LayerGroup.extend(extensions( Maze.LayerGroup ));
+Maze.FeatureGroup.Collision = Maze.FeatureGroup.extend(extensions( Maze.FeatureGroup ));
+Maze.GeoJSON.Collision      = Maze.GeoJSON.extend(extensions( Maze.GeoJSON ));
 
 // Uppercase factories only for backwards compatibility:
-L.LayerGroup.collision = function (options) {
-	return new L.LayerGroup.Collision(options || {});
+Maze.LayerGroup.collision = function (options) {
+	return new Maze.LayerGroup.Collision(options || {});
 };
 
-L.FeatureGroup.collision = function (options) {
-	return new L.FeatureGroup.Collision(options || {});
+Maze.FeatureGroup.collision = function (options) {
+	return new Maze.FeatureGroup.Collision(options || {});
 };
 
-L.GeoJSON.collision = function (options) {
-	return new L.GeoJSON.Collision(options || {});
+Maze.GeoJSON.collision = function (options) {
+	return new Maze.GeoJSON.Collision(options || {});
 };
 
 // Factories should always be lowercase, like this:
-L.layerGroup.collision = function (options) {
-	return new L.LayerGroup.Collision(options || {});
+Maze.layerGroup.collision = function (options) {
+	return new Maze.LayerGroup.Collision(options || {});
 };
 
-L.featureGroup.collision = function (options) {
-	return new L.FeatureGroup.Collision(options || {});
+Maze.featureGroup.collision = function (options) {
+	return new Maze.FeatureGroup.Collision(options || {});
 };
 
-L.geoJson.collision = function (options) {
-	return new L.GeoJSON.Collision(options || {});
+Maze.geoJson.collision = function (options) {
+	return new Maze.GeoJSON.Collision(options || {});
 };
 
