@@ -3,13 +3,14 @@ FLOOR_IDS = [1672, 246, 351, 70, 349, 59, 168, 155, 197, 374, 326, 94, 241, 220,
 
 // Create a map
 // center = Maze.latLng(63.41, 10.41);
-var MAP = Maze.map('mazemap-container', {
+var MAP = L.map('mazemap-container', {
             campusloader: false,
             // center: center,
             zoom: 5,
             zoomSnap: 0,
             zoomDelta: 0.5,
-            wheelPxPerZoomLevel: 100 });
+            wheelPxPerZoomLevel: 100,
+            markerZoomAnimation: false });
 MAP.setView([63.417421008760335,10.406426561608821], 15);
 
 MAP.createPane("topMAP");

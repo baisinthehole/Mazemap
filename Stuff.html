@@ -20,6 +20,7 @@
 <script src="simplify.js"></script>
 
 <div id='mazemap-container'></div>
+<div id='map'></div>
 
 <!-- geojson validation API -->
 <script src="https://unpkg.com/@mapbox/geojsonhint@latest/geojsonhint.js"></script>
@@ -31,6 +32,13 @@
 		#mazemap-container {
 			width: 100vw;
 			height: 100vh;
+			z-index: 1;
+		}
+		#map {
+			position: absolute;
+			width: 100vw;
+			height: 100vh;
+			z-index: 10;
 		}
 		.pswp__zoom-wrap {
 		  will-change: auto !important;

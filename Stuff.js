@@ -256,17 +256,17 @@ function zoom() {
         }
         else if (MAP.getZoom() < 20){
             drawings = [true, false, true, false, false, false, true, false, false, false, false, false, true, false];
-            names = [false, true, false, false, true, false, true, true];
+            names = [false, true, false, false, true, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 21){
             drawings = [true, true, false, false, false, false, false, false, true, true, true, false, false, false];
-            names = [true, false, false, false, false, false, true, true];
+            names = [true, false, false, false, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else {
             drawings = [true, true, false, false, false, false, false, false, true, true, true, false, false, false];
-            names = [true, false, false, false, false, false, true, true];
+            names = [true, false, false, false, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
     });
@@ -305,10 +305,10 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
     for (var i = 0; i < names.length; i++) {
         if (names[i] != nowNames[i]){
             if (!nowNames[i]){
-                //nameList[i].addTo(MAP);
+                nameList[i].addTo(MAP);
             }
             else if (nowNames[i]){
-                //nameList[i].removeFrom(MAP);
+                nameList[i].removeFrom(MAP);
             }
             nowNames[i] = !nowNames[i];
         }
@@ -1624,49 +1624,41 @@ function addGlobalNamesToZoom() {
 
 function addGlobalNamesToCollisionGroup() {
     globalRoomNamesGroup = L.LayerGroup.collision({
-        margin: 100
+        margin: 0
     });
     for (var i = 0; i < globalRoomNames.length; i++) {
         globalRoomNamesGroup.addLayer(globalRoomNames[i]);
     }
-    console.log(globalRoomNamesGroup);
-    globalUnmergedNamesGroup = Maze.LayerGroup.collision({
-        margin: 100,
-        minZoom: 20
+    globalUnmergedNamesGroup = L.LayerGroup.collision({
+        margin: 0
     });
     for (var i = 0; i < globalUnmergedNames.length; i++) {
         globalUnmergedNamesGroup.addLayer(globalUnmergedNames[i]);
     }
-    mergedTextLargeGroup = Maze.LayerGroup.collision({
-        margin: 100,
-        minZoom: 20
+    mergedTextLargeGroup = L.LayerGroup.collision({
+        margin: 0
     });
     for (var i = 0; i < mergedTextLarge.length; i++) {
         mergedTextLargeGroup.addLayer(mergedTextLarge[i]);
     }
-    mergedTextMediumGroup = Maze.LayerGroup.collision({
-        margin: 100,
-        minZoom: 20
+    mergedTextMediumGroup = L.LayerGroup.collision({
+        margin: 0
     });
     for (var i = 0; i < mergedTextMedium.length; i++) {
         mergedTextMediumGroup.addLayer(mergedTextMedium[i]);
     }
-    mergedTextSmallGroup = Maze.LayerGroup.collision({
-        margin: 100,
-        minZoom: 20
+    mergedTextSmallGroup = L.LayerGroup.collision({
+        margin: 0
     });
     for (var i = 0; i < mergedTextSmall.length; i++) {
         mergedTextSmallGroup.addLayer(mergedTextSmall[i]);
     }
-    globalLargeRoomNamesGroup = Maze.LayerGroup.collision({
-        margin: 100,
-        minZoom: 20
+    globalLargeRoomNamesGroup = L.LayerGroup.collision({
+        margin: 0
     });
     for (var i = 0; i < globalLargeRoomNames.length; i++) {
         globalLargeRoomNamesGroup.addLayer(globalLargeRoomNames[i]);
     }
-    // globalRoomNamesGroup.addTo(MAP);
-    // console.log(globalRoomNamesGroup);
 }
 
 function makeGeoJSONPolygon(index, fillColor, color, type) {
