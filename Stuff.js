@@ -260,6 +260,11 @@ function zoom() {
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 21){
+            drawings = [true, true, false, false, false, false, false, false, true, false, true, false, false, false];
+            names = [true, false, false, false, false, false, false, false];
+            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
+        }
+        else if (MAP.getZoom() < 22){
             drawings = [true, true, false, false, false, false, false, false, true, true, true, false, false, false];
             names = [true, false, false, false, false, false, false, false];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
