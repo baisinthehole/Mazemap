@@ -364,11 +364,6 @@ function recievedJSONfromServer() {
 
     // This function is defined in main.js
     createglobalMergedPolygons(geoJSON, removedDuplicatePoints);
-    if (localStorage.getItem('everything'+FLOOR_ID) === null) {
-        localStorage.setItem('everything'+FLOOR_ID, JSON.stringify(polygonList));
-    }
-
-
 }
 
   // Function for requesting JSON object from server
