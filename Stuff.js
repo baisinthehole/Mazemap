@@ -210,6 +210,8 @@ function zoom() {
     //console.log(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
     //console.log(polygonList);
 
+    console.log("globalRoomNames");
+    console.log(deepCopy(globalRoomNames));
     // contains all kinds of room names displayed on different levels
     var nameList = [globalRoomNamesGroup, globalUnmergedNamesGroup, mergedTextLargeGroup, mergedTextMediumGroup, mergedTextSmallGroup, globalLargeRoomNamesGroup, globalStairIcons, globalToiletIcons];
 
@@ -364,6 +366,9 @@ function recievedJSONfromServer() {
 
     // This function is defined in main.js
     createglobalMergedPolygons(geoJSON, removedDuplicatePoints);
+    console.log("asdftersedffg");
+    console.log(deepCopy(globalRoomNames));
+    addGlobalNamesToCollisionGroup();
 }
 
   // Function for requesting JSON object from server
@@ -1632,12 +1637,15 @@ function addGlobalNamesToZoom() {
 }
 
 function addGlobalNamesToCollisionGroup() {
+    console.log("qwerty");
+    console.log(deepCopy(globalRoomNames));
     globalRoomNamesGroup = Maze.LayerGroup.collision({
         margin: 0
     });
     for (var i = 0; i < globalRoomNames.length; i++) {
         globalRoomNamesGroup.addLayer(globalRoomNames[i]);
     }
+    console.log(deepCopy(globalRoomNamesGroup));
     globalUnmergedNamesGroup = Maze.LayerGroup.collision({
         margin: 0
     });

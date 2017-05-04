@@ -29,6 +29,8 @@ MAP.getPane("iconMAP").style.zIndex = 200;
 if (FLOOR_ID != false) {
     console.log("Get data from server");
     getJSONfromServer();
+    console.log("globalRoomNames");
+    console.log(deepCopy(globalRoomNames));
     zoom();
 }
 else {
