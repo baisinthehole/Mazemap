@@ -1,5 +1,5 @@
 var FILENAME = "gloes1.geojson";
-FLOOR_IDS = [1672, 246, 351, 70, 349, 59, 168, 155, 197, 374, 326, 94, 241, 220, 81, 408, 380, 295, 352, 311, 148, 300, 343, 142, 247, 141, 354, 85, 378, 65, 96, 178, 160, 236, 358, 234, 260, 355, 98, 100, 254, 200, 9, 353, 62]
+FLOOR_IDS = [300, 1672, 246, 351, 70, 349, 59, 168, 155, 197, 374, 326, 94, 241, 220, 81, 408, 380, 295, 352, 311, 148, 343, 142, 247, 141, 354, 85, 378, 65, 96, 178, 160, 236, 358, 234, 260, 355, 98, 100, 254, 200, 9, 353, 62]
 
 // Create a map
 // center = Maze.latLng(63.41, 10.41);
@@ -29,11 +29,12 @@ MAP.getPane("iconMAP").style.zIndex = 200;
 if (FLOOR_ID != false) {
     console.log("Get data from server");
     getJSONfromServer();
-    zoom();
 }
 else {
     console.log("Get data from localStorage");
     getLocalJSON(FILENAME);
+    // drawFromLocalStorage();
+    // zoom();
 }
 
 function createglobalMergedPolygons(data, roomCoordinates){
