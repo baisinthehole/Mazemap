@@ -5,8 +5,8 @@ import time
 PATH_FIREFOX = "C://Program Files (x86)/Mozilla Firefox/firefox.exe"
 
 # path to Stuff.html
-PATH_MAZEMAP = "C://Users/Butikk/Documents/Mazemap/Stuff.html"
-# PATH_MAZEMAP = "C://Users/missi/OneDrive/Documents/JavaScriptWorkspace/MazemapFun/Stuff.html"
+PATH_MAZEMAP = "C://Users/Butikk/Documents/Mazemap/Map.html"
+# PATH_MAZEMAP = "C://Users/missi/OneDrive/Documents/JavaScriptWorkspace/MazemapFun/Map.html"
 
 NUM_FLOORS = 20
 
