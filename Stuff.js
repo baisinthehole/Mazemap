@@ -763,12 +763,12 @@ function makeRoomNames(coordinates, title) {
     }
 }
 
-function makeLocalRoomNames(coordinates, title) {
+function makeLocalRoomNames(coordinates, title, fontSize) {
     var myIcon;
     var nameMarker;
     if (coordinates.length == 2) {
         myIcon = Maze.divIcon({
-            className: "labelClass",
+            className: "labelClass"+fontSize,
             iconSize: new Maze.Point(title.length * 7.5, 20),
             html: title
         });
@@ -778,7 +778,7 @@ function makeLocalRoomNames(coordinates, title) {
         if (coordinates.length > 0){
             point = getPoint(coordinates);
             myIcon = Maze.divIcon({
-                className: "labelClass",
+                className: "labelClass"+fontSize,
                 iconSize: new Maze.Point(title.length * 7.5, 20),
                 html: title
             });
@@ -1613,18 +1613,18 @@ function addGlobalCoordinatesToZoom() {
 }
 
 function addGlobalNamesToZoom() {
-    globalRoomNames = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[6], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[0]);
-    globalUnmergedNames = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[10], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[1]);
-    mergedTextLarge = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[3], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2]);
-    mergedTextMedium = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[4], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[3]);
-    mergedTextSmall = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[5], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[4]);
+    globalRoomNames = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[6], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[0],"12");
+    globalUnmergedNames = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[10], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[1],"11");
+    mergedTextLarge = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[3], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2],"9");
+    mergedTextMedium = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[4], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[3],"10");
+    mergedTextSmall = makeAllRoomNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[5], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[4],"11");
 
     var roomCoordinates = GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[10].concat(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[4]);
     var roomNames = GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[1].concat(GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[3]);
 
     var [largeCoordinates, largeNames] = getLargeRoomsAndNames(roomCoordinates, roomNames);
 
-    globalLargeRoomNames = makeAllRoomNames(largeCoordinates, largeNames);
+    globalLargeRoomNames = makeAllRoomNames(largeCoordinates, largeNames, "9");
 
     addGlobalNamesToCollisionGroup();
 
@@ -1711,20 +1711,20 @@ function makeGeoJSONPOIs(points, names) {
     return result;
 }
 
-function makeAllRoomNames(coordinates, names) {
+function makeAllRoomNames(coordinates, names, fontSize="11") {
     var nameMarkers = [];
     for (var i = coordinates.length - 1; i >= 0; i--) {
         // check if coordinate is point
         if (coordinates[i][0].constructor !== Array) {
-            nameMarkers.push(makeLocalRoomNames((coordinates[i]), names[i]));
+            nameMarkers.push(makeLocalRoomNames((coordinates[i]), names[i], fontSize));
         }
         // check if coordinate consist of one room
         else if (coordinates[i][0][0].constructor !== Array) {
-            nameMarkers.push(makeLocalRoomNames((coordinates[i]), names[i]));
+            nameMarkers.push(makeLocalRoomNames((coordinates[i]), names[i], fontSize));
         }
         // check if coordinate contains holes
         else {
-            nameMarkers.push(makeLocalRoomNames(coordinates[i][getBiggestRoom(coordinates[i])], names[i]));
+            nameMarkers.push(makeLocalRoomNames(coordinates[i][getBiggestRoom(coordinates[i])], names[i], fontSize));
         }
     }
     return nameMarkers;
