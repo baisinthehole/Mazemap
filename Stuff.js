@@ -759,7 +759,7 @@ function makeRoomNames(coordinates, title) {
     }
 }
 
-function makeLocalRoomNames(coordinates, title, fontSize) {
+function makeLocalRoomNames(coordinates, title, fontSize="11") {
     var myIcon;
     var nameMarker;
     if (coordinates.length == 2) {
