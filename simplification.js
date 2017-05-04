@@ -7,10 +7,10 @@ function removeDuplicatesFromAllRooms(roomCoordinates) {
     return simplifiedCoordinates;
 }
 
-function simplifyRoomsMadeBySomeDude(roomCoordinates) {
+function simplifyRoomsMadeBySomeDude(roomCoordinates, threshold) {
     var simplifiedCoordinates = [];
     for (var i = 0; i < roomCoordinates.length; i++) {
-        simplifiedCoordinates.push(simplify(roomCoordinates[i], VERY_IMPORTANCE_DISTANCE));
+        simplifiedCoordinates.push(simplify(roomCoordinates[i], threshold));
     }
     return simplifiedCoordinates;
 }
@@ -138,22 +138,22 @@ function removePointsTwoShort(coordinates, index) {
     return simplifiedCoordinates;
 }
 
-function generalSimplify(corridorCoordinates) {
+function generalSimplify(corridorCoordinates, areaThreshold, simplificationThreshold) {
 
     coordinates = deepCopy(corridorCoordinates);
 
     for (var i = 0; i < coordinates.length; i++) {
         if (coordinates[i][0][0].constructor === Array) {
             for (var j = 0; j < coordinates[i].length; j++) {
-                if (getArea(coordinates[i][j]) < 0.00000001) {
+                if (getArea(coordinates[i][j]) < areaThreshold) {
                     coordinates[i].splice(j, 1);
                     j--;
                 }
             }
-            coordinates[i] = simplifyRoomsMadeBySomeDude(coordinates[i]);
+            coordinates[i] = simplifyRoomsMadeBySomeDude(coordinates[i], simplificationThreshold);
         }
         else {
-            coordinates[i] = simplify(coordinates[i], VERY_IMPORTANCE_DISTANCE);
+            coordinates[i] = simplify(coordinates[i], simplificationThreshold);
         }
     }
     return coordinates;
