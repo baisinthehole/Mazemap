@@ -237,8 +237,6 @@ function zoom() {
 
     var ROOM_NAMES=true, UNMERGED_NAMES=true, MERGED_LARGE_NAMES=true, MERGED_MEDIUM_NAMES=true, MERGED_SMALL_NAMES=true, LARGE_ROOM_NAMES=true, STAIR_ICONS=true, TOILET_ICONS=true;
 
-    console.log(STAIRS);
-
     for (var i = 0; i < polygonList.length; i++) {
         nowDrawings.push(false);
     }
@@ -391,7 +389,7 @@ function recievedJSONfromServer() {
     }
 
     // edits JSON file
-    geoJSON = alterJSONfile(geoJSON, FLOOR_ID, 2);
+    geoJSON = alterJSONfile(geoJSON, FLOOR_ID, 0);
     console.log(geoJSON);
 
     GEO_JSON = geoJSON;
@@ -635,7 +633,7 @@ function fillCoordinateTypeServer(data, coordinates, polygonList, coordinateType
                     coordinates[coordinates.length - 1][1] = temp;
                 }
                 if (coordinateType == ROOM_TYPE.ROOM){
-                    makeRoomNames(coordinates[coordinates.length-1], i);
+                    makeRoomNames(coordinates[coordinates.length-1], data.pois[i].title);
                 }
             }
         }
@@ -1666,9 +1664,6 @@ function addGlobalNamesToZoom() {
     var roomNames = GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[1].concat(GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2]);
 
     var [largeCoordinates, largeNames] = getRoomNamesBasedOnThreshold(roomCoordinates, roomNames, 0.00000001);
-
-    console.log(largeCoordinates);
-    console.log(largeNames);
 
     globalLargeRoomNames = makeAllRoomNames(largeCoordinates, largeNames);
 
