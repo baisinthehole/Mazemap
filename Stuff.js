@@ -770,7 +770,7 @@ function makeLocalRoomNames(coordinates, title, fontSize) {
         myIcon = Maze.divIcon({
             className: "labelClass"+fontSize,
             iconSize: new Maze.Point(title.length * 7.5, 20),
-            html: title
+            html: ""
         });
         nameMarker = (Maze.marker(coordinates, {icon: myIcon}));
     }
