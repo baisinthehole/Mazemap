@@ -245,6 +245,7 @@ function zoom() {
     }
     // Zoom listener, is triggered on every change in zoom level
     MAP.on('zoomend', function () {
+        console.time("everything");
         console.log(MAP.getZoom());
         if (MAP.getZoom() < 16){
             drawings = [!OUTLINE, !CORRIDORS, !MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, !ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, !UNMERGED, !UNMERGED_LARGE];
@@ -316,11 +317,13 @@ function zoom() {
             names = [ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
+        console.timeEnd("everything");
     });
 }
 
 // draws and removes polygons and room names when zooming
 function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList) {
+    console.time("polygons");
     for (var i = 0; i < drawings.length; i++) {
         if (drawings[i] != nowDrawings[i]){
             if (!nowDrawings[i]){
@@ -348,17 +351,80 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
             nowDrawings[i] = !nowDrawings[i];
         }
     }
+    console.timeEnd("polygons");
+    console.time("names");
     for (var i = 0; i < names.length; i++) {
         if (names[i] != nowNames[i]){
             if (!nowNames[i]){
-                nameList[i].addTo(MAP);
+                if (i == 0) {
+                    globalRoomNamesGroup.eachLayer(function(marker) {
+                        marker.setOpacity(1);
+                    });
+                }
+                else if (i == 1) {
+                    globalUnmergedNamesGroup.eachLayer(function(marker) {
+                        marker.setOpacity(1);
+                    })
+                }
+                else if (i == 2) {
+                    mergedTextLargeGroup.eachLayer(function(marker) {
+                        marker.setOpacity(1);
+                    })    
+                }
+                else if (i == 3) {
+                    mergedTextMediumGroup.eachLayer(function(marker) {
+                        marker.setOpacity(1);
+                    })
+                }
+                else if (i == 4) {
+                    mergedTextSmallGroup.eachLayer(function(marker) {
+                        marker.setOpacity(1);
+                    })
+                }
+                else if (i == 5) {
+                    globalLargeRoomNamesGroup.eachLayer(function(marker) {
+                        marker.setOpacity(1);
+                    })
+                }
+                //nameList[i].addTo(MAP);
             }
             else if (nowNames[i]){
-                nameList[i].removeFrom(MAP);
+                if (i == 0) {
+                    globalRoomNamesGroup.eachLayer(function(marker) {
+                        marker.setOpacity(0);
+                    });
+                }
+                else if (i == 1) {
+                    globalUnmergedNamesGroup.eachLayer(function(marker) {
+                        marker.setOpacity(0);
+                    })
+                }
+                else if (i == 2) {
+                    mergedTextLargeGroup.eachLayer(function(marker) {
+                        marker.setOpacity(0);
+                    })    
+                }
+                else if (i == 3) {
+                    mergedTextMediumGroup.eachLayer(function(marker) {
+                        marker.setOpacity(0);
+                    })
+                }
+                else if (i == 4) {
+                    mergedTextSmallGroup.eachLayer(function(marker) {
+                        marker.setOpacity(0);
+                    })
+                }
+                else if (i == 5) {
+                    globalLargeRoomNamesGroup.eachLayer(function(marker) {
+                        marker.setOpacity(0);
+                    })
+                }
+                //nameList[i].removeFrom(MAP);
             }
             nowNames[i] = !nowNames[i];
         }
     }
+    console.timeEnd("names");
     return [nowDrawings, nowNames];
 }
 
@@ -1680,41 +1746,58 @@ function addGlobalNamesToZoom() {
 
 function addGlobalNamesToCollisionGroup() {
     globalRoomNamesGroup = Maze.LayerGroup.collision({
-        margin: 0
+        margin: 0,
     });
     for (var i = 0; i < globalRoomNames.length; i++) {
+        globalRoomNames[i].setOpacity(0);
         globalRoomNamesGroup.addLayer(globalRoomNames[i]);
     }
+    globalRoomNamesGroup.addTo(MAP);
+
     globalUnmergedNamesGroup = Maze.LayerGroup.collision({
-        margin: 0
+        margin: 0,
     });
     for (var i = 0; i < globalUnmergedNames.length; i++) {
+        globalUnmergedNames[i].setOpacity(0);
         globalUnmergedNamesGroup.addLayer(globalUnmergedNames[i]);
     }
+    globalUnmergedNamesGroup.addTo(MAP);
+
     mergedTextLargeGroup = Maze.LayerGroup.collision({
-        margin: 0
+        margin: 0,
     });
     for (var i = 0; i < mergedTextLarge.length; i++) {
+        mergedTextLarge[i].setOpacity(0);
         mergedTextLargeGroup.addLayer(mergedTextLarge[i]);
     }
+    mergedTextLargeGroup.addTo(MAP);
+
     mergedTextMediumGroup = Maze.LayerGroup.collision({
-        margin: 0
+        margin: 0,
     });
     for (var i = 0; i < mergedTextMedium.length; i++) {
+        mergedTextMedium[i].setOpacity(0);
         mergedTextMediumGroup.addLayer(mergedTextMedium[i]);
     }
+    mergedTextMediumGroup.addTo(MAP);
+
     mergedTextSmallGroup = Maze.LayerGroup.collision({
-        margin: 0
+        margin: 0,
     });
     for (var i = 0; i < mergedTextSmall.length; i++) {
+        mergedTextSmall[i].setOpacity(0);
         mergedTextSmallGroup.addLayer(mergedTextSmall[i]);
     }
+    mergedTextSmallGroup.addTo(MAP);
+
     globalLargeRoomNamesGroup = Maze.LayerGroup.collision({
-        margin: 0
+        margin: 0,
     });
     for (var i = 0; i < globalLargeRoomNames.length; i++) {
+        globalLargeRoomNames[i].setOpacity(0);
         globalLargeRoomNamesGroup.addLayer(globalLargeRoomNames[i]);
     }
+    globalLargeRoomNamesGroup.addTo(MAP);
 }
 
 function makeGeoJSONPolygon(index, fillColor, color, type) {
