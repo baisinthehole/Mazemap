@@ -167,7 +167,7 @@ var globalLargeRoomNamesGroup;
 var globalMediumRoomNameGroup;
 
 // indices in polygonList drawn without vectorGridSlicer
-var withoutVectorGridSlicer = [1,2,3,4,5,6,7,8,11,12,13];
+var withoutVectorGridSlicer = [3, 7, 13];
 
 
 // // Create stair icons
@@ -273,47 +273,47 @@ function zoom() {
         }
         else if (MAP.getZoom() < 18.5){
             drawings = [OUTLINE, !CORRIDORS, MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, !ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, UNMERGED, !UNMERGED_LARGE];
-            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
+            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 19){
             drawings = [OUTLINE, !CORRIDORS, MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, !ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, UNMERGED, !UNMERGED_LARGE];
-            names = [!ROOM_NAMES, UNMERGED_NAMES, !MERGED_LARGE_NAMES, MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
+            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 19.5){
             drawings = [OUTLINE, !CORRIDORS, MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, !ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, UNMERGED, !UNMERGED_LARGE];
-            names = [!ROOM_NAMES, UNMERGED_NAMES, !MERGED_LARGE_NAMES, MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
+            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 20){
             drawings = [OUTLINE, !CORRIDORS, MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, MERGED_SMALL, !SIMPLIFIED_LARGE, !ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, UNMERGED, !UNMERGED_LARGE];
-            names = [!ROOM_NAMES, UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
+            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 20.5){
             drawings = [OUTLINE, !CORRIDORS, MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, UNMERGED, !UNMERGED_LARGE];
-            names = [ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
+            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 21){
             drawings = [OUTLINE, !CORRIDORS, MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, ROOMS, !DOORS, STAIRS, !UNMERGED_SIMPLIFIED, !UNMERGED, !UNMERGED_LARGE];
-            names = [ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
+            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 21.5){
             drawings = [OUTLINE, CORRIDORS, !MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, ROOMS, DOORS, STAIRS, !UNMERGED_SIMPLIFIED, !UNMERGED, !UNMERGED_LARGE];
-            names = [ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
+            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else if (MAP.getZoom() < 22){
             drawings = [OUTLINE, CORRIDORS, !MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, ROOMS, DOORS, STAIRS, !UNMERGED_SIMPLIFIED, !UNMERGED, !UNMERGED_LARGE];
-            names = [ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
+            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
         else {
             drawings = [OUTLINE, CORRIDORS, !MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, ROOMS, DOORS, STAIRS, !UNMERGED_SIMPLIFIED, !UNMERGED, !UNMERGED_LARGE];
-            names = [ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
+            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
             [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
         }
     });
@@ -321,6 +321,7 @@ function zoom() {
 
 // draws and removes polygons and room names when zooming
 function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList) {
+    console.log(polygonList);
     for (var i = 0; i < drawings.length; i++) {
         if (drawings[i] != nowDrawings[i]){
             if (!nowDrawings[i]){
@@ -333,8 +334,13 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
                 else {
                     drawVectorGridSlicedPolygons(polygonList[i]);
                 }
+                nowDrawings[i] = !nowDrawings[i];
             }
-            else if (nowDrawings[i]){
+        }
+    }
+    for (var i = 0; i < drawings.length; i++) {
+        if (drawings[i] != nowDrawings[i]){
+            if (nowDrawings[i]){
                 if (FLOOR_ID != false) {
                     removePolygons([polygonList[i]]);
                 }
@@ -344,8 +350,8 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
                 else {
                     removeVectorGridSlicedPolygons(polygonList[i]);
                 }
+                nowDrawings[i] = !nowDrawings[i];
             }
-            nowDrawings[i] = !nowDrawings[i];
         }
     }
     for (var i = 0; i < names.length; i++) {
@@ -479,7 +485,8 @@ function renderGeoJSON(geoJSON, fillColor, color) {
             }
         },
         updateWhenZooming: false,
-        updateWhenIdle: true
+        updateWhenIdle: true,
+        updateInterval: 100
     });
 }
 
@@ -498,7 +505,8 @@ function renderGeoJSONTop(geoJSON, fillColor, color) {
         // render in a different pane with a higher z-index
         pane: "topMAP",
         updateWhenZooming: false,
-        updateWhenIdle: true
+        updateWhenIdle: true,
+        updateInterval: 100
     });
 }
 
@@ -1647,16 +1655,16 @@ function removeEmptyRoomsOrNames(coordinates, names) {
 
 function addGlobalCoordinatesToZoom() {
     globalOutlinePolygons = makeGeoJSONPolygon(0, buildingBackgroundColor, roomOutlineColor, "Polygon");
-    // globalCorridorPolygons = makeGeoJSONPolygon(1, "red", "gray", "Polygon");
-    // globalMergedCorridorPolygons = makeGeoJSONPolygon(2, "red", "gray", "Polygon");
-    // mergedLarge = makeGeoJSONPolygon(3, "yellow", "gray", "Polygon");
-    // mergedMedium = makeGeoJSONPolygon(4, "yellow", "gray", "Polygon");
-    // mergedSmall = makeGeoJSONPolygon(5, "yellow", "gray", "Polygon");
-    // globalRoomPolygons = makeGeoJSONPolygon(6, "white", "gray", "Polygon");
+    globalCorridorPolygons = makeGeoJSONPolygon(1, mergedCorridorColor, "gray", "Polygon");
+    globalMergedCorridorPolygons = makeGeoJSONPolygon(2, mergedCorridorColor, "gray", "Polygon");
+    mergedLarge = makeGeoJSONPolygon(3, roomColor, "gray", "Polygon");
+    mergedMedium = makeGeoJSONPolygon(4, roomColor, "gray", "Polygon");
+    mergedSmall = makeGeoJSONPolygon(5, roomColor, "gray", "Polygon");
+    globalRoomPolygons = makeGeoJSONPolygon(6, roomColor, "gray", "Polygon");
     globalDoorPolygons = makeGeoJSONTop(7, roomColor, doorColor, "MultiLineString");
     globalStairPolygons = makeGeoJSONTop(8, roomColor, stairColor, "MultiLineString");
-    // globalUnmergedPolygonsSimplified = makeGeoJSONPolygon(9, "white", "gray", "Polygon");
-    // globalUnmergedPolygons = makeGeoJSONPolygon(10, "white", "gray", "Polygon");
+    globalUnmergedPolygonsSimplified = makeGeoJSONPolygon(9, roomColor, "gray", "Polygon");
+    globalUnmergedPolygons = makeGeoJSONPolygon(10, roomColor, "gray", "Polygon");
 }
 
 function addGlobalNamesToZoom() {
@@ -1838,21 +1846,21 @@ function setAsOneFloorId(localStorage, globalArray) {
 
 function createPolygonsFromAllCoordinatesAsOneFloorId(coordinates) {
     // globalOutlinePolygons = fillAllPolygons(coordinates[0],"black", "white", "polygon");
-    globalCorridorPolygons = fillAllPolygons(coordinates[1], roomOutlineColor, mergedCorridorColor, "polygon");
-    globalMergedCorridorPolygons = fillAllPolygons(coordinates[2], roomOutlineColor, mergedCorridorColor,"polygon");
+    // globalCorridorPolygons = fillAllPolygons(coordinates[1], roomOutlineColor, mergedCorridorColor, "polygon");
+    // globalMergedCorridorPolygons = fillAllPolygons(coordinates[2], roomOutlineColor, mergedCorridorColor,"polygon");
     globalSimplifiedMergedCorridorCoordinates = fillAllPolygons(generalSimplify(coordinates[2], 0.00000001, VERY_IMPORTANCE_DISTANCE), roomOutlineColor, mergedCorridorColor, "polygon");
-    globalExtraSimplifiedMergedCorridorCoordinates = fillAllPolygons(generalSimplify(coordinates[2], 0.00000003, VERY_IMPORTANCE_DISTANCE*2), roomOutlineColor, mergedCorridorColor, "polygon");
-    mergedLarge = fillAllZoomlevelPolygons(coordinates[3], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2], roomOutlineColor, mergedRoomColor, "polygon");
-    mergedMedium = fillAllZoomlevelPolygons(coordinates[4], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[3], roomOutlineColor, mergedRoomColor, "polygon");
-    mergedSmall = fillAllZoomlevelPolygons(coordinates[5], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[4], roomOutlineColor, mergedRoomColor, "polygon");
-    globalRoomPolygons = fillAllPolygons(coordinates[6], roomOutlineColor, roomColor, "polygon");
+    //globalExtraSimplifiedMergedCorridorCoordinates = fillAllPolygons(generalSimplify(coordinates[2], 0.00000003, VERY_IMPORTANCE_DISTANCE*2), roomOutlineColor, mergedCorridorColor, "polygon");
+    // mergedLarge = fillAllZoomlevelPolygons(coordinates[3], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2], roomOutlineColor, mergedRoomColor, "polygon");
+    // mergedMedium = fillAllZoomlevelPolygons(coordinates[4], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[3], roomOutlineColor, mergedRoomColor, "polygon");
+    // mergedSmall = fillAllZoomlevelPolygons(coordinates[5], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[4], roomOutlineColor, mergedRoomColor, "polygon");
+    // globalRoomPolygons = fillAllPolygons(coordinates[6], roomOutlineColor, roomColor, "polygon");
 
     simplifiedMergedLarge = fillAllZoomlevelPolygons(generalSimplify(coordinates[3], 0.00000001, VERY_IMPORTANCE_DISTANCE), GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2], roomOutlineColor, mergedRoomColor, "polygons");
-    extraSimplifiedMergedLarge = fillAllZoomlevelPolygons(generalSimplify(coordinates[3], 0.00000003, VERY_IMPORTANCE_DISTANCE*2), GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2], roomOutlineColor, mergedRoomColor, "polygons");
+    //extraSimplifiedMergedLarge = fillAllZoomlevelPolygons(generalSimplify(coordinates[3], 0.00000003, VERY_IMPORTANCE_DISTANCE*2), GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[2], roomOutlineColor, mergedRoomColor, "polygons");
     // globalDoorPolygons = fillAllPolygons(coordinates[7], "gray", "white", "line");
     // globalStairPolygons = fillAllPolygons(coordinates[8], "gray", "white", "line");
-    globalUnmergedPolygonsSimplified = fillAllPolygons(coordinates[9], roomOutlineColor, roomColor, "polygon");
-    globalUnmergedPolygons = fillAllPolygons(coordinates[10], roomOutlineColor, roomColor, "polygon");
+    // globalUnmergedPolygonsSimplified = fillAllPolygons(coordinates[9], roomOutlineColor, roomColor, "polygon");
+    // globalUnmergedPolygons = fillAllPolygons(coordinates[10], roomOutlineColor, roomColor, "polygon");
     globalUnmergedLargePolygons = fillAllPolygons(filterOutSmallRooms(coordinates[10]), roomOutlineColor, roomColor, "polygon");
 }
 
