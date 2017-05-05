@@ -1755,7 +1755,7 @@ function addGlobalNamesToCollisionGroup() {
     globalRoomNamesGroup.addTo(MAP);
 
     globalUnmergedNamesGroup = Maze.LayerGroup.collision({
-        margin: 0,
+        margin: 0
     });
     for (var i = 0; i < globalUnmergedNames.length; i++) {
         globalUnmergedNames[i].setOpacity(0);
@@ -1764,7 +1764,7 @@ function addGlobalNamesToCollisionGroup() {
     globalUnmergedNamesGroup.addTo(MAP);
 
     mergedTextLargeGroup = Maze.LayerGroup.collision({
-        margin: 0,
+        margin: 0
     });
     for (var i = 0; i < mergedTextLarge.length; i++) {
         mergedTextLarge[i].setOpacity(0);
@@ -1773,7 +1773,7 @@ function addGlobalNamesToCollisionGroup() {
     mergedTextLargeGroup.addTo(MAP);
 
     mergedTextMediumGroup = Maze.LayerGroup.collision({
-        margin: 0,
+        margin: 0
     });
     for (var i = 0; i < mergedTextMedium.length; i++) {
         mergedTextMedium[i].setOpacity(0);
@@ -1782,7 +1782,7 @@ function addGlobalNamesToCollisionGroup() {
     mergedTextMediumGroup.addTo(MAP);
 
     mergedTextSmallGroup = Maze.LayerGroup.collision({
-        margin: 0,
+        margin: 0
     });
     for (var i = 0; i < mergedTextSmall.length; i++) {
         mergedTextSmall[i].setOpacity(0);
@@ -1791,7 +1791,7 @@ function addGlobalNamesToCollisionGroup() {
     mergedTextSmallGroup.addTo(MAP);
 
     globalLargeRoomNamesGroup = Maze.LayerGroup.collision({
-        margin: 0,
+        margin: 0
     });
     for (var i = 0; i < globalLargeRoomNames.length; i++) {
         globalLargeRoomNames[i].setOpacity(0);
