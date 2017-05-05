@@ -1746,7 +1746,7 @@ function addGlobalNamesToZoom() {
 
 function addGlobalNamesToCollisionGroup() {
     globalRoomNamesGroup = Maze.LayerGroup.collision({
-        margin: 0,
+        margin: 0
     });
     for (var i = 0; i < globalRoomNames.length; i++) {
         globalRoomNames[i].setOpacity(0);
