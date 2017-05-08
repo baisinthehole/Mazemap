@@ -1613,9 +1613,15 @@ function drawFromLocalStorage() {
     for (var i = 0; i < FLOOR_IDS.length; i++) {
         if (localStorage.getItem('allCoordinates'+FLOOR_IDS[i]) !== null) {
             localStorageCoordinates.push(JSON.parse(localStorage.getItem('allCoordinates'+FLOOR_IDS[i])));
+            if(FLOOR_IDS[i] == 300) {
+                
+            }
         }
         if (localStorage.getItem('allNames'+FLOOR_IDS[i]) !== null) {
             localStorageRoomNames.push(JSON.parse(localStorage.getItem('allNames'+FLOOR_IDS[i])));
+            // if(FLOOR_IDS[i] == 351) {
+            //     console.log(localStorage.getItem('allNames'+FLOOR_IDS[i]));
+            // }
         }
     }
     setAsOneFloorId(localStorageCoordinates, GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
@@ -1634,6 +1640,7 @@ function drawFromLocalStorage() {
     }
     addGlobalCoordinatesToZoom();
     addGlobalNamesToZoom();
+
     // layer.addTo(MAP);
     // globalMergedCorridorPolygons = deepCopy(layer);
     // globalMergedCorridorPolygons.addTo(MAP);
