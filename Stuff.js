@@ -323,7 +323,11 @@ function zoom() {
 
 // draws and removes polygons and room names when zooming
 function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList) {
+
+    console.time("everything");
+
     console.time("polygons");
+
     for (var i = 0; i < drawings.length; i++) {
         if (drawings[i] != nowDrawings[i]){
             if (!nowDrawings[i]){
@@ -351,7 +355,9 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
             nowDrawings[i] = !nowDrawings[i];
         }
     }
+
     console.timeEnd("polygons");
+
     console.time("names");
     for (var i = 0; i < names.length; i++) {
         if (names[i] != nowNames[i]){
@@ -425,6 +431,9 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
         }
     }
     console.timeEnd("names");
+
+    console.timeEnd("everything");
+
     return [nowDrawings, nowNames];
 }
 
@@ -525,7 +534,8 @@ function recievedLocalJSON(data) {
             }
         // }
     }
-    drawFromLocalStorage();
+    drawFromFile();
+    // drawFromLocalStorage();
     zoom();
 }
 
@@ -1675,9 +1685,15 @@ function drawFromLocalStorage() {
     for (var i = 0; i < FLOOR_IDS.length; i++) {
         if (localStorage.getItem('allCoordinates'+FLOOR_IDS[i]) !== null) {
             localStorageCoordinates.push(JSON.parse(localStorage.getItem('allCoordinates'+FLOOR_IDS[i])));
+            if(FLOOR_IDS[i] == 300) {
+
+            }
         }
         if (localStorage.getItem('allNames'+FLOOR_IDS[i]) !== null) {
             localStorageRoomNames.push(JSON.parse(localStorage.getItem('allNames'+FLOOR_IDS[i])));
+            // if(FLOOR_IDS[i] == 351) {
+            //     console.log(localStorage.getItem('allNames'+FLOOR_IDS[i]));
+            // }
         }
     }
     setAsOneFloorId(localStorageCoordinates, GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
@@ -1696,9 +1712,19 @@ function drawFromLocalStorage() {
     }
     addGlobalCoordinatesToZoom();
     addGlobalNamesToZoom();
+
     // layer.addTo(MAP);
     // globalMergedCorridorPolygons = deepCopy(layer);
     // globalMergedCorridorPolygons.addTo(MAP);
+    createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+}
+
+function drawFromFile() {
+    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID = allCoordinatesInFile;
+    GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID = allNamesInFile;
+    addGlobalCoordinatesToZoom();
+    addGlobalNamesToZoom();
+
     createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
 }
 
