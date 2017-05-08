@@ -321,6 +321,7 @@ function zoom() {
 
 // draws and removes polygons and room names when zooming
 function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList) {
+    console.time("Everything");
     for (var i = 0; i < drawings.length; i++) {
         if (drawings[i] != nowDrawings[i]){
             if (!nowDrawings[i]){
@@ -348,6 +349,7 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
             nowDrawings[i] = !nowDrawings[i];
         }
     }
+    console.time("Names");
     for (var i = 0; i < names.length; i++) {
         if (names[i] != nowNames[i]){
             if (!nowNames[i]){
@@ -359,6 +361,8 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
             nowNames[i] = !nowNames[i];
         }
     }
+    console.timeEnd("Names");
+    console.timeEnd("Everything");
     return [nowDrawings, nowNames];
 }
 
