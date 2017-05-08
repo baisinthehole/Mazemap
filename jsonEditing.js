@@ -14,7 +14,7 @@ function alterJSONfile(JSON, ID) {
 
     var list358 = [51985, 32263, 32634, 37957, 33676, 37998];
 
-    var list380 = [31933, 31554, 38671];
+    var list380 = [31933, 31554, 65925];
 
     // if (ID == "81") { // Stripa
     //     for (var i = 0; i < JSON.pois.length; i++) {
