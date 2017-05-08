@@ -35,6 +35,7 @@ else {
     // getLocalJSON(FILENAME);
     drawFromFile();
     zoom();
+    move();
 }
 
 function createglobalMergedPolygons(data, roomCoordinates){
