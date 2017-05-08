@@ -245,7 +245,7 @@ function zoom() {
     }
     // Zoom listener, is triggered on every change in zoom level
     MAP.on('zoomend', function () {
-        console.log(MAP.getZoom());
+        // console.log(MAP.getZoom());
         if (MAP.getZoom() < 16){
             drawings = [!OUTLINE, !CORRIDORS, !MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, !ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, !UNMERGED, !UNMERGED_LARGE];
             names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
@@ -321,7 +321,7 @@ function zoom() {
 
 // draws and removes polygons and room names when zooming
 function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList) {
-    console.time("everything");
+    // console.time("everything");
     for (var i = 0; i < drawings.length; i++) {
         if (drawings[i] != nowDrawings[i]){
             if (!nowDrawings[i]){
@@ -349,7 +349,7 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
             nowDrawings[i] = !nowDrawings[i];
         }
     }
-    console.time("names");
+    // console.time("names");
     for (var i = 0; i < names.length; i++) {
         if (names[i] != nowNames[i]){
             if (!nowNames[i]){
@@ -361,8 +361,8 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
             nowNames[i] = !nowNames[i];
         }
     }
-    console.timeEnd("names");
-    console.timeEnd("everything");
+    // console.timeEnd("names");
+    // console.timeEnd("everything");
     return [nowDrawings, nowNames];
 }
 
@@ -443,17 +443,15 @@ function getLocalJSON(filename) {
     );
 }
 function recievedLocalJSON(data) {
-    console.log(data);
+    // console.log(data);
     var color = ['blue', 'gray', 'green', 'black'];
     // Fill the coordinate arrays for each type of polygon and draw to map
     for (var i = 0; i < data.features.length; i++) {
         // if (data.features[i].geometry.coordinates.length == 1){
             if (data.features[i].properties.campusId == 1){
                 if (data.features[i].properties.layer == "outlines"){
-                    if (contains(FLOOR_IDS, data.features[i].properties.floorid)) {
-                        switchLatLong(data.features[i].geometry.coordinates[0]);
-                        GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[0].push(data.features[i].geometry.coordinates[0]);
-                    }
+                    switchLatLong(data.features[i].geometry.coordinates[0]);
+                    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[0].push(data.features[i].geometry.coordinates[0]);
                 }
                 else if (data.features[i].properties.layer == "stairs"){
                     switchLatLong(data.features[i].geometry.coordinates);
@@ -471,7 +469,7 @@ function recievedLocalJSON(data) {
 }
 
 function renderGeoJSON(geoJSON, fillColor, color) {
-    console.log(geoJSON);
+    // console.log(geoJSON);
     return L.vectorGrid.slicer(geoJSON, {
         maxZoom: 25,
         vectorTileLayerStyles: {
@@ -745,7 +743,7 @@ function drawPolygons(polygonList) {
                 MAP.addLayer(polygonList[i][j]);
             }
             else {
-                console.log("Trying to draw a non-polygon");
+                // console.log("Trying to draw a non-polygon");
                 // console.log(polygonList[i]._latlngs);
             }
         }

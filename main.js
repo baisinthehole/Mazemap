@@ -32,7 +32,7 @@ if (FLOOR_ID != false) {
     getJSONfromServer();
 }
 else {
-    console.log("Get data from localStorage");
+    // console.log("Get data from localStorage");
     // getLocalJSON(FILENAME);
     drawFromFile();
     zoom();
