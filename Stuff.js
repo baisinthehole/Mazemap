@@ -598,7 +598,7 @@ function makeRoomNames(coordinates, title) {
     if (coordinates.length == 2) {
         myIcon = Maze.divIcon({
             className: "labelClass",
-            iconSize: new Maze.Point(title.length * 7.5, 20),
+            iconSize: Maze.Point(title.length * 7.5, 20),
             html: ""
         });
         globalRoomNames.push(Maze.marker(coordinates, {icon: myIcon}));
@@ -608,7 +608,7 @@ function makeRoomNames(coordinates, title) {
             point = getPoint(coordinates);
             myIcon = Maze.divIcon({
                 className: "labelClass",
-                iconSize: new Maze.Point(title.length * 7.5, 20),
+                iconSize: Maze.Point(title.length * 7.5, 20),
                 html: title
             });
             globalRoomNames.push(Maze.marker(point, {icon: myIcon}));
@@ -629,7 +629,7 @@ function makeLocalRoomNames(coordinates, title, fontSize="11") {
     }
     else {
         if (coordinates.length > 0){
-            point = getPoint(coordinates);
+            var point = getPoint(coordinates);
             myIcon = Maze.divIcon({
                 className: "labelClass"+fontSize,
                 iconSize: new Maze.Point(title.length * 7.5, 20),
@@ -1456,6 +1456,7 @@ function drawFromLocalStorage() {
     // globalMergedCorridorPolygons.addTo(MAP);
     createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
 }
+
 
 function removeEmptyRoomsOrNames(coordinates, names) {
     for (var i = coordinates.length - 1; i >= 0; i--) {
