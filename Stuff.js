@@ -246,6 +246,32 @@ function zoom() {
     for (var i = 0; i < nameList.length; i++) {
         nowNames.push(false);
     }
+
+
+//     var allLayers = {
+//         outline: Maze.polygon(...),
+//         corridors: Maze.featuregroup()...,
+//         rooms: Maze.layerGrop.collision(...)
+//     }
+
+
+
+//     var visibility = {
+//         outline: true,
+//         corridors: false,
+//         ...
+//     }    
+// //allLayers.forEach(el=>{console.log(el, !!el._map)})
+
+//     for (i in visibility) {
+//         if (visibility[i])
+//             allLayers[i].addTo(map);
+//         else
+//             allLayers[i].remove();
+//     }
+
+
+
     // Zoom listener, is triggered on every change in zoom level
     MAP.on('zoomend', function () {
         console.time("everything");
@@ -370,163 +396,17 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
     console.time("names");
     for (var i = 0; i < names.length; i++) {
         if (names[i] != nowNames[i]){
-            if (nowNames[i]){
-                for (var j = 0; j < previousMarkersDisplayed.length; j++) {
-                    previousMarkersDisplayed[j].setOpacity(0);
-                }
-                previousMarkersDisplayed = [];
-                // if (i == 0) {
-                //     globalRoomNamesGroup.eachLayer(function(marker) {
-                //         marker.setOpacity(0);
-                //     });
-                // }
-                // else if (i == 1) {
-                //     globalUnmergedNamesGroup.eachLayer(function(marker) {
-                //         marker.setOpacity(0);
-                //     })
-                // }
-                // else if (i == 2) {
-                //     mergedTextLargeGroup.eachLayer(function(marker) {
-                //         marker.setOpacity(0);
-                //     })    
-                // }
-                // else if (i == 3) {
-                //     mergedTextMediumGroup.eachLayer(function(marker) {
-                //         marker.setOpacity(0);
-                //     })
-                // }
-                // else if (i == 4) {
-                //     mergedTextSmallGroup.eachLayer(function(marker) {
-                //         marker.setOpacity(0);
-                //     })
-                // }
-                // else if (i == 5) {
-                //     globalLargeRoomNamesGroup.eachLayer(function(marker) {
-                //         marker.setOpacity(0);
-                //     })
-                // }
-                // //nameList[i].removeFrom(MAP);
-                console.log("remove names");
-                console.log(previousMarkersDisplayed);
-                nowNames[i] = !nowNames[i];
-            }
-        }
-    }
-    for (var i = 0; i < names.length; i++) {
-        if (names[i] != nowNames[i]){
             if (!nowNames[i]){
-                console.log(i);
-                var bounds = MAP.getBounds();
-                if (i == 0) {
-                    globalRoomNamesGroup.eachLayer(function(marker) {
-                        if (bounds.contains(marker.getLatLng())) {
-                            marker.setOpacity(1);
-                            previousMarkersDisplayed.push(marker);
-                        }
-                    });
-                }
-                else if (i == 1) {
-                    globalUnmergedNamesGroup.eachLayer(function(marker) {
-                        if (bounds.contains(marker.getLatLng())) {
-                            marker.setOpacity(1);
-                            previousMarkersDisplayed.push(marker);
-                        }
-                    })
-                }
-                else if (i == 2) {
-                    mergedTextLargeGroup.eachLayer(function(marker) {
-                        if (bounds.contains(marker.getLatLng())) {
-                            marker.setOpacity(1);
-                            previousMarkersDisplayed.push(marker);
-                        }
-                    })    
-                }
-                else if (i == 3) {
-                    mergedTextMediumGroup.eachLayer(function(marker) {
-                        if (bounds.contains(marker.getLatLng())) {
-                            marker.setOpacity(1);
-                            previousMarkersDisplayed.push(marker);
-                        }
-                    })
-                }
-                else if (i == 4) {
-                    mergedTextSmallGroup.eachLayer(function(marker) {
-                        if (bounds.contains(marker.getLatLng())) {
-                            marker.setOpacity(1);
-                            previousMarkersDisplayed.push(marker);
-                        }
-                    })
-                }
-                else if (i == 5) {
-                    globalLargeRoomNamesGroup.eachLayer(function(marker) {
-                        if (bounds.contains(marker.getLatLng())) {
-                            marker.setOpacity(1);
-                            previousMarkersDisplayed.push(marker);
-                        }
-                    })
-                }
-                //nameList[i].addTo(MAP);
-                console.log("add names");
-                nowNames[i] = !nowNames[i];
+                nameList[i].addTo(MAP);
             }
+            else if (nowNames[i]){
+                nameList[i].removeFrom(MAP);
+            }
+            nowNames[i] = !nowNames[i];
         }
     }
     console.timeEnd("names");
-
-    console.timeEnd("everything");
-
     return [nowDrawings, nowNames];
-}
-
-function superMove(zoomLevel) {
-    for (var j = 0; j < previousMarkersDisplayed.length; j++) {
-        previousMarkersDisplayed[j].setOpacity(0);
-    }
-    previousMarkersDisplayed = [];
-    console.log("remove names");
-    console.log(previousMarkersDisplayed);
-    
-    var bounds = MAP.getBounds();
-    if (zoomLevel >= 20) {
-        globalRoomNamesGroup.eachLayer(function(marker) {
-            if (bounds.contains(marker.getLatLng())) {
-                marker.setOpacity(1);
-                previousMarkersDisplayed.push(marker);
-            }
-        });
-    }
-    if (zoomLevel >= 18.5 && zoomLevel < 20) {
-        globalUnmergedNamesGroup.eachLayer(function(marker) {
-            if (bounds.contains(marker.getLatLng())) {
-                marker.setOpacity(1);
-                previousMarkersDisplayed.push(marker);
-            }
-        });
-    }
-    if (zoomLevel >= 18.5 && zoomLevel < 19.5) {
-        mergedTextMediumGroup.eachLayer(function(marker) {
-            if (bounds.contains(marker.getLatLng())) {
-                marker.setOpacity(1);
-                previousMarkersDisplayed.push(marker);
-            }
-        });
-    }
-    if (zoomLevel >= 19.5 && zoomLevel < 20) {
-        mergedTextSmallGroup.eachLayer(function(marker) {
-            if (bounds.contains(marker.getLatLng())) {
-                marker.setOpacity(1);
-                previousMarkersDisplayed.push(marker);
-            }
-        });
-    }
-    if (zoomLevel >= 18 && zoomLevel < 18.5) {
-        globalLargeRoomNamesGroup.eachLayer(function(marker) {
-            if (bounds.contains(marker.getLatLng())) {
-                marker.setOpacity(1);
-                previousMarkersDisplayed.push(marker);
-            }
-        });
-    }
 }
 
 /* JSON object from server */
@@ -572,7 +452,7 @@ function recievedJSONfromServer() {
 
     // This function is defined in main.js
     createglobalMergedPolygons(geoJSON, removedDuplicatePoints);
-    addGlobalNamesToCollisionGroup();
+    //addGlobalNamesToCollisionGroup();
 
     zoom();
 }
@@ -1521,7 +1401,6 @@ function getArea(polygon){
 }
 
 function computeAreaOfRooms(rooms, indices) {
-
     var totalArea = 0;
 
     for (var i of indices) {
@@ -1868,55 +1747,38 @@ function addGlobalNamesToCollisionGroup() {
         margin: 0
     });
     for (var i = 0; i < globalRoomNames.length; i++) {
-        globalRoomNames[i].setOpacity(0);
         globalRoomNamesGroup.addLayer(globalRoomNames[i]);
     }
-    globalRoomNamesGroup.addTo(MAP);
-
     globalUnmergedNamesGroup = Maze.LayerGroup.collision({
         margin: 0
     });
     for (var i = 0; i < globalUnmergedNames.length; i++) {
-        globalUnmergedNames[i].setOpacity(0);
         globalUnmergedNamesGroup.addLayer(globalUnmergedNames[i]);
     }
-    globalUnmergedNamesGroup.addTo(MAP);
-
     mergedTextLargeGroup = Maze.LayerGroup.collision({
         margin: 0
     });
     for (var i = 0; i < mergedTextLarge.length; i++) {
-        mergedTextLarge[i].setOpacity(0);
         mergedTextLargeGroup.addLayer(mergedTextLarge[i]);
     }
-    mergedTextLargeGroup.addTo(MAP);
-
     mergedTextMediumGroup = Maze.LayerGroup.collision({
         margin: 0
     });
     for (var i = 0; i < mergedTextMedium.length; i++) {
-        mergedTextMedium[i].setOpacity(0);
         mergedTextMediumGroup.addLayer(mergedTextMedium[i]);
     }
-    mergedTextMediumGroup.addTo(MAP);
-
     mergedTextSmallGroup = Maze.LayerGroup.collision({
         margin: 0
     });
     for (var i = 0; i < mergedTextSmall.length; i++) {
-        mergedTextSmall[i].setOpacity(0);
         mergedTextSmallGroup.addLayer(mergedTextSmall[i]);
     }
-    mergedTextSmallGroup.addTo(MAP);
-
     globalLargeRoomNamesGroup = Maze.LayerGroup.collision({
         margin: 0
     });
     for (var i = 0; i < globalLargeRoomNames.length; i++) {
-        globalLargeRoomNames[i].setOpacity(0);
         globalLargeRoomNamesGroup.addLayer(globalLargeRoomNames[i]);
     }
-    globalLargeRoomNamesGroup.addTo(MAP);
 }
 
 function makeGeoJSONPolygon(index, fillColor, color, type) {
