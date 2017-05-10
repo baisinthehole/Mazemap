@@ -291,6 +291,9 @@ function newZoom() {
 }
 
 function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
+
+    var tempLayer = Maze.layerGroup();
+
     MAP.on('zoomend', function() {
         var zoom = MAP.getZoom();
         for (var i in roomLevels) {
@@ -301,7 +304,28 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
                 roomLayers[i].remove();
             }
         }
+        for (var i in nameLevels) {
+            if (zoom < nameLevels[i].maxZoom && zoom >= nameLevels[i].minZoom) {
+                tempLayer.remove();
+                tempLayer = getMarkersInViewPort(nameLayers[i]);
+                console.log(nameLayers[i]);
+                tempLayer.addTo(MAP);
+            }
+        }
     });
+}
+
+function getMarkersInViewPort(nameLayer) {
+    var tempLayer = Maze.layerGroup();
+    var bounds = MAP.getBounds();
+    nameLayer.eachLayer(function(marker) {
+        console.log("qwertyuiop");
+        if (bounds.contains(marker.getLatLng())) {
+            console.log("apefe");
+            tempLayer.addLayer(marker);
+        }
+    });
+    return tempLayer;
 }
 
 function drawFromFile() {
