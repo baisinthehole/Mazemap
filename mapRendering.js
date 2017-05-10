@@ -10,7 +10,8 @@ function createRoomObjects() {
             weight: 0.5,
             minZoom: 16.5,
             maxZoom: 25,
-            vectorGridSlicer: true 
+            vectorGridSlicer: true,
+            type: "Polygon" 
         },
 
         corridors: {
@@ -20,7 +21,8 @@ function createRoomObjects() {
             weight: 0.5,
             minZoom: 21,
             maxZoom: 25,
-            vectorGridSlicer: false
+            vectorGridSlicer: false,
+            type: "Polygon"
         },
 
         mergedCorridors: {
@@ -30,7 +32,8 @@ function createRoomObjects() {
             weight: 0.5,
             minZoom: 18,
             maxZoom: 21,
-            vectorGridSlicer: false
+            vectorGridSlicer: false,
+            type: "Polygon"
         },
 
         simplifiedMergedCorrdidors: {
@@ -40,7 +43,8 @@ function createRoomObjects() {
             weight: 0.5,
             minZoom: 17,
             maxZoom: 18,
-            vectorGridSlicer: false
+            vectorGridSlicer: false,
+            type: "Polygon"
         },
 
         simplifiedMergedLarge: {
@@ -50,7 +54,8 @@ function createRoomObjects() {
             weight: 0.5,
             minZoom: 17,
             maxZoom: 18,
-            vectorGridSlicer: false
+            vectorGridSlicer: false,
+            type: "Polygon"
         },
 
         mergedLarge: {
@@ -60,7 +65,8 @@ function createRoomObjects() {
             weight: 0.5,
             minZoom: 18,
             maxZoom: 18.5,
-            vectorGridSlicer: false
+            vectorGridSlicer: false,
+            type: "Polygon"
         },
 
         mergedMedium: {
@@ -70,7 +76,8 @@ function createRoomObjects() {
             weight: 0.5,
             minZoom: 18.5,
             maxZoom: 19.5,
-            vectorGridSlicer: false
+            vectorGridSlicer: false,
+            type: "Polygon"
         },
 
         mergedSmall: {
@@ -80,7 +87,8 @@ function createRoomObjects() {
             weight: 0.5,
             minZoom: 19.5,
             maxZoom: 20,
-            vectorGridSlicer: false
+            vectorGridSlicer: false,
+            type: "Polygon"
         },
 
         rooms: {
@@ -90,7 +98,8 @@ function createRoomObjects() {
             weight: 0.5,
             minZoom: 20,
             maxZoom: 25,
-            vectorGridSlicer: false
+            vectorGridSlicer: false,
+            type: "Polygon"
         },
 
         doors: {
@@ -100,7 +109,8 @@ function createRoomObjects() {
             weight: 0.5,
             minZoom: 21,
             maxZoom: 25,
-            vectorGridSlicer: true
+            vectorGridSlicer: true,
+            type: "MultiLineString"
         },
 
         stairs: {
@@ -110,7 +120,8 @@ function createRoomObjects() {
             weight: 0.5,
             minZoom: 20.5,
             maxZoom: 25,
-            vectorGridSlicer: true
+            vectorGridSlicer: true,
+            type: "MultiLineString"
         },
 
         unmergedRooms: {
@@ -120,7 +131,8 @@ function createRoomObjects() {
             weight: 0.5,
             minZoom: 18,
             maxZoom: 20.5,
-            vectorGridSlicer: false
+            vectorGridSlicer: false,
+            type: "Polygon"
         },
 
         unmergedLarge: {
@@ -130,7 +142,8 @@ function createRoomObjects() {
             weight: 0.5,
             minZoom: 17,
             maxZoom: 18,
-            vectorGridSlicer: false
+            vectorGridSlicer: false,
+            type: "Polygon"
         }
     };
     return levels;
@@ -139,9 +152,12 @@ function createRoomObjects() {
 function createPolygonLayers(levels) {
     var layers = {};
 
+    // console.log(MAP.getPane("topMAP"));
+    // console.log(MAP.getPane("tilePane"));
+
     for (var i in levels) {
         if (levels[i].vectorGridSlicer) {
-            layers[i] = L.vectorGrid.slicer(makeGeoJSON(levels[i].coordinates, "Polygon"), {
+            layers[i] = L.vectorGrid.slicer(makeGeoJSON(levels[i].coordinates, levels[i].type), {
                 maxZoom: levels[i].maxZoom,
                 minZoom: levels[i].minZoom,
                 vectorTileLayerStyles: {
@@ -149,9 +165,11 @@ function createPolygonLayers(levels) {
                         fillColor: levels[i].fillColor,
                         color: levels[i].color,
                         fill: true,
-                        weight: levels[i].weight
+                        weight: levels[i].weight,
+                        fillOpacity: 1
                     }
-                }
+                },
+                pane: getPane(i)
             });
         }
         else {
@@ -162,6 +180,13 @@ function createPolygonLayers(levels) {
         }
     }
     return layers;
+}
+
+function getPane(key) {
+    if (key == "doors" || key == "stairs") {
+        return "topMAP";
+    }
+    return "tilePane";
 }
 
 function addCoordinatesThatAreNotPoints(group, polygons) {
