@@ -10,7 +10,7 @@ function createRoomObjects() {
             weight: 0.5,
             minZoom: 16.5,
             maxZoom: 25,
-            vectorGridSlicer: true, 
+            vectorGridSlicer: true 
         },
 
         corridors: {
@@ -121,7 +121,7 @@ function createPolygonLayers(levels) {
 
     for (var i in levels) {
         if (levels[i].vectorGridSlicer) {
-            layers[i] = L.vectorGrid.slicer(makeGeoJSON(levels[i].coordinates, "yay"), {
+            layers[i] = L.vectorGrid.slicer(makeGeoJSON(levels[i].coordinates, "Polygon"), {
                 maxZoom: levels[i].maxZoom,
                 minZoom: levels[i].minZoom,
                 vectorTileLayerStyles: {
@@ -135,10 +135,26 @@ function createPolygonLayers(levels) {
             });
         }
         else {
-            layers[i] = Maze.layerGroup(fillAllPolygons(levels[i].coordinates, levels[i].color, levels[i].fillColor, "polygon"));
+            layers[i] = Maze.layerGroup();
+            var polygons = fillAllPolygons(levels[i].coordinates, levels[i].color, levels[i].fillColor, "polygon");
+
+            addCoordinatesThatAreNotPoints(layers[i], polygons[0]);
         }
     }
     return layers;
+}
+
+function addCoordinatesThatAreNotPoints(group, polygons) {
+    for (var i = 0; i < polygons.length; i++) {
+        if (polygons[i]._latlngs.length > 1) {
+            if (polygons[i]._latlngs[0]) {
+                group.addLayer(polygons[0][i]);
+            }
+        }
+        else if (polygons[i]._latlngs[0][0]) {
+            group.addLayer(polygons[i]);
+        }
+    }
 }
 
 function createNameObjects() {
