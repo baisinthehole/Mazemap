@@ -301,6 +301,14 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
                 roomLayers[i].remove();
             }
         }
+        for (var i in nameLevels) {
+            if (zoom < nameLevels[i].maxZoom && zoom >= nameLevels[i].minZoom) {
+                nameLayers[i].addTo(MAP);
+            }
+            else {
+                nameLayers[i].remove();
+            }
+        }
     });
 }
 
