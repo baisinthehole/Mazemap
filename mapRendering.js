@@ -138,6 +138,8 @@ function createPolygonLayers(levels) {
             layers[i] = Maze.layerGroup();
             var polygons = fillAllPolygons(levels[i].coordinates, levels[i].color, levels[i].fillColor, "polygon");
 
+            console.log(polygons);
+
             addCoordinatesThatAreNotPoints(layers[i], polygons[0]);
         }
     }
@@ -146,12 +148,7 @@ function createPolygonLayers(levels) {
 
 function addCoordinatesThatAreNotPoints(group, polygons) {
     for (var i = 0; i < polygons.length; i++) {
-        if (polygons[i]._latlngs.length > 1) {
-            if (polygons[i]._latlngs[0]) {
-                group.addLayer(polygons[0][i]);
-            }
-        }
-        else if (polygons[i]._latlngs[0][0]) {
+        if (polygons[i]._latlngs[0].constructor === Array) {
             group.addLayer(polygons[i]);
         }
     }
