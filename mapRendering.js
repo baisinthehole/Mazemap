@@ -11,7 +11,7 @@ function createRoomObjects() {
             minZoom: 16.5,
             maxZoom: 25,
             vectorGridSlicer: true,
-            type: "Polygon" 
+            type: "Polygon"
         },
 
         corridors: {
@@ -292,7 +292,7 @@ function newZoom() {
 
 function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
 
-    var tempLayer = Maze.layerGroup();
+    var tempLayer = Maze.LayerGroup.collision();
 
     MAP.on('zoomend', function() {
         var zoom = MAP.getZoom();
@@ -308,7 +308,7 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
             if (zoom < nameLevels[i].maxZoom && zoom >= nameLevels[i].minZoom) {
                 tempLayer.remove();
                 tempLayer = getMarkersInViewPort(nameLayers[i]);
-                console.log(nameLayers[i]);
+                // console.log(nameLayers[i]);
                 tempLayer.addTo(MAP);
             }
         }
@@ -316,15 +316,23 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
 }
 
 function getMarkersInViewPort(nameLayer) {
-    var tempLayer = Maze.layerGroup();
+    var tempLayer = Maze.LayerGroup.collision();
     var bounds = MAP.getBounds();
-    nameLayer.eachLayer(function(marker) {
-        console.log("qwertyuiop");
-        if (bounds.contains(marker.getLatLng())) {
-            console.log("apefe");
-            tempLayer.addLayer(marker);
+    // console.log("nameLayer");
+    // console.log(nameLayer);
+    // nameLayer.eachLayer(function(marker) {
+    //     console.log("qwertyuiop");
+    //     if (bounds.contains(marker.getLatLng())) {
+    //         console.log("apefe");
+    //         tempLayer.addLayer(marker);
+    //     }
+    // });
+    for (var i = 0; i < nameLayer._originalLayers.length; i++) {
+        if (bounds.contains(nameLayer._originalLayers[i].getLatLng())) {
+            // console.log("apefe");
+            tempLayer.addLayer(nameLayer._originalLayers[i]);
         }
-    });
+    }
     return tempLayer;
 }
 
@@ -386,7 +394,7 @@ function zoom() {
 //         outline: true,
 //         corridors: false,
 //         ...
-//     }    
+//     }
 // //allLayers.forEach(el=>{console.log(el, !!el._map)})
 
 //     for (i in visibility) {
