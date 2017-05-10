@@ -273,8 +273,8 @@ function recievedLocalJSON(data) {
             }
         // }
     }
-    drawFromFile();
-    // drawFromLocalStorage();
+    // drawFromFile();
+    drawFromLocalStorage();
     zoom();
 }
 
@@ -1437,17 +1437,18 @@ function drawFromLocalStorage() {
     setAsOneFloorId(localStorageCoordinates, GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
     setAsOneFloorId(localStorageRoomNames, GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID);
     removeEmptyRoomsOrNames(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[6], GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID[0]);
-    if (localStorage.getItem('allMergedCorridors') == null) {
-        mergeCorridorsForMultipleFloors();
-        localStorage.setItem('allMergedCorridors', JSON.stringify(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[2]));
-    }
-    else if (JSON.parse(localStorage.getItem('allMergedCorridors')).length == 0) {
-        mergeCorridorsForMultipleFloors();
-        localStorage.setItem('allMergedCorridors', JSON.stringify(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[2]));
-    }
-    else {
-        GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[2] = JSON.parse(localStorage.getItem('allMergedCorridors'));
-    }
+    mergeCorridorsForMultipleFloors();
+    // if (localStorage.getItem('allMergedCorridors') == null) {
+    //     mergeCorridorsForMultipleFloors();
+    //     localStorage.setItem('allMergedCorridors', JSON.stringify(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[2]));
+    // }
+    // else if (JSON.parse(localStorage.getItem('allMergedCorridors')).length == 0) {
+    //     mergeCorridorsForMultipleFloors();
+    //     localStorage.setItem('allMergedCorridors', JSON.stringify(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[2]));
+    // }
+    // else {
+    //     GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[2] = JSON.parse(localStorage.getItem('allMergedCorridors'));
+    // }
     addGlobalCoordinatesToZoom();
     addGlobalNamesToZoom();
 
@@ -1455,6 +1456,7 @@ function drawFromLocalStorage() {
     // globalMergedCorridorPolygons = deepCopy(layer);
     // globalMergedCorridorPolygons.addTo(MAP);
     createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
+    downloadAsFile();
 }
 
 function removeEmptyRoomsOrNames(coordinates, names) {
