@@ -227,11 +227,27 @@ function newZoom() {
     var roomLayers = createPolygonLayers(roomLevels);
 
     var nameLevels = createNameObjects();
-    console.log(nameLevels.largeNames.names);
     var nameLayers = createMarkerLayers(nameLevels);
 
     console.log(roomLayers);
     console.log(nameLayers);
+
+    renderEverything(roomLevels, nameLevels, roomLayers, nameLayers);
+}
+
+function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
+    MAP.on('zoomend', function() {
+        var zoom = MAP.getZoom();
+        for (var i in roomLevels) {
+            if (zoom < roomLevels[i].maxZoom && zoom >= roomLevels[i].minZoom) {
+                console.log(roomLayers[i]);
+                roomLayers[i].addTo(MAP);
+            }
+            else {
+                roomLayers[i].remove();
+            }
+        }
+    });
 }
 
 function drawFromFile() {
@@ -242,7 +258,7 @@ function drawFromFile() {
 
     createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
 
-    newZoom();
+    zoom();
 }
 
 // contains all the data that are displayed on different zoom levels and updates display accordingly

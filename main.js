@@ -33,8 +33,10 @@ if (FLOOR_ID != false) {
 else {
     console.log("Get data from localStorage");
     // getLocalJSON(FILENAME);
-    drawFromFile();
-    zoom();
+    // drawFromFile();
+    // zoom();
+
+    newZoom();
 }
 
 function createglobalMergedPolygons(data, roomCoordinates){
