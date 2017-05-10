@@ -111,6 +111,26 @@ function createRoomObjects() {
             minZoom: 20.5,
             maxZoom: 25,
             vectorGridSlicer: true
+        },
+
+        unmergedRooms: {
+            coordinates: allCoordinatesInFile[10],
+            fillColor: roomColor,
+            color: roomOutlineColor,
+            weight: 0.5,
+            minZoom: 18,
+            maxZoom: 20.5,
+            vectorGridSlicer: false
+        },
+
+        unmergedLarge: {
+            coordinates: allCoordinatesInFile[10],
+            fillColor: roomColor,
+            color: roomOutlineColor,
+            weight: 0.5,
+            minZoom: 17,
+            maxZoom: 18,
+            vectorGridSlicer: false
         }
     };
     return levels;
@@ -138,8 +158,6 @@ function createPolygonLayers(levels) {
             layers[i] = Maze.layerGroup();
             var polygons = fillAllPolygons(levels[i].coordinates, levels[i].color, levels[i].fillColor, "polygon");
 
-            console.log(polygons);
-
             addCoordinatesThatAreNotPoints(layers[i], polygons[0]);
         }
     }
@@ -148,8 +166,10 @@ function createPolygonLayers(levels) {
 
 function addCoordinatesThatAreNotPoints(group, polygons) {
     for (var i = 0; i < polygons.length; i++) {
-        if (polygons[i]._latlngs[0].constructor === Array) {
-            group.addLayer(polygons[i]);
+        if (polygons[i]._latlngs[0].length > 2) {
+            if (polygons[i]._latlngs[0].constructor === Array) {
+                group.addLayer(polygons[i]);
+            }
         }
     }
 }
@@ -242,9 +262,6 @@ function newZoom() {
     var nameLevels = createNameObjects();
     var nameLayers = createMarkerLayers(nameLevels);
 
-    console.log(roomLayers);
-    console.log(nameLayers);
-
     renderEverything(roomLevels, nameLevels, roomLayers, nameLayers);
 }
 
@@ -253,7 +270,6 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
         var zoom = MAP.getZoom();
         for (var i in roomLevels) {
             if (zoom < roomLevels[i].maxZoom && zoom >= roomLevels[i].minZoom) {
-                console.log(roomLayers[i]);
                 roomLayers[i].addTo(MAP);
             }
             else {
