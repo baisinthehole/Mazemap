@@ -136,7 +136,7 @@ function createRoomObjects() {
         },
 
         unmergedLarge: {
-            coordinates: allCoordinatesInFile[10],
+            coordinates: filterOutSmallRooms(allCoordinatesInFile[10]),
             fillColor: roomColor,
             color: roomOutlineColor,
             weight: 0.5,

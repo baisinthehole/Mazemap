@@ -634,7 +634,7 @@ function makeLocalRoomNames(coordinates, title, fontSize="11") {
             iconSize: new Maze.Point(title.length * 7.5, 20),
             html: ""
         });
-        nameMarker = (Maze.marker(coordinates, {icon: myIcon}));
+        nameMarker = (Maze.marker([coordinates[1], coordinates[0]], {icon: myIcon}));
     }
     else {
         if (coordinates.length > 0){
@@ -644,7 +644,7 @@ function makeLocalRoomNames(coordinates, title, fontSize="11") {
                 iconSize: new Maze.Point(title.length * 7.5, 20),
                 html: title
             });
-            nameMarker = (Maze.marker(point, {icon: myIcon}));
+            nameMarker = (Maze.marker([point[1], point[0]], {icon: myIcon}));
         }
     }
 
