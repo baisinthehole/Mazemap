@@ -335,42 +335,51 @@ function renderGeoJSONText(geoJSON, textColor) {
 function makeGeoJSON (coordinates, type) {
     for (var i = 0; i < coordinates.length; i++) {
         // coordinate is not a point
-        if (coordinates[i][0].constructor === Array) {
-            if (coordinates[i][0][0].constructor === Array) {
-                for (var j = 0; j < coordinates[i].length; j++) {
-                    switchLatLong(coordinates[i][j]);
+        if (coordinates[i].length > 0) {
+            if (coordinates[i][0].constructor === Array) {
+                if (coordinates[i][0][0].constructor === Array) {
+                    for (var j = 0; j < coordinates[i].length; j++) {
+                        switchLatLong(coordinates[i][j]);
+                    }
                 }
-            }
-            else { // if (type != "LineString") {
-                switchLatLong(coordinates[i]);
+                else { // if (type != "LineString") {
+                    switchLatLong(coordinates[i]);
+                }
             }
         }
     }
 
+    console.log(coordinates);
+
     result = {type: "FeatureCollection", features: []};
     for (var i = 0; i < coordinates.length; i++) {
-        if (coordinates[i][0].constructor === Array) {
-            if (coordinates[i][0][0].constructor === Array) {
-                result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "MultiPolygon"}});
-                moveBiggestRoomFirst(coordinates[i]);
-                for (var j = 0; j < coordinates[i].length; j++) {
-                    if (coordinates[i][j][0] != coordinates[i][j][coordinates[i].length - 1]) {
-                        coordinates[i][j].push(coordinates[i][j][0]);
+        if (coordinates[i].length > 0) {
+            if (coordinates[i][0].constructor === Array) {
+                if (coordinates[i][0][0].constructor === Array) {
+                    result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "MultiPolygon"}});
+                    moveBiggestRoomFirst(coordinates[i]);
+                    for (var j = 0; j < coordinates[i].length; j++) {
+                        if (coordinates[i][j][0] != coordinates[i][j][coordinates[i].length - 1]) {
+                            coordinates[i][j].push(coordinates[i][j][0]);
+                        }
+                    }
+                }
+                else {
+                    result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": type}});
+                    if (coordinates[i][0] != coordinates[i][coordinates.length - 1] && type == "Polygon") {
+                        coordinates[i].push(coordinates[i][0]);
                     }
                 }
             }
             else {
-                result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": type}});
-                if (coordinates[i][0] != coordinates[i][coordinates.length - 1] && type == "Polygon") {
-                    coordinates[i].push(coordinates[i][0]);
-                }
+                    result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": type}});
             }
+
+            result.features[i].geometry.coordinates.push(coordinates[i]);
         }
         else {
-                result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": type}});
+            result.features.push({"type": "Feature", "geometry": {"coordinates": [], "type": "Point"}});
         }
-
-        result.features[i].geometry.coordinates.push(coordinates[i]);
     }
     return result;
 }
