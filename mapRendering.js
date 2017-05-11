@@ -19,7 +19,7 @@ function createRoomObjects() {
             fillColor: mergedCorridorColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 21,
+            minZoom: 16.5,
             maxZoom: 25,
             vectorGridSlicer: true,
             type: "Polygon"
@@ -30,8 +30,8 @@ function createRoomObjects() {
             fillColor: mergedCorridorColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 18,
-            maxZoom: 21,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: true,
             type: "Polygon"
         },
@@ -41,8 +41,8 @@ function createRoomObjects() {
             fillColor: mergedCorridorColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 17,
-            maxZoom: 18,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: true,
             type: "Polygon"
         },
@@ -52,8 +52,8 @@ function createRoomObjects() {
             fillColor: mergedRoomColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 17,
-            maxZoom: 18,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: true,
             type: "Polygon"
         },
@@ -63,8 +63,8 @@ function createRoomObjects() {
             fillColor: mergedRoomColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 18,
-            maxZoom: 18.5,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: true,
             type: "Polygon"
         },
@@ -74,8 +74,8 @@ function createRoomObjects() {
             fillColor: mergedRoomColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 18.5,
-            maxZoom: 19.5,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: true,
             type: "Polygon"
         },
@@ -85,8 +85,8 @@ function createRoomObjects() {
             fillColor: mergedRoomColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 19.5,
-            maxZoom: 20,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: true,
             type: "Polygon"
         },
@@ -96,7 +96,7 @@ function createRoomObjects() {
             fillColor: roomColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 20,
+            minZoom: 16.5,
             maxZoom: 25,
             vectorGridSlicer: true,
             type: "Polygon"
@@ -107,7 +107,7 @@ function createRoomObjects() {
             fillColor: roomColor,
             color: doorColor,
             weight: 0.5,
-            minZoom: 21,
+            minZoom: 19,
             maxZoom: 25,
             vectorGridSlicer: true,
             type: "MultiLineString"
@@ -118,7 +118,7 @@ function createRoomObjects() {
             fillColor: roomColor,
             color: stairColor,
             weight: 0.5,
-            minZoom: 20.5,
+            minZoom: 18.5,
             maxZoom: 25,
             vectorGridSlicer: true,
             type: "MultiLineString"
@@ -129,8 +129,8 @@ function createRoomObjects() {
             fillColor: roomColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 18,
-            maxZoom: 20.5,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: true,
             type: "Polygon"
         },
@@ -140,8 +140,8 @@ function createRoomObjects() {
             fillColor: roomColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 17,
-            maxZoom: 18,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: true,
             type: "Polygon"
         }
@@ -204,15 +204,15 @@ function createNameObjects() {
         roomNames: {
             coordinates: allCoordinatesInFile[6],
             names: allNamesInFile[0],
-            minZoom: 20,
+            minZoom: 17,
             maxZoom: 25
         },
 
         unmergedNames: {
             coordinates: allCoordinatesInFile[10],
             names: allNamesInFile[1],
-            minZoom: 18.5,
-            maxZoom: 20
+            minZoom: null,
+            maxZoom: null
         },
 
         mergedLarge: {
@@ -225,22 +225,22 @@ function createNameObjects() {
         mergedMedium: {
             coordinates: allCoordinatesInFile[4],
             names: allNamesInFile[3],
-            minZoom: 18.5,
-            maxZoom: 19.5
+            minZoom: null,
+            maxZoom: null
         },
 
         mergedSmall: {
             coordinates: allCoordinatesInFile[5],
             names: allNamesInFile[4],
-            minZoom: 19.5,
-            maxZoom: 20
+            minZoom: null,
+            maxZoom: null
         },
 
         largeNames: {
             coordinates: getLargeRoomCoordinates(allCoordinatesInFile, allNamesInFile),
             names: getLargeRoomNames(allCoordinatesInFile, allNamesInFile),
-            minZoom: 18,
-            maxZoom: 18.5
+            minZoom: null,
+            maxZoom: null
         }
     };
     return levels;
