@@ -294,8 +294,11 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
 
     var tempLayer = Maze.LayerGroup.collision();
 
-    MAP.on('zoomend', function() {
+    MAP.on('moveend', function() {
+        tempLayer.remove();
+        tempLayer = Maze.LayerGroup.collision();
         var zoom = MAP.getZoom();
+        console.log(zoom);
         for (var i in roomLevels) {
             if (zoom < roomLevels[i].maxZoom && zoom >= roomLevels[i].minZoom) {
                 roomLayers[i].addTo(MAP);
@@ -306,17 +309,15 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
         }
         for (var i in nameLevels) {
             if (zoom < nameLevels[i].maxZoom && zoom >= nameLevels[i].minZoom) {
-                tempLayer.remove();
-                tempLayer = getMarkersInViewPort(nameLayers[i]);
+                getMarkersInViewPort(tempLayer, nameLayers[i]);
                 // console.log(nameLayers[i]);
-                tempLayer.addTo(MAP);
             }
         }
+        tempLayer.addTo(MAP);
     });
 }
 
-function getMarkersInViewPort(nameLayer) {
-    var tempLayer = Maze.LayerGroup.collision();
+function getMarkersInViewPort(tempLayer, nameLayer) {
     var bounds = MAP.getBounds();
     // console.log("nameLayer");
     // console.log(nameLayer);
@@ -333,7 +334,6 @@ function getMarkersInViewPort(nameLayer) {
             tempLayer.addLayer(nameLayer._originalLayers[i]);
         }
     }
-    return tempLayer;
 }
 
 function drawFromFile() {
