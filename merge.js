@@ -925,6 +925,12 @@ function createCirclePolygons(points1, points2, polygon1, polygon2, connectedInd
     var increasing = true;
     var counter = 0;
     var broken = false;
+    points1 = [];
+    points2 = [];
+    for (var i = 0; i < connectedIndexes.length; i++) {
+        points1.push(connectedIndexes[i][0]);
+        points2.push(connectedIndexes[i][1]);
+    }
     while (points1.length > 0 || resultRoom[0] != polygon1[index]) {
         counter++;
         if (counter > 9990) {

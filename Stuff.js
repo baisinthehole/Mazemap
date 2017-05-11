@@ -219,7 +219,21 @@ function recievedJSONfromServer() {
     // This function is defined in main.js
     createglobalMergedPolygons(geoJSON, removedDuplicatePoints);
     //addGlobalNamesToCollisionGroup();
+    console.log(GLOBAL_ALL_COORDINATES);
+    console.log(deepCopy(allCoordinatesInFile));
+    for (var i = 0; i < GLOBAL_ALL_COORDINATES.length; i++) {
+        if (GLOBAL_ALL_COORDINATES[i].length > 0) {
+            allCoordinatesInFile[i].push(GLOBAL_ALL_COORDINATES[i]);
+        }
+    }
+    console.log(deepCopy(allCoordinatesInFile));
 
+    console.log(GLOBAL_ROOM_NAMES);
+    console.log(deepCopy(allNamesInFile));
+    for (var i = 0; i < GLOBAL_ROOM_NAMES.length; i++) {
+        allNamesInFile[i].push(GLOBAL_ROOM_NAMES[i]);
+    }
+    console.log(deepCopy(allNamesInFile));
     zoom();
 }
 
