@@ -1,6 +1,8 @@
 // area threshold of holes in rooms that will be removed, to remove unnecessary details on lower zoom levels.
 var AREA_THRESHOLD = 0.00000001;
 
+// object for keeping all information about polygon layers in one place
+// note that vectorGridSlicer is true for all the layers
 function createRoomObjects() {
     var levels = {
         outlines: {
@@ -149,13 +151,12 @@ function createRoomObjects() {
     return levels;
 }
 
+// converts the polygon layer information into actual leaflet layers, so these can be used for rendering
 function createPolygonLayers(levels) {
     var layers = {};
 
-    // console.log(MAP.getPane("topMAP"));
-    // console.log(MAP.getPane("tilePane"));
-
     for (var i in levels) {
+        // creates a vectorgrid slicer layer
         if (levels[i].vectorGridSlicer) {
             layers[i] = L.vectorGrid.slicer(makeGeoJSON(levels[i].coordinates, levels[i].type), {
                 maxZoom: levels[i].maxZoom,
@@ -172,6 +173,7 @@ function createPolygonLayers(levels) {
                 pane: getPane(i)
             });
         }
+        // creates a layergroup layer
         else {
             layers[i] = Maze.layerGroup();
             var polygons = fillAllPolygons(levels[i].coordinates, levels[i].color, levels[i].fillColor, "polygon");
@@ -182,6 +184,7 @@ function createPolygonLayers(levels) {
     return layers;
 }
 
+// is used to make sure doors and stairs are put in a different pane with a higher z-index than the default pane
 function getPane(key) {
     if (key == "doors" || key == "stairs") {
         return "topMAP";
@@ -189,6 +192,7 @@ function getPane(key) {
     return "tilePane";
 }
 
+// makes sure that only polygons that are not points are added to the layergroup, since leaflet throws errors when trying to render p
 function addCoordinatesThatAreNotPoints(group, polygons) {
     for (var i = 0; i < polygons.length; i++) {
         if (polygons[i]._latlngs[0].length > 2) {
@@ -199,6 +203,7 @@ function addCoordinatesThatAreNotPoints(group, polygons) {
     }
 }
 
+// stores all information about room names in an object for easy access
 function createNameObjects() {
     var levels = {
         roomNames: {
@@ -246,6 +251,7 @@ function createNameObjects() {
     return levels;
 }
 
+// helper function for finding rooms that are bigger than a threshold. Is used for layers where only large rooms should be visible
 function getLargeRoomCoordinates(coordinates, names) {
     var roomCoordinates = coordinates[10].concat(coordinates[3]);
     var roomNames = names[1].concat(names[2]);
@@ -255,6 +261,7 @@ function getLargeRoomCoordinates(coordinates, names) {
     return largeCoordinates;
 }
 
+// helper function for finding names of rooms that are bigger than a threshold. Is used for layers where only names of large rooms should
 function getLargeRoomNames(coordinates, names) {
     var roomCoordinates = coordinates[10].concat(coordinates[3]);
     var roomNames = names[1].concat(names[2]);
@@ -264,10 +271,12 @@ function getLargeRoomNames(coordinates, names) {
     return largeNames;
 }
 
+// converts marker information into leaflet layers for simple adding and removing to map
 function createMarkerLayers(levels) {
     var layers = {};
 
     for (var i in levels) {
+        // collision layer is used because it prevents rendering overlapping markers
         layers[i] = Maze.LayerGroup.collision({
             margin: 0
         });
@@ -280,6 +289,7 @@ function createMarkerLayers(levels) {
     return layers;
 }
 
+// main function for initializing polygon and name info, and converting it to leaflet layers
 function newZoom() {
     var roomLevels = createRoomObjects();
     var roomLayers = createPolygonLayers(roomLevels);
@@ -290,6 +300,7 @@ function newZoom() {
     renderEverything(roomLevels, nameLevels, roomLayers, nameLayers);
 }
 
+// render function that keeps handler functions for zooming and moving on the map
 function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
 
     var tempLayer = Maze.LayerGroup.collision();
@@ -299,6 +310,8 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
         tempLayer = Maze.LayerGroup.collision();
         var zoom = MAP.getZoom();
         console.log(zoom);
+        
+        // add or remove polygon layers according to zoom levels
         for (var i in roomLevels) {
             if (zoom < roomLevels[i].maxZoom && zoom >= roomLevels[i].minZoom) {
                 roomLayers[i].addTo(MAP);
@@ -307,232 +320,25 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
                 roomLayers[i].remove();
             }
         }
+
+        // add or remove name layers according to zoom
         for (var i in nameLevels) {
             if (zoom < nameLevels[i].maxZoom && zoom >= nameLevels[i].minZoom) {
+                // makes sure to only add names that are in viewport to layer, to avoid unnecessary rendering of markers outside the screen
                 getMarkersInViewPort(tempLayer, nameLayers[i]);
-                // console.log(nameLayers[i]);
             }
         }
         tempLayer.addTo(MAP);
     });
 }
 
+// makes sure to only add names that are in viewport to layer, to avoid unnecessary rendering of markers outside the screen
 function getMarkersInViewPort(tempLayer, nameLayer) {
     var bounds = MAP.getBounds();
-    // console.log("nameLayer");
-    // console.log(nameLayer);
-    // nameLayer.eachLayer(function(marker) {
-    //     console.log("qwertyuiop");
-    //     if (bounds.contains(marker.getLatLng())) {
-    //         console.log("apefe");
-    //         tempLayer.addLayer(marker);
-    //     }
-    // });
     for (var i = 0; i < nameLayer._originalLayers.length; i++) {
         if (bounds.contains(nameLayer._originalLayers[i].getLatLng())) {
-            // console.log("apefe");
             tempLayer.addLayer(nameLayer._originalLayers[i]);
         }
     }
 }
 
-function drawFromFile() {
-    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID = allCoordinatesInFile;
-    GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID = allNamesInFile;
-    addGlobalCoordinatesToZoom();
-    addGlobalNamesToZoom();
-
-    createPolygonsFromAllCoordinatesAsOneFloorId(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
-
-    zoom();
-}
-
-// contains all the data that are displayed on different zoom levels and updates display accordingly
-function zoom() {
-
-    // contains all kinds of polygons displayed on different levels
-    polygonList = [globalOutlinePolygons, globalCorridorPolygons, globalMergedCorridorPolygons, globalSimplifiedMergedCorridorCoordinates, mergedLarge, mergedMedium, mergedSmall, simplifiedMergedLarge, globalRoomPolygons, globalDoorPolygons, globalStairPolygons, globalUnmergedPolygonsSimplified, globalUnmergedPolygons, globalUnmergedLargePolygons];
-    //console.log(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID);
-    //console.log(polygonList);
-
-    // contains all kinds of room names displayed on different levels
-    var nameList = [globalRoomNamesGroup, globalUnmergedNamesGroup, mergedTextLargeGroup, mergedTextMediumGroup, mergedTextSmallGroup, globalLargeRoomNamesGroup, globalStairIcons, globalToiletIcons];
-
-    // contains all polygons that are currently displayed
-    var nowDrawings = [];
-
-    // contains all room names that are currently displayed
-    var nowNames = [];
-
-    // keeps information about which zoom levels different polygons will be displayed or not
-    var drawings;
-
-    // keeps information about which zoom levels different room names will be displayed or not
-    var names;
-
-    var OUTLINE=true, CORRIDORS=true, MERGED_CORRIDORS=true, SIMPLIFIED_MERGED_CORRIDORS=true, MERGED_LARGE=true, MERGED_MEDIUM=true, MERGED_SMALL=true, SIMPLIFIED_LARGE=true, ROOMS=true, DOORS=true, STAIRS=true, UNMERGED_SIMPLIFIED=true, UNMERGED=true, UNMERGED_LARGE=true;
-
-    var ROOM_NAMES=true, UNMERGED_NAMES=true, MERGED_LARGE_NAMES=true, MERGED_MEDIUM_NAMES=true, MERGED_SMALL_NAMES=true, LARGE_ROOM_NAMES=true, STAIR_ICONS=true, TOILET_ICONS=true;
-
-    for (var i = 0; i < polygonList.length; i++) {
-        nowDrawings.push(false);
-    }
-    for (var i = 0; i < nameList.length; i++) {
-        nowNames.push(false);
-    }
-
-
-//     var allLayers = {
-//         outline: Maze.polygon(...),
-//         corridors: Maze.featuregroup()...,
-//         rooms: Maze.layerGrop.collision(...)
-//     }
-
-
-
-//     var visibility = {
-//         outline: true,
-//         corridors: false,
-//         ...
-//     }
-// //allLayers.forEach(el=>{console.log(el, !!el._map)})
-
-//     for (i in visibility) {
-//         if (visibility[i])
-//             allLayers[i].addTo(map);
-//         else
-//             allLayers[i].remove();
-//     }
-
-
-
-    // Zoom listener, is triggered on every change in zoom level
-    MAP.on('zoomend', function () {
-        console.time("everything");
-        console.log(MAP.getZoom());
-        if (MAP.getZoom() < 16){
-            drawings = [!OUTLINE, !CORRIDORS, !MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, !ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, !UNMERGED, !UNMERGED_LARGE];
-            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
-            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
-        }
-        else if (MAP.getZoom() < 16.5){
-            drawings = [!OUTLINE, !CORRIDORS, !MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, !ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, !UNMERGED, !UNMERGED_LARGE];
-            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
-            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
-        }
-        else if (MAP.getZoom() < 17){
-            drawings = [OUTLINE, !CORRIDORS, !MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, !ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, !UNMERGED, !UNMERGED_LARGE];
-            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
-            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
-        }
-        else if (MAP.getZoom() < 17.5){
-            drawings = [OUTLINE, !CORRIDORS, !MERGED_CORRIDORS, SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, SIMPLIFIED_LARGE, !ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, !UNMERGED, UNMERGED_LARGE];
-            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
-            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
-        }
-        else if (MAP.getZoom() < 18){
-            drawings = [OUTLINE, !CORRIDORS, !MERGED_CORRIDORS, SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, SIMPLIFIED_LARGE, !ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, !UNMERGED, UNMERGED_LARGE];
-            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
-            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
-        }
-        else if (MAP.getZoom() < 18.5){
-            drawings = [OUTLINE, !CORRIDORS, MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, !ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, UNMERGED, !UNMERGED_LARGE];
-            names = [!ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
-            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
-        }
-        else if (MAP.getZoom() < 19){
-            drawings = [OUTLINE, !CORRIDORS, MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, !ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, UNMERGED, !UNMERGED_LARGE];
-            names = [!ROOM_NAMES, UNMERGED_NAMES, !MERGED_LARGE_NAMES, MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
-            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
-        }
-        else if (MAP.getZoom() < 19.5){
-            drawings = [OUTLINE, !CORRIDORS, MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, !ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, UNMERGED, !UNMERGED_LARGE];
-            names = [!ROOM_NAMES, UNMERGED_NAMES, !MERGED_LARGE_NAMES, MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
-            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
-        }
-        else if (MAP.getZoom() < 20){
-            drawings = [OUTLINE, !CORRIDORS, MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, MERGED_SMALL, !SIMPLIFIED_LARGE, !ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, UNMERGED, !UNMERGED_LARGE];
-            names = [!ROOM_NAMES, UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
-            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
-        }
-        else if (MAP.getZoom() < 20.5){
-            drawings = [OUTLINE, !CORRIDORS, MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, ROOMS, !DOORS, !STAIRS, !UNMERGED_SIMPLIFIED, UNMERGED, !UNMERGED_LARGE];
-            names = [ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
-            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
-        }
-        else if (MAP.getZoom() < 21){
-            drawings = [OUTLINE, !CORRIDORS, MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, ROOMS, !DOORS, STAIRS, !UNMERGED_SIMPLIFIED, !UNMERGED, !UNMERGED_LARGE];
-            names = [ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
-            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
-        }
-        else if (MAP.getZoom() < 21.5){
-            drawings = [OUTLINE, CORRIDORS, !MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, ROOMS, DOORS, STAIRS, !UNMERGED_SIMPLIFIED, !UNMERGED, !UNMERGED_LARGE];
-            names = [ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
-            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
-        }
-        else if (MAP.getZoom() < 22){
-            drawings = [OUTLINE, CORRIDORS, !MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, ROOMS, DOORS, STAIRS, !UNMERGED_SIMPLIFIED, !UNMERGED, !UNMERGED_LARGE];
-            names = [ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
-            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
-        }
-        else {
-            drawings = [OUTLINE, CORRIDORS, !MERGED_CORRIDORS, !SIMPLIFIED_MERGED_CORRIDORS, !MERGED_LARGE, !MERGED_MEDIUM, !MERGED_SMALL, !SIMPLIFIED_LARGE, ROOMS, DOORS, STAIRS, !UNMERGED_SIMPLIFIED, !UNMERGED, !UNMERGED_LARGE];
-            names = [ROOM_NAMES, !UNMERGED_NAMES, !MERGED_LARGE_NAMES, !MERGED_MEDIUM_NAMES, !MERGED_SMALL_NAMES, !LARGE_ROOM_NAMES, !STAIR_ICONS, !TOILET_ICONS];
-            [nowDrawings, nowNames] = superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList);
-        }
-        console.timeEnd("everything");
-    });
-}
-
-// draws and removes polygons and room names when zooming
-function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList) {
-
-    console.time("everything");
-
-    console.time("polygons");
-
-    for (var i = 0; i < drawings.length; i++) {
-        if (drawings[i] != nowDrawings[i]){
-            if (!nowDrawings[i]){
-                if (FLOOR_ID != false) {
-                    drawPolygons([polygonList[i]]);
-                }
-                else if (contains(withoutVectorGridSlicer, i)) {
-                    drawPolygons(polygonList[i]);
-                }
-                else {
-                    drawVectorGridSlicedPolygons(polygonList[i]);
-                }
-            }
-            else if (nowDrawings[i]){
-                if (FLOOR_ID != false) {
-                    removePolygons([polygonList[i]]);
-                }
-                else if (contains(withoutVectorGridSlicer, i)) {
-                    removePolygons(polygonList[i]);
-                }
-                else {
-                    removeVectorGridSlicedPolygons(polygonList[i]);
-                }
-            }
-            nowDrawings[i] = !nowDrawings[i];
-        }
-    }
-
-    console.timeEnd("polygons");
-
-    console.time("names");
-    for (var i = 0; i < names.length; i++) {
-        if (names[i] != nowNames[i]){
-            if (!nowNames[i]){
-                nameList[i].addTo(MAP);
-            }
-            else if (nowNames[i]){
-                nameList[i].removeFrom(MAP);
-            }
-            nowNames[i] = !nowNames[i];
-        }
-    }
-    console.timeEnd("names");
-    return [nowDrawings, nowNames];
-}
