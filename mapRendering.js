@@ -303,15 +303,15 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
 
     var tempLayer = Maze.LayerGroup.collision();
 
-    MAP.on('movestart', function() {
-        console.log("START!");
-        console.time("everything");
-        console.time("movement");
-    });
+    // MAP.on('zoomstart', function() {
+    //     console.log("START!");
+    //     console.time("everything");
+    //     console.time("movement");
+    // });
 
-    MAP.on('moveend', function() {
-        console.timeEnd("movement");
-        console.time("polygons");
+    MAP.on('zoomend', function() {
+        // console.timeEnd("movement");
+        // console.time("polygons");
         tempLayer.remove();
         tempLayer = Maze.LayerGroup.collision();
         var zoom = MAP.getZoom();
@@ -326,8 +326,8 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
                 roomLayers[i].remove();
             }
         }
-        console.timeEnd("polygons");
-        console.time("names");
+        // console.timeEnd("polygons");
+        // console.time("names");
 
         // add or remove name layers according to zoom
         for (var i in nameLevels) {
@@ -337,19 +337,19 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
             }
         }
         tempLayer.addTo(MAP);
-        console.timeEnd("names");
-        console.timeEnd("everything");
-        console.log("END!");
+        // console.timeEnd("names");
+        // console.timeEnd("everything");
+        // console.log("END!");
     });
 }
 
 // makes sure to only add names that are in viewport to layer, to avoid unnecessary rendering of markers outside the screen
 function getMarkersInViewPort(tempLayer, nameLayer) {
-    var bounds = MAP.getBounds();
+    // var bounds = MAP.getBounds();
     for (var i = 0; i < nameLayer._originalLayers.length; i++) {
-        if (bounds.contains(nameLayer._originalLayers[i].getLatLng())) {
+        // if (bounds.contains(nameLayer._originalLayers[i].getLatLng())) {
             // console.log("apefe");
             tempLayer.addLayer(nameLayer._originalLayers[i]);
-        }
+        // }
     }
 }
