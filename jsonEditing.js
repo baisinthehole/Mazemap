@@ -16,6 +16,10 @@ function alterJSONfile(JSON, ID) {
 
     var list380 = [31933, 31554, 38671];
 
+
+    // Stripa
+    var list311 = [32587, 32588, 32583, 39518];
+
     // if (ID == "81") { // Stripa
     //     for (var i = 0; i < JSON.pois.length; i++) {
     //         if (contains(list81, JSON.pois[i].identifierId)) {
@@ -79,13 +83,13 @@ function alterJSONfile(JSON, ID) {
             }
         }
     }
-    // if (ID == "311") { // Stripa
-    //     for (var i = 0; i < JSON.pois.length; i++) {
-    //         if (contains(list311, JSON.pois[i].identifierId)) {
-    //             JSON.pois[i].infos.push({poiTypeId: 2});
-    //         }
-    //     }
-    // }
+    if (ID == "311") { // Stripa
+        for (var i = 0; i < JSON.pois.length; i++) {
+            if (contains(list311, JSON.pois[i].identifierId)) {
+                JSON.pois[i].infos.push({poiTypeId: 2});
+            }
+        }
+    }
     // if (ID == "326") { // IT-vest
     //     for (var i = 0; i < JSON.pois.length; i++) {
     //         if (contains(list326, JSON.pois[i].identifierId)) {
