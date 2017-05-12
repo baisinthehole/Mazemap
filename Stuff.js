@@ -254,10 +254,25 @@ function getLocalJSON(filename) {
 }
 function recievedLocalJSON(data) {
     var color = ['blue', 'gray', 'green', 'black'];
+    console.log(data);
+    var floorIdOnCampus = [];
+    var coordinates = [];
+    var icons = [];
     // Fill the coordinate arrays for each type of polygon and draw to map
     for (var i = 0; i < data.features.length; i++) {
         // if (data.features[i].geometry.coordinates.length == 1){
             if (data.features[i].properties.campusId == 1){
+                if(data.features[i].properties.floorId) {
+                    // switchLatLong(data.features[i].geometry.coordinates);
+                    var myIcon = Maze.divIcon({
+                        className: "labelClass",
+                        iconSize: new Maze.Point(data.features[i].properties.floorId.length * 7.5, 20),
+                        html: data.features[i].properties.floorId
+                    });
+                    icons.push(myIcon);
+                    coordinates.push(getPoint(data.features[i].geometry.coordinates));
+                    floorIdOnCampus.push(data.features[i].properties.floorId);
+                }
                 if (data.features[i].properties.layer == "outlines"){
                     switchLatLong(data.features[i].geometry.coordinates[0]);
                     GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[0].push(data.features[i].geometry.coordinates[0]);
@@ -273,6 +288,17 @@ function recievedLocalJSON(data) {
             }
         // }
     }
+    var floorIdNonDuplicates = [];
+    for (var i = 0; i < floorIdOnCampus.length; i++) {
+        if (!contains(floorIdNonDuplicates, floorIdOnCampus[i])) {
+            floorIdNonDuplicates.push(floorIdOnCampus[i]);
+            Maze.marker([coordinates[i][1], coordinates[i][0]], {icon: icons[i]}).addTo(MAP);
+            console.log("Adding markers");
+        }
+    }
+    console.log(floorIdNonDuplicates);
+    console.log(coordinates);
+    console.log(icons);
     drawFromFile();
     // drawFromLocalStorage();
     zoom();
