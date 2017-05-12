@@ -10,7 +10,8 @@ var MAP = Maze.map('mazemap-container', {
             zoomSnap: 0,
             zoomDelta: 0.5,
             wheelPxPerZoomLevel: 100,
-            markerZoomAnimation: false });
+            markerZoomAnimation: false,
+            preferCanvas: true });
 MAP.setView([63.417421008760335,10.406426561608821], 15);
 
 MAP.createPane("topMAP");

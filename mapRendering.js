@@ -1,6 +1,11 @@
 // area threshold of holes in rooms that will be removed, to remove unnecessary details on lower zoom levels.
 var AREA_THRESHOLD = 0.00000001;
 
+var totalTimes = [];
+var moveTimes = [];
+var polygonTimes = [];
+var nameTimes = [];
+
 function createRoomObjects() {
     var levels = {
         outlines: {
@@ -294,12 +299,23 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
 
     var tempLayer = Maze.LayerGroup.collision();
 
+    var zoom;
+    var i;
+
+    MAP.on('movestart', function() {
+        console.log("START!");
+        console.time("everything");
+        console.time("movement");
+    });
+
     MAP.on('moveend', function() {
+        console.timeEnd("movement");
+        console.time("polygons");
         tempLayer.remove();
         tempLayer = Maze.LayerGroup.collision();
-        var zoom = MAP.getZoom();
+        zoom = MAP.getZoom();
         console.log(zoom);
-        for (var i in roomLevels) {
+        for (i in roomLevels) {
             if (zoom < roomLevels[i].maxZoom && zoom >= roomLevels[i].minZoom) {
                 roomLayers[i].addTo(MAP);
             }
@@ -307,13 +323,19 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
                 roomLayers[i].remove();
             }
         }
-        for (var i in nameLevels) {
+        console.log(roomLayers);
+        console.timeEnd("polygons");
+        console.time("names");
+        for (i in nameLevels) {
             if (zoom < nameLevels[i].maxZoom && zoom >= nameLevels[i].minZoom) {
                 getMarkersInViewPort(tempLayer, nameLayers[i]);
                 // console.log(nameLayers[i]);
             }
         }
         tempLayer.addTo(MAP);
+        console.timeEnd("names");
+        console.timeEnd("everything");
+        console.log("END!");
     });
 }
 
