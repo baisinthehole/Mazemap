@@ -223,7 +223,9 @@ function recievedJSONfromServer() {
     console.log(deepCopy(allCoordinatesInFile));
     for (var i = 0; i < GLOBAL_ALL_COORDINATES.length; i++) {
         if (GLOBAL_ALL_COORDINATES[i].length > 0) {
-            allCoordinatesInFile[i].push(GLOBAL_ALL_COORDINATES[i]);
+            for (var j = 0; j < GLOBAL_ALL_COORDINATES[i].length; j++) {
+                allCoordinatesInFile[i].push(GLOBAL_ALL_COORDINATES[i][j]);
+            }
         }
     }
     console.log(deepCopy(allCoordinatesInFile));
@@ -231,9 +233,12 @@ function recievedJSONfromServer() {
     console.log(GLOBAL_ROOM_NAMES);
     console.log(deepCopy(allNamesInFile));
     for (var i = 0; i < GLOBAL_ROOM_NAMES.length; i++) {
-        allNamesInFile[i].push(GLOBAL_ROOM_NAMES[i]);
+        for (var j = 0; j < GLOBAL_ROOM_NAMES[i].length; j++) {
+            allNamesInFile[i].push(GLOBAL_ROOM_NAMES[i][j]);
+        }
     }
     console.log(deepCopy(allNamesInFile));
+    downloadAsFile();
     zoom();
 }
 

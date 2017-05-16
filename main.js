@@ -4,11 +4,12 @@
 // At last, run with floorID set to false
 
 function downloadAsFile() {
-    download(JSON.stringify(GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID), "coordinates.txt", "text/plain");
-    download(JSON.stringify(GLOBAL_ALL_ROOM_NAMES_AS_ONE_FLOORID), "names.txt", "text/plain");
+    download(JSON.stringify(allCoordinatesInFile), "coordinates.txt", "text/plain");
+    download(JSON.stringify(allNamesInFile), "names.txt", "text/plain");
 }
 
-
+console.log(allCoordinatesInFile);
+console.log(allNamesInFile);
 var FILENAME = "gloes1.geojson";
 FLOOR_IDS = [300, 1672, 246, 351, 70, 349, 59, 168, 155, 197, 374, 326, 94, 241, 220, 81, 408, 380, 295, 352, 311, 148, 343, 142, 247, 141, 354, 85, 378, 65, 96, 178, 160, 236, 358, 234, 260, 355, 98, 100, 254, 200, 9, 353, 62]
 
