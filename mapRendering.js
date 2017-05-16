@@ -208,42 +208,56 @@ function createNameObjects() {
             coordinates: allCoordinatesInFile[6],
             names: allNamesInFile[0],
             minZoom: 20,
-            maxZoom: 25
+            maxZoom: 25,
+            margin: 0
         },
 
         unmergedNames: {
             coordinates: allCoordinatesInFile[10],
             names: allNamesInFile[1],
             minZoom: 18.5,
-            maxZoom: 20
+            maxZoom: 20,
+            margin: 0
         },
 
         mergedLarge: {
             coordinates: allCoordinatesInFile[3],
             names: allNamesInFile[2],
             minZoom: null,
-            maxZoom: null
+            maxZoom: null,
+            margin: 0
         },
 
         mergedMedium: {
             coordinates: allCoordinatesInFile[4],
             names: allNamesInFile[3],
             minZoom: 18.5,
-            maxZoom: 19.5
+            maxZoom: 19.5,
+            margin: 0
         },
 
         mergedSmall: {
             coordinates: allCoordinatesInFile[5],
             names: allNamesInFile[4],
             minZoom: 19.5,
-            maxZoom: 20
+            maxZoom: 20,
+            margin: 0
         },
 
         largeNames: {
             coordinates: getLargeRoomCoordinates(allCoordinatesInFile, allNamesInFile),
             names: getLargeRoomNames(allCoordinatesInFile, allNamesInFile),
             minZoom: 18,
-            maxZoom: 18.5
+            maxZoom: 18.5,
+            margin: 5
+        },
+
+        veryLargeNames: {
+            coordinates: getLargeRoomCoordinates(allCoordinatesInFile, allNamesInFile),
+            names: getLargeRoomNames(allCoordinatesInFile, allNamesInFile),
+            minZoom: 17,
+            maxZoom: 18,
+            margin: 20
         }
     };
     return levels;
@@ -276,7 +290,7 @@ function createMarkerLayers(levels) {
     for (var i in levels) {
         // collision layer is used because it prevents rendering overlapping markers
         layers[i] = Maze.LayerGroup.collision({
-            margin: 0
+            margin: levels[i].margin
         });
         var markers = makeAllRoomNames(levels[i].coordinates, levels[i].names, "11");
         for (var j = 0; j < markers.length; j++) {
@@ -334,6 +348,7 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
             if (zoom < nameLevels[i].maxZoom && zoom >= nameLevels[i].minZoom) {
                 // makes sure to only add names that are in viewport to layer, to avoid unnecessary rendering of markers outside the screen
                 getMarkersInViewPort(tempLayer, nameLayers[i]);
+                tempLayer._margin = nameLevels[i].margin;
             }
         }
         tempLayer.addTo(MAP);
