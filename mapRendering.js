@@ -166,7 +166,8 @@ function createPolygonLayers(levels) {
                         color: levels[i].color,
                         fill: true,
                         weight: levels[i].weight,
-                        fillOpacity: 1
+                        fillOpacity: 1,
+                        rendererFactory: L.canvas.tile
                     }
                 },
                 pane: getPane(i)
