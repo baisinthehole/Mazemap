@@ -1,7 +1,6 @@
 // This branch is for creating new versions of the files containing the coordinates and names
 // First run with floorID set to the floors you want to update
-// Then adjust the downloadAsFile function below to use the wanted files
-// At last, run with floorID set to false
+// Copy the text from the downloaded files, and paste them into allCoordinatesInFile and allNamesInFile
 
 function downloadAsFile() {
     download(JSON.stringify(allCoordinatesInFile), "coordinates.txt", "text/plain");
