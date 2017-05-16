@@ -221,22 +221,37 @@ function recievedJSONfromServer() {
     //addGlobalNamesToCollisionGroup();
     console.log(GLOBAL_ALL_COORDINATES);
     console.log(deepCopy(allCoordinatesInFile));
+    var nameIndex -1;
     for (var i = 0; i < GLOBAL_ALL_COORDINATES.length; i++) {
         if (GLOBAL_ALL_COORDINATES[i].length > 0) {
+            nameIndex -1;
             for (var j = 0; j < GLOBAL_ALL_COORDINATES[i].length; j++) {
-                allCoordinatesInFile[i].push(GLOBAL_ALL_COORDINATES[i][j]);
+                if (i == 6) {
+                    nameIndex = 0;
+                }
+                else if (i == 3) {
+                    nameIndex = 2;
+                }
+                else if (i == 4) {
+                    nameIndex = 3;
+                }
+                else if (i == 5) {
+                    nameIndex = 4;
+                }
+                else if (i == 10) {
+                    nameIndex = 1;
+                }
+                if (nameIndex == -1) {
+                    allCoordinatesInFile[i].push(GLOBAL_ALL_COORDINATES[i][j]);
+                }
+                else if (GLOBAL_ALL_COORDINATES[i][j].length > 0) {
+                    allCoordinatesInFile[i].push(GLOBAL_ALL_COORDINATES[i][j]);
+                    allNamesInFile[i].push(GLOBAL_ROOM_NAMES[nameIndex][j]);
+                }
             }
         }
     }
-    console.log(deepCopy(allCoordinatesInFile));
 
-    console.log(GLOBAL_ROOM_NAMES);
-    console.log(deepCopy(allNamesInFile));
-    for (var i = 0; i < GLOBAL_ROOM_NAMES.length; i++) {
-        for (var j = 0; j < GLOBAL_ROOM_NAMES[i].length; j++) {
-            allNamesInFile[i].push(GLOBAL_ROOM_NAMES[i][j]);
-        }
-    }
     console.log(deepCopy(allNamesInFile));
     downloadAsFile();
     zoom();
