@@ -221,10 +221,10 @@ function recievedJSONfromServer() {
     //addGlobalNamesToCollisionGroup();
     console.log(GLOBAL_ALL_COORDINATES);
     console.log(deepCopy(allCoordinatesInFile));
-    var nameIndex -1;
+    var nameIndex = -1;
     for (var i = 0; i < GLOBAL_ALL_COORDINATES.length; i++) {
         if (GLOBAL_ALL_COORDINATES[i].length > 0) {
-            nameIndex -1;
+            nameIndex = -1;
             for (var j = 0; j < GLOBAL_ALL_COORDINATES[i].length; j++) {
                 if (i == 6) {
                     nameIndex = 0;
@@ -246,7 +246,7 @@ function recievedJSONfromServer() {
                 }
                 else if (GLOBAL_ALL_COORDINATES[i][j].length > 0) {
                     allCoordinatesInFile[i].push(GLOBAL_ALL_COORDINATES[i][j]);
-                    allNamesInFile[i].push(GLOBAL_ROOM_NAMES[nameIndex][j]);
+                    allNamesInFile[nameIndex].push(GLOBAL_ROOM_NAMES[nameIndex][j]);
                 }
             }
         }
