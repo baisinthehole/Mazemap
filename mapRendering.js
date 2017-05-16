@@ -299,10 +299,25 @@ function newZoom() {
     var roomLevels = createRoomObjects();
     var roomLayers = createPolygonLayers(roomLevels);
 
+    removeNamesThatAreTooDifferent();
     var nameLevels = createNameObjects();
     var nameLayers = createMarkerLayers(nameLevels);
 
     renderEverything(roomLevels, nameLevels, roomLayers, nameLayers);
+}
+
+// Set names like "Delta - 123" to ""
+function removeNamesThatAreTooDifferent() {
+    for (var i = 0; i < allNamesInFile.length; i++) {
+        for (var j = 0; j < allNamesInFile[i].length; j++) {
+            var index = allNamesInFile[i][j].indexOf(" - ");
+            if (index != -1) {
+                if (allNamesInFile[i][j].length - index > 6) {
+                    allNamesInFile[i][j] = "";
+                }
+            }
+        }
+    }
 }
 
 function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
