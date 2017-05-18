@@ -1561,7 +1561,7 @@ function makeMergedName(nameList, indices) {
         if (nameList[indices[i]] < minName) {
             minName = nameList[indices[i]];
         }
-        else if (nameList[indices[i]] > minName) {
+        else if (nameList[indices[i]] > maxName) {
             maxName = nameList[indices[i]];
         }
     }
