@@ -900,7 +900,12 @@ function getNeighbors(data, simplified){
             if (i!=j){
                 result = getDistPolyToPoly(simplified[i], simplified[j]);
                 if (result[2] < VERY_IMPORTANCE_DISTANCE) {
-                    if (poiTypeNotCorridor(data.pois[i].infos, data.pois[j].infos, i)){
+                    if (data) {
+                        if (poiTypeNotCorridor(data.pois[i].infos, data.pois[j].infos, i)){
+                            adjacent.push(j);
+                        }
+                    }
+                    else {
                         adjacent.push(j);
                     }
                 }
@@ -1608,9 +1613,11 @@ function drawFromLocalStorage() {
     var localStorageRoomNames = [];
     for (var i = 0; i < FLOOR_IDS.length; i++) {
         if (localStorage.getItem('allCoordinates'+FLOOR_IDS[i]) !== null) {
+            console.log("Found room");
             localStorageCoordinates.push(JSON.parse(localStorage.getItem('allCoordinates'+FLOOR_IDS[i])));
         }
         if (localStorage.getItem('allNames'+FLOOR_IDS[i]) !== null) {
+            console.log("Found names");
             localStorageRoomNames.push(JSON.parse(localStorage.getItem('allNames'+FLOOR_IDS[i])));
         }
     }
