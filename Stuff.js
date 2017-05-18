@@ -253,29 +253,50 @@ function getLocalJSON(filename) {
     );
 }
 function recievedLocalJSON(data) {
-    var color = ['blue', 'gray', 'green', 'black'];
-    // Fill the coordinate arrays for each type of polygon and draw to map
-    for (var i = 0; i < data.features.length; i++) {
-        // if (data.features[i].geometry.coordinates.length == 1){
-            if (data.features[i].properties.campusId == 1){
-                if (data.features[i].properties.layer == "outlines"){
-                    switchLatLong(data.features[i].geometry.coordinates[0]);
-                    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[0].push(data.features[i].geometry.coordinates[0]);
-                }
-                else if (data.features[i].properties.layer == "stairs"){
-                    switchLatLong(data.features[i].geometry.coordinates);
-                    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[8].push(data.features[i].geometry.coordinates);
-                }
-                else if (data.features[i].properties.layer == "doors"){
-                    switchLatLong(data.features[i].geometry.coordinates);
-                    GLOBAL_ALL_COORDINATES_AS_ONE_FLOORID[7].push(data.features[i].geometry.coordinates);
-                }
+    console.log(deepCopy(allCoordinatesInFile));
+    var point;
+    for (var i = allCoordinatesInFile.length-1; i >= 0; i--) {
+        for (var j = allCoordinatesInFile[i].length-1; j >= 0; j--) {
+            if (allCoordinatesInFile[i][j][0].constructor === Array) {
+                // console.log(allCoordinatesInFile[i][j]);
+                // console.log(i);
+                // console.log(j);
+                point = getPoint(allCoordinatesInFile[i][j]);
             }
-        // }
+            else {
+                point = allCoordinatesInFile[i][j];
+            }
+            if (!inside([point[1], point[0]], data.features[82].geometry.coordinates[0])) {
+            // for (var k = 0; k < allCoordinatesInFile[i][j].length; k++) {
+            //     if (!inside([allCoordinatesInFile[i][j][k][1], allCoordinatesInFile[i][j][k][0]], data.features[82].geometry.coordinates[0])) {
+                    allCoordinatesInFile[i].splice(j, 1);
+                    if (i == 6) {
+                        allNamesInFile[0].splice(j, 1);
+                    }
+                    else if (i == 9) {
+                        allNamesInFile[1].splice(j, 1);
+                    }
+                    else if (i == 3) {
+                        allNamesInFile[2].splice(j, 1);
+                    }
+                    else if (i == 4) {
+                        allNamesInFile[3].splice(j, 1);
+                    }
+                    else if (i == 5) {
+                        allNamesInFile[4].splice(j, 1);
+                    }
+                    // break;
+                // }
+            }
+        }
     }
-    drawFromFile();
-    // drawFromLocalStorage();
-    zoom();
+    download(JSON.stringify(allCoordinatesInFile[6]), "rooms354", "text/plain");
+    download(JSON.stringify(allCoordinatesInFile[1]), "corridors354", "text/plain");
+    download(JSON.stringify(allNamesInFile[0]), "names354", "text/plain");
+    console.log(deepCopy(allCoordinatesInFile));
+
+    console.log(allNamesInFile);
+    newZoom();
 }
 
 function renderGeoJSON(geoJSON, fillColor, color) {
@@ -715,7 +736,12 @@ function getNeighbors(data, simplified){
             if (i!=j){
                 result = getDistPolyToPoly(simplified[i], simplified[j]);
                 if (result[2] < VERY_IMPORTANCE_DISTANCE) {
-                    if (poiTypeNotCorridor(data.pois[i].infos, data.pois[j].infos, i)){
+                    if (data) {
+                        if (poiTypeNotCorridor(data.pois[i].infos, data.pois[j].infos, i)){
+                            adjacent.push(j);
+                        }
+                    }
+                    else {
                         adjacent.push(j);
                     }
                 }

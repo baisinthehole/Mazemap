@@ -28,22 +28,37 @@ MAP.getPane("iconMAP").style.zIndex = 200;
 
 // Uncomment the preferred JSON file
 
-if (FLOOR_ID != false) {
+if (FLOOR_ID == "354") {
+    globalNameList = names354;
+
+    globalRoomCoordinates = deepCopy(rooms354);
+    GLOBAL_ROOM_COORDINATES = deepCopy(globalRoomCoordinates);
+    GLOBAL_ALL_COORDINATES[6] = deepCopy(globalRoomCoordinates);
+    GLOBAL_CORRIDOR_COORDINATES = deepCopy(corridors354);
+    GLOBAL_ALL_COORDINATES[1] = deepCopy(GLOBAL_CORRIDOR_COORDINATES);
+
+    createglobalMergedPolygons(undefined, globalRoomCoordinates);
+    zoom();
+}
+else if (FLOOR_ID != false) {
     console.log("Get data from server");
     getJSONfromServer();
 }
 else {
     console.log("Get data from localStorage");
-    // getLocalJSON(FILENAME);
+    getLocalJSON(FILENAME);
     // drawFromFile();
     // zoom();
 
-    newZoom();
+    // newZoom();
 }
 
 function createglobalMergedPolygons(data, roomCoordinates){
     var neighbors;
     var indeces;
+    console.log(data);
+    console.log(deepCopy(roomCoordinates));
+    console.log(deepCopy(globalNameList));
 
     console.log("oisdvniednv");
 

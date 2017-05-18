@@ -552,18 +552,18 @@ function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList
 
     console.timeEnd("polygons");
 
-    console.time("names");
-    for (var i = 0; i < names.length; i++) {
-        if (names[i] != nowNames[i]){
-            if (!nowNames[i]){
-                nameList[i].addTo(MAP);
-            }
-            else if (nowNames[i]){
-                nameList[i].removeFrom(MAP);
-            }
-            nowNames[i] = !nowNames[i];
-        }
-    }
-    console.timeEnd("names");
+    // console.time("names");
+    // for (var i = 0; i < names.length; i++) {
+    //     if (names[i] != nowNames[i]){
+    //         if (!nowNames[i]){
+    //             nameList[i].addTo(MAP);
+    //         }
+    //         else if (nowNames[i]){
+    //             nameList[i].removeFrom(MAP);
+    //         }
+    //         nowNames[i] = !nowNames[i];
+    //     }
+    // }
+    // console.timeEnd("names");
     return [nowDrawings, nowNames];
 }
