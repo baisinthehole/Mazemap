@@ -1503,9 +1503,11 @@ function fillMergedCoordinates(coordinates) {
 }
 
 function getUnmergedRooms(container, coordinates) {
+    console.log(globalNameList);
     for (var i = 0; i < container.length; i++) {
         if (container[i].length == 1) {
             if (GLOBAL_ROOM_COORDINATES[i].length > 0){
+                console.log(globalNameList[i]);
                 globalUnmergedRoomsSimplified.push(coordinates[i]);
                 globalUnmergedRooms.push(GLOBAL_ROOM_COORDINATES[i]);
                 globalUnmergedNameList.push(globalNameList[i]);

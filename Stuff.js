@@ -321,6 +321,7 @@ function zoom() {
 
 // draws and removes polygons and room names when zooming
 function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList) {
+    console.log(nameList);
     for (var i = 0; i < drawings.length; i++) {
         if (drawings[i] != nowDrawings[i]){
             if (!nowDrawings[i]){
@@ -573,6 +574,15 @@ function switchLatLong(coordinates) {
         coordinates[i][0] = coordinates[i][1];
         coordinates[i][1] = temp;
     }
+}
+
+function switchLatLongRoom(coordinates) {
+    for (var i = 0; i < coordinates.length; i++) {
+        var temp = coordinates[i][0];
+        coordinates[i][0] = coordinates[i][1];
+        coordinates[i][1] = temp;
+    }
+    return coordinates;
 }
 
 function fillStairCoordinates(data, coordinates, polygonList, coordinateType, color, lineOrPolygon) {
@@ -1644,7 +1654,10 @@ function drawFromLocalStorage() {
 }
 
 function removeEmptyRoomsOrNames(coordinates, names) {
+    console.log(coordinates);
+    console.log(names);
     for (var i = coordinates.length - 1; i >= 0; i--) {
+        console.log(i);
         if (coordinates[i].length == 0 || names[i].length == 0) {
             coordinates.splice(i, 1);
             names.splice(i, 1);
