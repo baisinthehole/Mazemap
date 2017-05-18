@@ -99,7 +99,7 @@ function test6() {
 
     // works if this line is present.
     globalCorridorCoordinates = addPointsOnAllCorridors(neighborCorridors);
-    
+
     //globalCorridorCoordinates = removeDuplicatesFromAllRooms(globalCorridorCoordinates);
 
     getCorridorIndices(globalCorridorCoordinates);
@@ -124,7 +124,7 @@ function test38() {
     var neighborCorridors = getNeighborsCorridors(globalCorridorCoordinates);
 
     // globalCorridorCoordinates = addPointsOnAllCorridors(neighborCorridors);
-    
+
     // globalCorridorCoordinates = removeDuplicatesFromAllRooms(globalCorridorCoordinates);
 
     //getCorridorIndices(globalCorridorCoordinates);
@@ -149,7 +149,7 @@ function test91() {
     var neighborCorridors = getNeighborsCorridors(globalCorridorCoordinates);
 
     // globalCorridorCoordinates = addPointsOnAllCorridors(neighborCorridors);
-    
+
     // globalCorridorCoordinates = removeDuplicatesFromAllRooms(globalCorridorCoordinates);
 
     getCorridorIndices(globalCorridorCoordinates);

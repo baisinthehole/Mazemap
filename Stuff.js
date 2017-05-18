@@ -321,7 +321,6 @@ function zoom() {
 
 // draws and removes polygons and room names when zooming
 function superZoom(drawings, names, nowDrawings, nowNames, polygonList, nameList) {
-    console.log(nameList);
     for (var i = 0; i < drawings.length; i++) {
         if (drawings[i] != nowDrawings[i]){
             if (!nowDrawings[i]){
@@ -959,17 +958,12 @@ function getNeighbors(data, simplified){
     var neighbors = [];
     var result;
     var indeces = [];
-    console.log(data);
-    console.log(simplified);
     for (var i = 0; i < simplified.length; i++) {
         var adjacent = [];
         for (var j = 0; j < simplified.length; j++) {
             if (i!=j){
                 result = getDistPolyToPoly(simplified[i], simplified[j]);
                 if (result[2] < VERY_IMPORTANCE_DISTANCE) {
-                    console.log(data);
-                    console.log(i);
-                    console.log(j);
                     if (poiTypeNotCorridor(data.pois[i].infos, data.pois[j].infos, i)){
                         adjacent.push(j);
                     }
@@ -978,7 +972,6 @@ function getNeighbors(data, simplified){
         }
         neighbors.push(adjacent);
     }
-    console.log(neighbors);
     return neighbors;
 }
 
@@ -1679,11 +1672,9 @@ function drawFromLocalStorage() {
     var localStorageRoomNames = [];
     for (var i = 0; i < FLOOR_IDS.length; i++) {
         if (localStorage.getItem('allCoordinates'+FLOOR_IDS[i]) !== null) {
-            console.log("Found room");
             localStorageCoordinates.push(JSON.parse(localStorage.getItem('allCoordinates'+FLOOR_IDS[i])));
         }
         if (localStorage.getItem('allNames'+FLOOR_IDS[i]) !== null) {
-            console.log("Found names");
             localStorageRoomNames.push(JSON.parse(localStorage.getItem('allNames'+FLOOR_IDS[i])));
         }
     }
@@ -1710,10 +1701,7 @@ function drawFromLocalStorage() {
 }
 
 function removeEmptyRoomsOrNames(coordinates, names) {
-    console.log(coordinates);
-    console.log(names);
     for (var i = coordinates.length - 1; i >= 0; i--) {
-        console.log(i);
         if (coordinates[i].length == 0 || names[i].length == 0) {
             coordinates.splice(i, 1);
             names.splice(i, 1);

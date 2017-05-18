@@ -1533,17 +1533,12 @@ function makeMergedNameStrings(mergedRooms, nameList) {
                 index = dynamicMergedRooms[i].length-1-j;
                 if (index >= 0){
                     for (var k = 0; k < dynamicMergedRooms[i][index].length; k++) {
-                        if (nameList[dynamicMergedRooms[i][index][k][0]] < nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]]) {
-                            lastText = nameList[dynamicMergedRooms[i][index][k][0]] + " - " + getDiffRoomNames(nameList[dynamicMergedRooms[i][index][k][0]], nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]]);
+                        [minName, maxName] = makeMergedName(nameList, dynamicMergedRooms[i][index][k]);
+                        if (minName == maxName){
+                            lastText = minName;
                         }
                         else {
-                            // If name is equal, only write one of the names
-                            if (nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]] === nameList[dynamicMergedRooms[i][index][k][0]]) {
-                                lastText = nameList[dynamicMergedRooms[i][index][k][0]];
-                            }
-                            else {
-                                lastText = nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]] + " - " + getDiffRoomNames(nameList[dynamicMergedRooms[i][index][k][dynamicMergedRooms[i][index][k].length - 1]], nameList[dynamicMergedRooms[i][index][k][0]]);
-                            }
+                            lastText = minName + " - " + getDiffRoomNames(minName, maxName);
                         }
                         textZoomLevels[2-j].push(lastText);
                     }
@@ -1555,6 +1550,22 @@ function makeMergedNameStrings(mergedRooms, nameList) {
         }
     }
     return textZoomLevels;
+}
+
+// Return the smallest string and largest string of a group of merged rooms
+// Hopefully returning the name with the smallest number first
+function makeMergedName(nameList, indices) {
+    var minName = nameList[indices[0]];
+    var maxName = nameList[indices[0]];
+    for (var i = 1; i < indices.length; i++) {
+        if (nameList[indices[i]] < minName) {
+            minName = nameList[indices[i]];
+        }
+        else if (nameList[indices[i]] > minName) {
+            maxName = nameList[indices[i]];
+        }
+    }
+    return [minName, maxName];
 }
 
 function getDiffRoomNames(roomName1, roomName2){
