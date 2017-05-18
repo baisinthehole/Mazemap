@@ -431,6 +431,61 @@ function getHttp(url) {
     }
 }
 
+function recievedJSON354(geoJSON) {
+    for (var i = geoJSON.pois.length -1; i >= 0 ; i--) {
+        var poiTypeRoom = false;
+        for (var j = 0; j < geoJSON.pois[i].infos.length; j++) {
+            if (geoJSON.pois[i].infos[j].poiTypeId == ROOM_TYPE.ROOM){
+                poiTypeRoom = true;
+            }
+        }
+        if (!poiTypeRoom){
+            console.log("Trying to delete");
+            geoJSON.pois.splice(i, 1);
+        }
+    }
+
+    // edits JSON file
+    geoJSON = alterJSONfile(geoJSON, FLOOR_ID);
+    console.log(geoJSON);
+
+    GEO_JSON = geoJSON;
+    fillCoordinateTypeServer(geoJSON, globalCorridorCoordinates, globalCorridorPolygons, ROOM_TYPE.CORRIDOR, roomOutlineColor, mergedCorridorColor, 1, "polygon");
+    fillCoordinateTypeServer(geoJSON, globalRoomCoordinates, globalRoomPolygons, ROOM_TYPE.ROOM, roomOutlineColor, roomColor, 1, "polygon");
+    GLOBAL_ROOM_COORDINATES = deepCopy(globalRoomCoordinates);
+    GLOBAL_ALL_COORDINATES[6] = deepCopy(globalRoomCoordinates);
+    GLOBAL_CORRIDOR_COORDINATES = deepCopy(globalCorridorCoordinates);
+    GLOBAL_ALL_COORDINATES[1] = deepCopy(GLOBAL_CORRIDOR_COORDINATES);
+
+    removedDuplicatePoints = removeDuplicatesFromAllRooms(globalRoomCoordinates);
+    // var simplifiedRoomCoordinates = simplifyRoomsMadeBySomeDude(removedDuplicatePoints);
+
+    // This function is defined in main.js
+    createglobalMergedPolygons(geoJSON, removedDuplicatePoints);
+    addGlobalNamesToCollisionGroup();
+    zoom();
+}
+
+  // Function for requesting JSON object from server
+function getHttp(url) {
+    // Create event for handling asynchronous responses from the server
+    var event = new Event('responseTextChange');
+    var info = new XMLHttpRequest();
+    // Asynchronous HTTP request
+    info.open( "GET", url, true );
+    info.send();
+    info.onreadystatechange = function(error) {
+        if (info.readyState == 4 && info.status == 200) {
+            console.log("successfully retrieved response from the server");
+            RAW_RESPONSE = info.responseText;
+            // Dispatch the event, which will make the rest of the program happen
+            document.getElementById('mazemap-container').dispatchEvent(event);
+        }
+        else {
+            //console.error("Error", error);
+        }
+    }
+}
 
 /* JSON object from local file */
 function getLocalJSON(filename) {
@@ -904,18 +959,18 @@ function getNeighbors(data, simplified){
     var neighbors = [];
     var result;
     var indeces = [];
+    console.log(data);
+    console.log(simplified);
     for (var i = 0; i < simplified.length; i++) {
         var adjacent = [];
         for (var j = 0; j < simplified.length; j++) {
             if (i!=j){
                 result = getDistPolyToPoly(simplified[i], simplified[j]);
                 if (result[2] < VERY_IMPORTANCE_DISTANCE) {
-                    if (data) {
-                        if (poiTypeNotCorridor(data.pois[i].infos, data.pois[j].infos, i)){
-                            adjacent.push(j);
-                        }
-                    }
-                    else {
+                    console.log(data);
+                    console.log(i);
+                    console.log(j);
+                    if (poiTypeNotCorridor(data.pois[i].infos, data.pois[j].infos, i)){
                         adjacent.push(j);
                     }
                 }
@@ -923,6 +978,7 @@ function getNeighbors(data, simplified){
         }
         neighbors.push(adjacent);
     }
+    console.log(neighbors);
     return neighbors;
 }
 
