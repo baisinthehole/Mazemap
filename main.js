@@ -5,13 +5,15 @@ FLOOR_IDS = [300, 1672, 246, 351, 70, 349, 59, 168, 197, 374, 326, 94, 241, 220,
 // Create a map
 // center = Maze.latLng(63.41, 10.41);
 var MAP = Maze.map('mazemap-container', {
-            campusloader: false,
-            // center: center,
-            zoom: 5,
-            zoomSnap: 0,
-            zoomDelta: 0.5,
-            wheelPxPerZoomLevel: 100,
-            markerZoomAnimation: false });
+    campusloader: false,
+    // center: center,
+    zoom: 5,
+    zoomSnap: 0,
+    zoomDelta: 0.5,
+    wheelPxPerZoomLevel: 100,
+    markerZoomAnimation: false,
+    renderer: Maze.canvas()
+});
 MAP.setView([63.417421008760335,10.406426561608821], 15);
 
 MAP.createPane("topMAP");
@@ -34,8 +36,10 @@ if (FLOOR_ID != false) {
 else {
     console.log("Get data from localStorage");
     // getLocalJSON(FILENAME);
-    drawFromFile();
-    zoom();
+    // drawFromFile();
+    // zoom();
+
+    newZoom();
 }
 
 function createglobalMergedPolygons(data, roomCoordinates){
