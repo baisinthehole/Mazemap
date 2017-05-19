@@ -19,7 +19,7 @@ function createRoomObjects() {
             fillColor: mergedCorridorColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 21,
+            minZoom: 17,
             maxZoom: 25,
             vectorGridSlicer: false,
             type: "Polygon"
@@ -30,8 +30,8 @@ function createRoomObjects() {
             fillColor: mergedCorridorColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 18,
-            maxZoom: 21,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: false,
             type: "Polygon"
         },
@@ -41,8 +41,8 @@ function createRoomObjects() {
             fillColor: mergedCorridorColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 17,
-            maxZoom: 18,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: false,
             type: "Polygon"
         },
@@ -52,8 +52,8 @@ function createRoomObjects() {
             fillColor: mergedRoomColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 17,
-            maxZoom: 18,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: false,
             type: "Polygon"
         },
@@ -63,8 +63,8 @@ function createRoomObjects() {
             fillColor: mergedRoomColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 18,
-            maxZoom: 18.5,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: false,
             type: "Polygon"
         },
@@ -74,8 +74,8 @@ function createRoomObjects() {
             fillColor: mergedRoomColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 18.5,
-            maxZoom: 19.5,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: false,
             type: "Polygon"
         },
@@ -85,8 +85,8 @@ function createRoomObjects() {
             fillColor: mergedRoomColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 19.5,
-            maxZoom: 20,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: false,
             type: "Polygon"
         },
@@ -96,7 +96,7 @@ function createRoomObjects() {
             fillColor: roomColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 20,
+            minZoom: 17,
             maxZoom: 25,
             vectorGridSlicer: false,
             type: "Polygon"
@@ -129,8 +129,8 @@ function createRoomObjects() {
             fillColor: roomColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 18,
-            maxZoom: 20.5,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: false,
             type: "Polygon"
         },
@@ -140,8 +140,8 @@ function createRoomObjects() {
             fillColor: roomColor,
             color: roomOutlineColor,
             weight: 0.5,
-            minZoom: 17,
-            maxZoom: 18,
+            minZoom: null,
+            maxZoom: null,
             vectorGridSlicer: false,
             type: "Polygon"
         }
