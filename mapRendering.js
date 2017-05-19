@@ -299,11 +299,11 @@ function newZoom() {
     var roomLevels = createRoomObjects();
     var roomLayers = createPolygonLayers(roomLevels);
 
-    removeNamesThatAreTooDifferent();
-    var nameLevels = createNameObjects();
-    var nameLayers = createMarkerLayers(nameLevels);
+    // removeNamesThatAreTooDifferent();
+    // var nameLevels = createNameObjects();
+    // var nameLayers = createMarkerLayers(nameLevels);
 
-    renderEverything(roomLevels, nameLevels, roomLayers, nameLayers);
+    renderEverything(roomLevels, undefined, roomLayers, undefined);
 }
 
 // Set names like "Delta - 123" to ""
@@ -322,11 +322,11 @@ function removeNamesThatAreTooDifferent() {
 
 function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
 
-    var tempLayer = Maze.LayerGroup.collision();
+    // var tempLayer = Maze.LayerGroup.collision();
 
     MAP.on('moveend', function() {
-        tempLayer.remove();
-        tempLayer = Maze.LayerGroup.collision();
+        // tempLayer.remove();
+        // tempLayer = Maze.LayerGroup.collision();
         var zoom = MAP.getZoom();
         console.log(zoom);
         for (var i in roomLevels) {
@@ -337,14 +337,14 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
                 roomLayers[i].remove();
             }
         }
-        for (var i in nameLevels) {
-            if (zoom < nameLevels[i].maxZoom && zoom >= nameLevels[i].minZoom) {
-                getMarkersInViewPort(tempLayer, nameLayers[i]);
-                // console.log(nameLayers[i]);
-                tempLayer._margin = nameLevels[i].margin;
-            }
-        }
-        tempLayer.addTo(MAP);
+        // for (var i in nameLevels) {
+        //     if (zoom < nameLevels[i].maxZoom && zoom >= nameLevels[i].minZoom) {
+        //         getMarkersInViewPort(tempLayer, nameLayers[i]);
+        //         // console.log(nameLayers[i]);
+        //         tempLayer._margin = nameLevels[i].margin;
+        //     }
+        // }
+        // tempLayer.addTo(MAP);
     });
 }
 
