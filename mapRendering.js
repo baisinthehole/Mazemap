@@ -205,7 +205,7 @@ function createNameObjects() {
         roomNames: {
             coordinates: allCoordinatesInFile[6],
             names: allNamesInFile[0],
-            minZoom: 20,
+            minZoom: 17,
             maxZoom: 25,
             margin: 0
         },
@@ -213,8 +213,8 @@ function createNameObjects() {
         unmergedNames: {
             coordinates: allCoordinatesInFile[10],
             names: allNamesInFile[1],
-            minZoom: 18.5,
-            maxZoom: 20,
+            minZoom: null,
+            maxZoom: null,
             margin: 0
         },
 
@@ -229,32 +229,32 @@ function createNameObjects() {
         mergedMedium: {
             coordinates: allCoordinatesInFile[4],
             names: allNamesInFile[3],
-            minZoom: 18.5,
-            maxZoom: 19.5,
+            minZoom: null,
+            maxZoom: null,
             margin: 0
         },
 
         mergedSmall: {
             coordinates: allCoordinatesInFile[5],
             names: allNamesInFile[4],
-            minZoom: 19.5,
-            maxZoom: 20,
+            minZoom: null,
+            maxZoom: null,
             margin: 0
         },
 
         largeNames: {
             coordinates: getLargeRoomCoordinates(allCoordinatesInFile, allNamesInFile),
             names: getLargeRoomNames(allCoordinatesInFile, allNamesInFile),
-            minZoom: 18,
-            maxZoom: 18.5,
+            minZoom: null,
+            maxZoom: null,
             margin: 5
         },
 
         veryLargeNames: {
             coordinates: getLargeRoomCoordinates(allCoordinatesInFile, allNamesInFile),
             names: getLargeRoomNames(allCoordinatesInFile, allNamesInFile),
-            minZoom: 17,
-            maxZoom: 18,
+            minZoom: null,
+            maxZoom: null,
             margin: 20
         }
     };
@@ -299,11 +299,11 @@ function newZoom() {
     var roomLevels = createRoomObjects();
     var roomLayers = createPolygonLayers(roomLevels);
 
-    // removeNamesThatAreTooDifferent();
-    // var nameLevels = createNameObjects();
-    // var nameLayers = createMarkerLayers(nameLevels);
+    removeNamesThatAreTooDifferent();
+    var nameLevels = createNameObjects();
+    var nameLayers = createMarkerLayers(nameLevels);
 
-    renderEverything(roomLevels, undefined, roomLayers, undefined);
+    renderEverything(roomLevels, nameLevels, roomLayers, nameLayers);
 }
 
 // Set names like "Delta - 123" to ""
@@ -322,11 +322,11 @@ function removeNamesThatAreTooDifferent() {
 
 function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
 
-    // var tempLayer = Maze.LayerGroup.collision();
+    var tempLayer = Maze.LayerGroup.collision();
 
     MAP.on('moveend', function() {
-        // tempLayer.remove();
-        // tempLayer = Maze.LayerGroup.collision();
+        tempLayer.remove();
+        tempLayer = Maze.LayerGroup.collision();
         var zoom = MAP.getZoom();
         console.log(zoom);
         for (var i in roomLevels) {
@@ -337,14 +337,14 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
                 roomLayers[i].remove();
             }
         }
-        // for (var i in nameLevels) {
-        //     if (zoom < nameLevels[i].maxZoom && zoom >= nameLevels[i].minZoom) {
-        //         getMarkersInViewPort(tempLayer, nameLayers[i]);
-        //         // console.log(nameLayers[i]);
-        //         tempLayer._margin = nameLevels[i].margin;
-        //     }
-        // }
-        // tempLayer.addTo(MAP);
+        for (var i in nameLevels) {
+            if (zoom < nameLevels[i].maxZoom && zoom >= nameLevels[i].minZoom) {
+                getMarkersInViewPort(tempLayer, nameLayers[i]);
+                // console.log(nameLayers[i]);
+                tempLayer._margin = nameLevels[i].margin;
+            }
+        }
+        tempLayer.addTo(MAP);
     });
 }
 
