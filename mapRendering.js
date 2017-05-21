@@ -205,16 +205,16 @@ function createNameObjects() {
         roomNames: {
             coordinates: allCoordinatesInFile[6],
             names: allNamesInFile[0],
-            minZoom: 20,
-            maxZoom: 25,
+            minZoom: null,
+            maxZoom: null,
             margin: 0
         },
 
         unmergedNames: {
             coordinates: allCoordinatesInFile[10],
             names: allNamesInFile[1],
-            minZoom: 18.5,
-            maxZoom: 20,
+            minZoom: null,
+            maxZoom: null,
             margin: 0
         },
 
@@ -229,36 +229,60 @@ function createNameObjects() {
         mergedMedium: {
             coordinates: allCoordinatesInFile[4],
             names: allNamesInFile[3],
-            minZoom: 18.5,
-            maxZoom: 19.5,
+            minZoom: null,
+            maxZoom: null,
             margin: 0
         },
 
         mergedSmall: {
             coordinates: allCoordinatesInFile[5],
             names: allNamesInFile[4],
-            minZoom: 19.5,
-            maxZoom: 20,
+            minZoom: null,
+            maxZoom: null,
             margin: 0
         },
 
         largeNames: {
             coordinates: getLargeRoomCoordinates(allCoordinatesInFile, allNamesInFile),
             names: getLargeRoomNames(allCoordinatesInFile, allNamesInFile),
-            minZoom: 18,
-            maxZoom: 18.5,
+            minZoom: null,
+            maxZoom: null,
             margin: 5
         },
 
         veryLargeNames: {
             coordinates: getLargeRoomCoordinates(allCoordinatesInFile, allNamesInFile),
             names: getLargeRoomNames(allCoordinatesInFile, allNamesInFile),
-            minZoom: 17,
-            maxZoom: 18,
+            minZoom: null,
+            maxZoom: null,
             margin: 20
         }
     };
     return levels;
+}
+
+function createCustomMarkers(testNumber) {
+    if (testNumber == 1) {
+        var markers = {
+            markerPair1: {
+                startPoint: [63.41575401983687, 10.405654607395311],
+                endPoint: [63.4154990152524, 10.407129380242633],
+                startName: "B1-175",
+                endName: "E1-143"
+            }
+        };
+    }
+    else {
+        var markers = {
+            markerPair2: {
+                startPoint: [63.41535022985763, 10.404815733223304],
+                endPoint: [63.416401875093, 10.40557838382981],
+                startName: "A1-142",
+                endName: "4.126"
+            }
+        };
+    }
+    return markers;
 }
 
 function getLargeRoomCoordinates(coordinates, names) {
@@ -295,6 +319,22 @@ function createMarkerLayers(levels) {
     return layers;
 }
 
+function createCustomMarkerLayers(markers) {
+    for (var i in markers) {
+        var startMarker = Maze.marker(markers[i].startPoint);
+        var startIcon = Maze.icon.glyph({prefix: '', cssClass:'sans-serif', glyph: 'A', glyphColor: "red"});
+
+        var endMarker = Maze.marker(markers[i].endPoint);
+        var endIcon = Maze.icon.glyph({prefix: '', cssClass:'sans-serif', glyph: 'B', glyphColor: "green"}); 
+
+        startMarker.setIcon(startIcon);
+        endMarker.setIcon(endIcon);
+
+        startMarker.addTo(MAP);
+        endMarker.addTo(MAP);       
+    }
+}
+
 function newZoom() {
     var roomLevels = createRoomObjects();
     var roomLayers = createPolygonLayers(roomLevels);
@@ -304,6 +344,10 @@ function newZoom() {
     var nameLayers = createMarkerLayers(nameLevels);
 
     renderEverything(roomLevels, nameLevels, roomLayers, nameLayers);
+
+    clickToShowCoordinates();
+
+    createCustomMarkerLayers(createCustomMarkers(2));
 }
 
 // Set names like "Delta - 123" to ""
@@ -328,7 +372,7 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
         tempLayer.remove();
         tempLayer = Maze.LayerGroup.collision();
         var zoom = MAP.getZoom();
-        console.log(zoom);
+        //console.log(zoom);
         for (var i in roomLevels) {
             if (zoom < roomLevels[i].maxZoom && zoom >= roomLevels[i].minZoom) {
                 roomLayers[i].addTo(MAP);
@@ -365,6 +409,15 @@ function getMarkersInViewPort(tempLayer, nameLayer) {
             tempLayer.addLayer(nameLayer._originalLayers[i]);
         }
     }
+}
+
+function clickToShowCoordinates() {
+    MAP.on("click", function(event) {
+        console.log("Lat");
+        console.log(event.latlng.lat);
+        console.log("Long");
+        console.log(event.latlng.lng);
+    });
 }
 
 function drawFromFile() {
