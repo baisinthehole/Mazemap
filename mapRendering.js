@@ -205,9 +205,10 @@ function createNameObjects() {
         roomNames: {
             coordinates: allCoordinatesInFile[6],
             names: allNamesInFile[0],
-            minZoom: 17,
+            minZoom: 21,
             maxZoom: 25,
-            margin: 0
+            margin: 0,
+            fontSize: "14"
         },
 
         unmergedNames: {
@@ -219,27 +220,30 @@ function createNameObjects() {
         },
 
         mergedLarge: {
-            coordinates: allCoordinatesInFile[3],
-            names: allNamesInFile[2],
-            minZoom: null,
-            maxZoom: null,
-            margin: 0
+            coordinates: allCoordinatesInFile[6],
+            names: allNamesInFile[0],
+            minZoom: 20,
+            maxZoom: 21,
+            margin: 0,
+            fontSize: "12"
         },
 
         mergedMedium: {
-            coordinates: allCoordinatesInFile[4],
-            names: allNamesInFile[3],
-            minZoom: null,
-            maxZoom: null,
-            margin: 0
+            coordinates: allCoordinatesInFile[6],
+            names: allNamesInFile[0],
+            minZoom: 18.5,
+            maxZoom: 20,
+            margin: 0,
+            fontSize: "9"
         },
 
         mergedSmall: {
-            coordinates: allCoordinatesInFile[5],
-            names: allNamesInFile[4],
-            minZoom: null,
-            maxZoom: null,
-            margin: 0
+            coordinates: allCoordinatesInFile[6],
+            names: allNamesInFile[0],
+            minZoom: 17,
+            maxZoom: 18.5,
+            margin: 0,
+            fontSize: "8"
         },
 
         largeNames: {
@@ -286,7 +290,7 @@ function createMarkerLayers(levels) {
         layers[i] = Maze.LayerGroup.collision({
             margin: 0
         });
-        var markers = makeAllRoomNames(levels[i].coordinates, levels[i].names, "11");
+        var markers = makeAllRoomNames(levels[i].coordinates, levels[i].names, levels[i].fontSize);
         for (var j = 0; j < markers.length; j++) {
             layers[i].addLayer(markers[j]);
         }
