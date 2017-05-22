@@ -301,6 +301,8 @@ function createMarkerLayers(levels) {
 }
 
 function newZoom() {
+    removeDash();
+
     var roomLevels = createRoomObjects();
     var roomLayers = createPolygonLayers(roomLevels);
 
@@ -322,6 +324,18 @@ function removeNamesThatAreTooDifferent() {
                 if (allNamesInFile[i][j].length - index > 6) {
                     allNamesInFile[i][j] = "";
                 }
+            }
+        }
+    }
+}
+
+// Removes 1- from names to make it more understandable
+function removeDash() {
+    for (var i = 0; i < allNamesInFile.length; i++) {
+        for (var j = 0; j < allNamesInFile[i].length; j++) {
+            var index = allNamesInFile[i][j].indexOf("1-");
+            if (index != -1) {
+                allNamesInFile[i][j] = allNamesInFile[i][j].substring(0, index) + allNamesInFile[i][j].substring(index+2, allNamesInFile[i][j].length);
             }
         }
     }
