@@ -205,16 +205,16 @@ function createNameObjects() {
         roomNames: {
             coordinates: allCoordinatesInFile[6],
             names: allNamesInFile[0],
-            minZoom: null,
-            maxZoom: null,
+            minZoom: 20,
+            maxZoom: 25,
             margin: 0
         },
 
         unmergedNames: {
             coordinates: allCoordinatesInFile[10],
             names: allNamesInFile[1],
-            minZoom: null,
-            maxZoom: null,
+            minZoom: 18.5,
+            maxZoom: 20,
             margin: 0
         },
 
@@ -229,32 +229,32 @@ function createNameObjects() {
         mergedMedium: {
             coordinates: allCoordinatesInFile[4],
             names: allNamesInFile[3],
-            minZoom: null,
-            maxZoom: null,
+            minZoom: 18.5,
+            maxZoom: 19.5,
             margin: 0
         },
 
         mergedSmall: {
             coordinates: allCoordinatesInFile[5],
             names: allNamesInFile[4],
-            minZoom: null,
-            maxZoom: null,
+            minZoom: 19.5,
+            maxZoom: 20,
             margin: 0
         },
 
         largeNames: {
             coordinates: getLargeRoomCoordinates(allCoordinatesInFile, allNamesInFile),
             names: getLargeRoomNames(allCoordinatesInFile, allNamesInFile),
-            minZoom: null,
-            maxZoom: null,
+            minZoom: 18,
+            maxZoom: 18.5,
             margin: 5
         },
 
         veryLargeNames: {
             coordinates: getLargeRoomCoordinates(allCoordinatesInFile, allNamesInFile),
             names: getLargeRoomNames(allCoordinatesInFile, allNamesInFile),
-            minZoom: null,
-            maxZoom: null,
+            minZoom: 17,
+            maxZoom: 18,
             margin: 20
         }
     };
@@ -466,8 +466,13 @@ function clickToShowCoordinates() {
         for (var i = 0; i < rooms.length; i++) {
             if (inside([event.latlng.lat, event.latlng.lng], allCoordinatesInFile[6][rooms[i]])) {
                 if (!timer) {
-                    timer = true;
-                    console.time("Path");
+                    if (contains([43, 144], rooms[i])) {
+                        timer = true;
+                        console.time("Path");
+                    }
+                    else if (contains([836, 39], rooms[i])) {
+                        MAP.setView([63.41591186500906,10.405824608273125], 18);
+                    }
                 }
                 else {
                     if (contains([836, 39], rooms[i])) {
