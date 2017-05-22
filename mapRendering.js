@@ -348,23 +348,14 @@ function newZoom() {
     var drawControl = new Maze.Control.Draw(options);
     MAP.addControl(drawControl);
 
-    var editableLayers = new Maze.FeatureGroup();
-    MAP.addLayer(editableLayers);
-
     MAP.on('draw:created', function(e) {
       var type = e.layerType,
         layer = e.layer;
+        layer.options.pane = "iconMAP";
 
       if (type === 'polyline') {
         layer.bindPopup('A polyline!');
-      } else if ( type === 'polygon') {
-        layer.bindPopup('A polygon!');
-      } else if (type === 'marker')
-      {layer.bindPopup('marker!');}
-      else if (type === 'circle')
-      {layer.bindPopup('A circle!');}
-       else if (type === 'rectangle')
-      {layer.bindPopup('A rectangle!');}
+      }
 
 
       editableLayers.addLayer(layer);
