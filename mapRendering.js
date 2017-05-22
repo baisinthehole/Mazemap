@@ -332,7 +332,7 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
     var tempLayer = Maze.LayerGroup.collision();
 
     MAP.on('moveend', function() {
-        if (zoomCounter == 1) {
+        if (zoomCounter == 0) {
             console.time("Demo");
         }
         zoomCounter++;
@@ -363,6 +363,16 @@ function clickedOnRoom(rooms) {
     MAP.on("click", function(event) {
         for (var i = 0; i < rooms.length; i++) {
             if (inside([event.latlng.lat, event.latlng.lng], allCoordinatesInFile[6][rooms[i]])) {
+                var marker = Maze.marker(getPoint(allCoordinatesInFile[6][rooms[i]]));
+                var startIcon = Maze.icon.glyph({prefix: '', cssClass:'sans-serif', glyph: 'A', glyphColor: "red"});
+                var endIcon = Maze.icon.glyph({prefix: '', cssClass:'sans-serif', glyph: 'B', glyphColor: "green"});
+                if (contains([836, 39], rooms[i])) {
+                    marker.setIcon(endIcon);
+                }
+                else {
+                    marker.setIcon(startIcon);
+                }
+                marker.addTo(MAP);
                 console.timeEnd("Demo");
             }
         }
