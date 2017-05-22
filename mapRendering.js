@@ -158,7 +158,7 @@ function createPolygonLayers(levels) {
 
     for (var i in levels) {
         if (levels[i].vectorGridSlicer) {
-            layers[i] = L.vectorGrid.slicer(makeGeoJSON(levels[i].coordinates, levels[i].type), {
+            layers[i] = Maze.vectorGrid.slicer(makeGeoJSON(levels[i].coordinates, levels[i].type), {
                 maxZoom: levels[i].maxZoom,
                 minZoom: levels[i].minZoom,
                 vectorTileLayerStyles: {
@@ -168,7 +168,7 @@ function createPolygonLayers(levels) {
                         fill: true,
                         weight: levels[i].weight,
                         fillOpacity: 1,
-                        rendererFactory: L.canvas.tile
+                        rendererFactory: Maze.canvas.tile
                     }
                 },
                 pane: getPane(i)
@@ -307,6 +307,68 @@ function newZoom() {
     renderEverything(roomLevels, nameLevels, roomLayers, nameLayers);
 
     clickedOnRoom([allCoordinatesInFile[6][836]]);
+
+    // Initialise the FeatureGroup to store editable layers
+    var editableLayers = new Maze.FeatureGroup();
+    MAP.addLayer(editableLayers);
+
+    var options = {
+      position: 'topleft',
+      draw: {
+        polygon: {
+          allowIntersection: false, // Restricts shapes to simple polygons
+          drawError: {
+            color: '#e1e100', // Color the shape will turn when intersects
+            message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+          },
+          shapeOptions: {
+            color: '#97009c'
+          }
+        },
+        polyline: {
+            shapeOptions: {
+            color: '#f357a1',
+            weight: 10
+              }
+        },
+        // disable toolbar item by setting it to false
+        polyline: true,
+        circle: false, // Turns off this drawing tool
+        polygon: false,
+        marker: false,
+        rectangle: false,
+      },
+      edit: {
+        featureGroup: editableLayers, //REQUIRED!!
+        remove: true
+      }
+    };
+
+    // Initialise the draw control and pass it the FeatureGroup of editable layers
+    var drawControl = new Maze.Control.Draw(options);
+    MAP.addControl(drawControl);
+
+    var editableLayers = new Maze.FeatureGroup();
+    MAP.addLayer(editableLayers);
+
+    MAP.on('draw:created', function(e) {
+      var type = e.layerType,
+        layer = e.layer;
+
+      if (type === 'polyline') {
+        layer.bindPopup('A polyline!');
+      } else if ( type === 'polygon') {
+        layer.bindPopup('A polygon!');
+      } else if (type === 'marker')
+      {layer.bindPopup('marker!');}
+      else if (type === 'circle')
+      {layer.bindPopup('A circle!');}
+       else if (type === 'rectangle')
+      {layer.bindPopup('A rectangle!');}
+
+
+      editableLayers.addLayer(layer);
+    });
 }
 
 // Set names like "Delta - 123" to ""
