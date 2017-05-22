@@ -14,7 +14,7 @@ var MAP = Maze.map('mazemap-container', {
     markerZoomAnimation: false,
     renderer: Maze.canvas()
 });
-MAP.setView([63.417421008760335,10.406426561608821], 15);
+MAP.setView([63.41591186500906,10.405824608273125], 16.5);
 
 MAP.createPane("topMAP");
 MAP.getPane("topMAP").style.zIndex = 100;
