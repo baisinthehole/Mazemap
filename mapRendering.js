@@ -205,8 +205,8 @@ function createNameObjects() {
         roomNames: {
             coordinates: allCoordinatesInFile[6],
             names: allNamesInFile[0],
-            minZoom: null,
-            maxZoom: null,
+            minZoom: 18,
+            maxZoom: 25,
             margin: 0
         },
 
