@@ -157,7 +157,7 @@ function createPolygonLayers(levels) {
 
     for (var i in levels) {
         if (levels[i].vectorGridSlicer) {
-            layers[i] = L.vectorGrid.slicer(makeGeoJSON(levels[i].coordinates, levels[i].type), {
+            layers[i] = Maze.vectorGrid.slicer(makeGeoJSON(levels[i].coordinates, levels[i].type), {
                 maxZoom: levels[i].maxZoom,
                 minZoom: levels[i].minZoom,
                 vectorTileLayerStyles: {
@@ -167,7 +167,7 @@ function createPolygonLayers(levels) {
                         fill: true,
                         weight: levels[i].weight,
                         fillOpacity: 1,
-                        rendererFactory: L.canvas.tile
+                        rendererFactory: Maze.canvas.tile
                     }
                 },
                 pane: getPane(i)
@@ -325,13 +325,13 @@ function createCustomMarkerLayers(markers) {
         var startIcon = Maze.icon.glyph({prefix: '', cssClass:'sans-serif', glyph: 'A', glyphColor: "red"});
 
         var endMarker = Maze.marker(markers[i].endPoint);
-        var endIcon = Maze.icon.glyph({prefix: '', cssClass:'sans-serif', glyph: 'B', glyphColor: "green"}); 
+        var endIcon = Maze.icon.glyph({prefix: '', cssClass:'sans-serif', glyph: 'B', glyphColor: "green"});
 
         startMarker.setIcon(startIcon);
         endMarker.setIcon(endIcon);
 
         startMarker.addTo(MAP);
-        endMarker.addTo(MAP);       
+        endMarker.addTo(MAP);
     }
 }
 
@@ -347,7 +347,55 @@ function newZoom() {
 
     clickToShowCoordinates();
 
-    createCustomMarkerLayers(createCustomMarkers(2));
+    createCustomMarkerLayers(createCustomMarkers(1));
+
+        // Initialise the FeatureGroup to store editable layers
+    var editableLayers = new Maze.FeatureGroup();
+    MAP.addLayer(editableLayers);
+
+    var options = {
+      position: 'topleft',
+      draw: {
+        polygon: {
+          allowIntersection: false, // Restricts shapes to simple polygons
+          drawError: {
+            color: '#e1e100', // Color the shape will turn when intersects
+            message: '<strong>Oh snap!<strong> you can\'t draw that!' // Message that will show when intersect
+          },
+          shapeOptions: {
+            color: '#97009c'
+          }
+        },
+        polyline: {
+            shapeOptions: {
+            color: '#f357a1',
+            weight: 10
+              }
+        },
+        // disable toolbar item by setting it to false
+        polyline: true,
+        circle: false, // Turns off this drawing tool
+        polygon: false,
+        marker: false,
+        rectangle: false,
+      },
+      edit: {
+        featureGroup: editableLayers, //REQUIRED!!
+        remove: true
+      }
+    };
+
+    // Initialise the draw control and pass it the FeatureGroup of editable layers
+    var drawControl = new Maze.Control.Draw(options);
+    MAP.addControl(drawControl);
+
+    MAP.on('draw:created', function(e) {
+      var type = e.layerType,
+        layer = e.layer;
+        layer.options.pane = "iconMAP";
+
+      editableLayers.addLayer(layer);
+    });
 }
 
 // Set names like "Delta - 123" to ""
@@ -412,11 +460,21 @@ function getMarkersInViewPort(tempLayer, nameLayer) {
 }
 
 function clickToShowCoordinates() {
+    var timer = false;
+    var rooms = [836, 43, 39, 144];
     MAP.on("click", function(event) {
-        console.log("Lat");
-        console.log(event.latlng.lat);
-        console.log("Long");
-        console.log(event.latlng.lng);
+        for (var i = 0; i < rooms.length; i++) {
+            if (inside([event.latlng.lat, event.latlng.lng], allCoordinatesInFile[6][rooms[i]])) {
+                if (!timer) {
+                    timer = true;
+                    console.time("Path");
+                }
+                else {
+                    timer = false;
+                    console.timeEnd("Path");
+                }
+            }
+        }
     });
 }
 

@@ -4,10 +4,17 @@
 <link rel="stylesheet" href="https://api.mazemap.com/js/v1.2.10/mazemap.min.css">
 <script type='text/javascript' src='https://api.mazemap.com/js/v1.2.10/mazemap.min.js'></script>
 
+<script>
+    // the Maze namespace is an extension of the L namespace
+    // Make a reference to enable compatibility with plugins that use the L namespace
+    window.L = window.Maze;
+</script>
+
 <!-- Leaflet inclusion -->
 <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.0.0-rc.3/dist/leaflet.css" /> -->
-<script src="https://unpkg.com/leaflet@1.0.0-rc.3/dist/leaflet.js"></script>
+<!-- <script src="https://unpkg.com/leaflet@latest/dist/leaflet.js"></script> -->
 <!-- <script src="bower_components/leaflet/dist/leaflet-src.js"></script> -->
+<script src="leafletDraw.js"></script>
 <script src="https://unpkg.com/leaflet.vectorgrid@latest/dist/Leaflet.VectorGrid.bundled.js"></script>
 <script src="bower_components/rbush/rbush.js"></script>
 <script src="Leaflet.LayerGroup.Collision.js"></script>
