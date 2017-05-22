@@ -1,5 +1,6 @@
 // area threshold of holes in rooms that will be removed, to remove unnecessary details on lower zoom levels.
 var AREA_THRESHOLD = 0.00000001;
+var zoomCounter = 0;
 
 function createRoomObjects() {
     var levels = {
@@ -304,6 +305,8 @@ function newZoom() {
     var nameLayers = createMarkerLayers(nameLevels);
 
     renderEverything(roomLevels, nameLevels, roomLayers, nameLayers);
+
+    clickedOnRoom([allCoordinatesInFile[6][836]]);
 }
 
 // Set names like "Delta - 123" to ""
@@ -325,6 +328,10 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
     var tempLayer = Maze.LayerGroup.collision();
 
     MAP.on('moveend', function() {
+        if (zoomCounter == 1) {
+            console.time("Demo");
+        }
+        zoomCounter++;
         tempLayer.remove();
         tempLayer = Maze.LayerGroup.collision();
         var zoom = MAP.getZoom();
@@ -345,6 +352,17 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
             }
         }
         tempLayer.addTo(MAP);
+    });
+}
+
+function clickedOnRoom(room) {
+    MAP.on("click", function(event) {
+        for (var i = 0; i < room.length; i++) {
+            if (inside([event.latlng.lat, event.latlng.lng], room[i])) {
+                console.timeEnd("Demo");
+                zoomCounter = 0;
+            }
+        }
     });
 }
 
