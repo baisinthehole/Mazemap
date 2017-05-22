@@ -235,7 +235,7 @@ function createNameObjects() {
             minZoom: 18.5,
             maxZoom: 20,
             margin: 0,
-            fontSize: "9"
+            fontSize: "10"
         },
 
         mergedSmall: {
