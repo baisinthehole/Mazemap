@@ -349,16 +349,10 @@ function newZoom() {
     MAP.addControl(drawControl);
 
     MAP.on('draw:created', function(e) {
-      var type = e.layerType,
+        var type = e.layerType,
         layer = e.layer;
         layer.options.pane = "iconMAP";
-
-      if (type === 'polyline') {
-        layer.bindPopup('A polyline!');
-      }
-
-
-      editableLayers.addLayer(layer);
+        editableLayers.addLayer(layer);
     });
 }
 
