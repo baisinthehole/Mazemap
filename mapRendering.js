@@ -470,8 +470,10 @@ function clickToShowCoordinates() {
                     console.time("Path");
                 }
                 else {
-                    timer = false;
-                    console.timeEnd("Path");
+                    if (contains([836, 39], rooms[i])) {
+                        timer = false;
+                        console.timeEnd("Path");
+                    }
                 }
             }
         }
