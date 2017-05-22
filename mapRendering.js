@@ -235,7 +235,7 @@ function createNameObjects() {
             minZoom: 18.5,
             maxZoom: 20,
             margin: 0,
-            fontSize: "9"
+            fontSize: "10"
         },
 
         mergedSmall: {
@@ -312,7 +312,6 @@ function newZoom() {
 
     renderEverything(roomLevels, nameLevels, roomLayers, nameLayers);
 
-    clickedOnRoom([836, 43, 39, 144]);
 }
 
 // Set names like "Delta - 123" to ""
@@ -346,10 +345,10 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
     var tempLayer = Maze.LayerGroup.collision();
 
     MAP.on('moveend', function() {
-        if (zoomCounter == 0) {
-            console.time("Demo");
-        }
-        zoomCounter++;
+        // if (zoomCounter == 0) {
+        //     console.time("Demo");
+        // }
+        // zoomCounter++;
         tempLayer.remove();
         tempLayer = Maze.LayerGroup.collision();
         var zoom = MAP.getZoom();
