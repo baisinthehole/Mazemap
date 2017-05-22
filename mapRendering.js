@@ -1,5 +1,6 @@
 // area threshold of holes in rooms that will be removed, to remove unnecessary details on lower zoom levels.
 var AREA_THRESHOLD = 0.00000001;
+var zoomCounter = 0;
 
 function createRoomObjects() {
     var levels = {
@@ -175,6 +176,7 @@ function createPolygonLayers(levels) {
         }
         else {
             layers[i] = Maze.layerGroup();
+
             var polygons = fillAllPolygons(levels[i].coordinates, levels[i].color, levels[i].fillColor, "polygon");
 
             addCoordinatesThatAreNotPoints(layers[i], polygons[0]);
@@ -325,13 +327,13 @@ function createCustomMarkerLayers(markers) {
         var startIcon = Maze.icon.glyph({prefix: '', cssClass:'sans-serif', glyph: 'A', glyphColor: "red"});
 
         var endMarker = Maze.marker(markers[i].endPoint);
-        var endIcon = Maze.icon.glyph({prefix: '', cssClass:'sans-serif', glyph: 'B', glyphColor: "green"}); 
+        var endIcon = Maze.icon.glyph({prefix: '', cssClass:'sans-serif', glyph: 'B', glyphColor: "green"});
 
         startMarker.setIcon(startIcon);
         endMarker.setIcon(endIcon);
 
         startMarker.addTo(MAP);
-        endMarker.addTo(MAP);       
+        endMarker.addTo(MAP);
     }
 }
 
@@ -345,9 +347,21 @@ function newZoom() {
 
     renderEverything(roomLevels, nameLevels, roomLayers, nameLayers);
 
-    clickToShowCoordinates();
+    clickToShowCoordinates(allCoordinatesInFile[6][836]);
 
     createCustomMarkerLayers(createCustomMarkers(2));
+    console.log(allCoordinatesInFile);
+    for (var i = 0; i < allCoordinatesInFile[6].length; i++) {
+        if (inside([63.416401027183376, 10.405577841158264], allCoordinatesInFile[6][i])) {
+            console.log("1");
+            console.log(i);
+            console.log(allCoordinatesInFile[6][i]);
+        }
+        if (inside([10.405577841158264, 63.416401027183376], allCoordinatesInFile[6][i])) {
+            console.log("2");
+            console.log(allCoordinatesInFile[6][i]);
+        }
+    }
 }
 
 // Set names like "Delta - 123" to ""
@@ -369,6 +383,10 @@ function renderEverything(roomLevels, nameLevels, roomLayers, nameLayers) {
     var tempLayer = Maze.LayerGroup.collision();
 
     MAP.on('moveend', function() {
+        if (zoomCounter == 1) {
+            console.time("Demo");
+        }
+        zoomCounter++;
         tempLayer.remove();
         tempLayer = Maze.LayerGroup.collision();
         var zoom = MAP.getZoom();
@@ -411,8 +429,13 @@ function getMarkersInViewPort(tempLayer, nameLayer) {
     }
 }
 
-function clickToShowCoordinates() {
+function clickToShowCoordinates(room) {
     MAP.on("click", function(event) {
+        if (inside([event.latlng.lat, event.latlng.lng], room)) {
+            console.log("Found room");
+            console.timeEnd("Demo");
+            zoomCounter = 0;
+        }
         console.log("Lat");
         console.log(event.latlng.lat);
         console.log("Long");
@@ -492,6 +515,10 @@ function zoom() {
 
     // Zoom listener, is triggered on every change in zoom level
     MAP.on('zoomend', function () {
+        if (zoomCounter == 2) {
+            console.time("Demo");
+        }
+        zoomCounter++;
         console.time("everything");
         console.log(MAP.getZoom());
         if (MAP.getZoom() < 16){
