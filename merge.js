@@ -542,7 +542,7 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
     pointIndexes1 = sortPairs(pointIndexes1, room1.length);
     pointIndexes2 = sortPairs(pointIndexes2, room2.length);
     for (var i = 0; i < pointIndexes1.length; i+=2) {
-        [index1, index2] = getClosestPairToPair(pointIndexes1, pointIndexes2, i, room1, room2);
+        [index1, index2] = getClosestPairToPair(pointIndexes1, pointIndexes2, i, room1, room2, usedIndexes2);
         usedIndexes2.push(index1);
         usedIndexes2.push(index2);
         indexesConnected.push([pointIndexes1[i], pointIndexes2[index2]]);
@@ -550,12 +550,11 @@ function connectCirclePoints(room1, room2, pointIndexes1, pointIndexes2) {
     }
     return indexesConnected;
 }
-
-function getClosestPairToPair(pointIndexes1, pointIndexes2, index, room1, room2){
+function getClosestPairToPair(pointIndexes1, pointIndexes2, index, room1, room2, usedIndexes2){
     var minDistPairs = Infinity;
     var indexPI2 = 0;
     for (var i = 0; i < pointIndexes2.length; i+=2) {
-        if (getDistBetweenTwoPairOfPoints(pointIndexes1, pointIndexes2, index, i, room1, room2) < minDistPairs) {
+        if (getDistBetweenTwoPairOfPoints(pointIndexes1, pointIndexes2, index, i, room1, room2) < minDistPairs && !contains(usedIndexes2, i)) {
             minDistPairs = getDistBetweenTwoPairOfPoints(pointIndexes1, pointIndexes2, index, i, room1, room2);
             indexPI2 = i;
         }
@@ -1515,8 +1514,8 @@ function getUnmergedRooms(container, coordinates) {
     }
     GLOBAL_ALL_COORDINATES[9] = deepCopy(globalUnmergedRoomsSimplified);
     GLOBAL_ALL_COORDINATES[10] = deepCopy(globalUnmergedRooms);
-    fillPolygons(globalUnmergedRoomsSimplified, globalUnmergedPolygonsSimplified, roomOutlineColor, roomColor, "line", 1);
-    fillPolygons(globalUnmergedRooms, globalUnmergedPolygons, roomOutlineColor, roomColor, "line", 1);
+    fillPolygons(globalUnmergedRoomsSimplified, globalUnmergedPolygonsSimplified, roomOutlineColor, roomColor, "polygon", 1);
+    fillPolygons(globalUnmergedRooms, globalUnmergedPolygons, roomOutlineColor, roomColor, "polygon", 1);
 
 }
 

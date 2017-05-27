@@ -218,7 +218,7 @@ function recievedJSONfromServer() {
 
     // This function is defined in main.js
     createglobalMergedPolygons(geoJSON, removedDuplicatePoints);
-    //addGlobalNamesToCollisionGroup();
+    addGlobalNamesToCollisionGroup();
 
     zoom();
 }
